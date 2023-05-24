@@ -1,0 +1,20 @@
+curl -X POST -H "Transfer-Encoding: chunked" -H "Content-Type: multipart/form-data; boundary=---------------------------7d3a1d3e043d4" --data-binary $'-----------------------------7d3a1d3e043d4\r\nContent-Disposition: form-data; name="file1"; filename="main.cpp"\r\nContent-Type: text/plain\r\n\r\n'"$(cat main.cpp)"$'\r\n-----------------------------7d3a1d3e043d4\r\nContent-Disposition: form-data; name="file2"; filename="webserv.hpp"\r\nContent-Type: text/plain\r\n\r\n'"$(cat webserv.hpp)"$'\r\n-----------------------------7d3a1d3e043d4--\r\n' http://127.0.0.1:8090
+
+
+curl -v -X POST \
+--header "Transfer-Encoding: chunked" \
+--header "Content-Type: application/octet-stream" \
+--header "Expect:" \
+--header "Connection: keep-alive" \
+--header "Content-Disposition: attachment; filename=\"main.cpp\"" \
+--data-binary "@main.cpp" \
+--header "Content-Disposition: attachment; filename=\"webserv.hpp\"" \
+--data-binary "@webserv.hpp" \
+http://127.0.0.1:8090
+
+
+
+curl -X POST -H "Content-Type: application/json" -d '{"name": "John", "age": 30}' "http://localhost:8090/myendpoint?param1=value1&param2=value2"
+
+
+
