@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tel-bouh <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 20:01:49 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/05/19 19:46:00 by tel-bouh         ###   ########.fr       */
+/*   Updated: 2023/05/29 17:02:29 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@
 # include <fcntl.h>
 # include <cmath>
 #include <vector>
+#include <map>
 #include <iostream>
 #include <sstream>
 #include <fstream>
@@ -43,6 +44,7 @@
 struct body
 {
 	int				get_body_type;
+	int				rd_bytes;
 	int				chunks_flag;
 	int				boundary_flag;
 	int				content_length_flag;
@@ -56,14 +58,6 @@ struct body
 };
 
 
-/*struct respReslt
-{
-	std::string	root;
-	std::string	index;
-	int			error;
-	int			autoindex;
-};*/
-
 struct	location
 {
 	std::string											pattern;
@@ -76,6 +70,7 @@ struct	location
 	std::string											upload_store;
 	std::string											cgi_ext;
 	std::string											cgi_path;
+	std::string											redirect;
 };
 // serverfile struct hold information from confige file each variable is hold one value or multiple if it std::string so its hold one value
 // and if its std::vector so it hold mutiple value 
@@ -116,47 +111,34 @@ struct	serverfile
 // len is the length of the addr struct a variable that we need it in a call of some functions
 // fd is the file descriptor of the client returned from  accept function
 
+struct uploadFiles
+{
+	std::string		filename;
+	std::fstream	*file;
+};
+
 struct client
 {
 	std::vector<std::pair<std::string, std::string> >	request;
 	std::vector<std::pair<std::string, std::string> >	response;
-	std::string											rsp;
 	struct sockaddr_storage								addr;
 	socklen_t											len;
 	int													fd;
 	bool												request_is_ready;
 	bool												response_is_ready;
-	std::stringstream									buffer;
 	struct body											bodys;
+	std::string											headers;
+	std::fstream										*file;			
+	std::string											file_name;
+	std::string											body_data;
+	int													nbr_of_reads;
+	int													post_flag;
+	std::vector<struct uploadFiles>						upload_files;
 
-	client(){};
-	client(const client& other)
-    {
-        request = other.request;
-        response = other.response;
-        rsp = other.rsp;
-        addr = other.addr;
-        len = other.len;
-        fd = other.fd;
-        request_is_ready = other.request_is_ready;
-        response_is_ready = other.response_is_ready;
-        buffer.str("");  // Initialize the stringstream with an empty string
-    }
-	client& operator=(const client& other)
-	{
-		if (this != &other) {
-			request = other.request;
-			response = other.response;
-			rsp = other.rsp;
-			addr = other.addr;
-			len = other.len;
-			fd = other.fd;
-			request_is_ready = other.request_is_ready;
-			response_is_ready = other.response_is_ready;
-			buffer.str("");  // Initialize the stringstream with an empty string
-		}
-    	return *this;
-	}
+	client();
+	~client();
+	client(const client& rhs);
+	client&		operator=(const client& rhs);
 };
 
 struct server
@@ -184,7 +166,6 @@ struct	webserv
 	std::vector<serverfile>				config;
 	int									nbr_of_connections;
 };
-
 
 //handleConnection.cpp
 void    handleConnection(struct webserv& web);
@@ -289,8 +270,7 @@ void			response(struct webserv& web, int fd);
 void			responseToRequest(struct server serv, struct client clt, struct respReslt& hepl);
 
 //parseRequest.cpp
-int isRequestWellFormed(struct webserv web, std::string buff);
-void    fillRequestData(struct client& clt, std::stringstream& buff);
+
 void    parseRequest(struct webserv& web, struct client& clt);
 
 // parse request // 
@@ -298,4 +278,5 @@ void    parseRequest(struct webserv& web, struct client& clt);
 void    receiveRequest(struct webserv& web, struct client& clt, int i);
 void    maxFd(struct webserv& web);
 int		toInt(std::string nbr);
+void    splitBody(std::string buffer, struct client& clt);
 #endif

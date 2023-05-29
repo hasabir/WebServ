@@ -6,55 +6,15 @@
 #    By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/16 14:11:30 by tel-bouh          #+#    #+#              #
-#    Updated: 2023/05/22 16:04:12 by hasabir          ###   ########.fr        #
+#    Updated: 2023/05/29 14:17:27 by hasabir          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
+NAME = webserv
 
-
-
-
-
-# NAME = webserv
-# SRC_DIRS = init acceptConnectionAndGetRequestData configFile init parseConfigFile
-# OBJ_DIR = obj
-
-# CC = c++
-# CPPFLAGS = -std=c++98
-
-
-# # OBJSS = $(addprefix $(OBJ_D)/,${SRCS:.cpp=.o})
-# OBJS = $(foreach dir,$(SRC_DIRS),$(addprefix $(OBJ_DIR)/,${SRCS:.cpp=.o}))
-# # OBJS = $(foreach dir,$(SRC_DIRS),$(patsubst %.cpp,$(OBJ_DIR)/%.o,$(wildcard $(dir)/*.cpp)))
-# # OBJS = $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.cpp)))
-
-# all: $(NAME)
-
-# $(OBJ_DIR)/%.o: %.cpp | $(OBJ_DIR)
-# 	$(CC) $(CPPFLAGS) -c $< -o $@
-
-# $(NAME): $(OBJS)
-# 	$(CC) $(OBJS) -o $(NAME)
-# 	@echo "|  Compilation Done  |"
-
-# $(OBJ_DIR):
-# 	mkdir -p $(OBJ_DIR)
-
-# clean:
-# 	rm -rf $(OBJ_DIR)
-
-# fclean: clean
-# 	rm -f $(NAME)
-
-# re: fclean all
-
-
-#-------------------------------------------------------------------------
-
-NAME = webserv.out
-
-SRCS = main.cpp \
+SRCS = ./main.cpp \
 	   acceptConnectionAndGetRequestData/recieveRequest.cpp \
+	   acceptConnectionAndGetRequestData/splitBody.cpp \
 	   acceptConnectionAndGetRequestData/endOfRequest.cpp \
 	   acceptConnectionAndGetRequestData/handleConnection.cpp  \
 	   init/displayHostPort.cpp ./init/initServer.cpp \
@@ -68,7 +28,7 @@ SRCS = main.cpp \
 	   parseConfigFile/checkConfigdata.cpp \
 	   parseConfigFile/splitSemiColons.cpp \
 	   parseConfigFile/valides.cpp  \
-		parseRequest/parseRequest.cpp 
+	   parseRequest/parseRequest.cpp client.cpp
 # parseRequest.cpp
 
 OBJS = ${SRCS:.cpp=.o}
@@ -95,7 +55,13 @@ fclean: clean
 re: fclean all
 
 
-#--------------------------------------------------------------------
+
+
+
+
+
+
+
 
 
 
@@ -106,6 +72,7 @@ re: fclean all
 
 # SRCS = ./main.cpp \
 # 	   ./acceptConnectionAndGetRequestData/recieveRequest.cpp \
+# 	   ./acceptConnectionAndGetRequestData/splitBody.cpp \
 # 	   ./acceptConnectionAndGetRequestData/endOfRequest.cpp \
 # 	   ./acceptConnectionAndGetRequestData/handleConnection.cpp  \
 # 	   ./init/displayHostPort.cpp ./init/initServer.cpp \
@@ -119,7 +86,7 @@ re: fclean all
 # 	   ./parseConfigFile/checkConfigData.cpp \
 # 	   ./parseConfigFile/splitSemiColons.cpp \
 # 	   ./parseConfigFile/valides.cpp  \
-# 	   ./parseRequest.cpp 
+# 	   ./parseRequest.cpp ./client.cpp
 
 # INCLUDES = .
 

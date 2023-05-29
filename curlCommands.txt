@@ -17,4 +17,11 @@ http://127.0.0.1:8090
 curl -X POST -H "Content-Type: application/json" -d '{"name": "John", "age": 30}' "http://localhost:8090/myendpoint?param1=value1&param2=value2"
 
 
+curl -X POST -H "Transfer-Encoding: chunked" --data-binary $''
+
+while IFS= read -r -d '' -n 200 chunk; do
+    chunk_size=$(printf "%x" $(echo -n "$chunk" | wc -c))
+    echo -n "$chunk_size"$'\r\n'"$chunk"$'\r\n'
+    sleep 1
+done < <(split -b 200 main.cpp) | curl -X POST -H "Transfer-Encoding: chunked" -H "Content-Type: multipart/form-data" --data-binary @- http://127.0.0.1:8090
 

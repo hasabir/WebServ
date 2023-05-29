@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/28 21:03:29 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/05/20 10:46:35 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/05/29 18:23:43 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,7 +162,7 @@ int	checkConfigData(struct webserv& web)
 		else 
 			i++;
 	}
-	//displayServerFile(web.config);
+	//? displayServerFile(web.config);
 	return (0);
 }
 

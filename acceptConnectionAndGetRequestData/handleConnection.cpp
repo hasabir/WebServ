@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/16 14:04:07 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/05/20 10:45:41 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/05/29 17:01:56 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ void	handleConnection(struct webserv& web)
 	int				j;
 	int				size;
 	int				k;
+	
 	size = web.servers.size();	
 	i = 0;
 	while (i < size)
@@ -66,7 +67,8 @@ void	handleConnection(struct webserv& web)
 						web.clients[k].bodys.n_chunks = 0;
 						web.clients[k].bodys.cr_index = -1;
 						web.clients[k].bodys.get_body_type = 0;
-
+						web.clients[k].file_name = "req" + std::to_string(web.clients[k].fd) + ".txt";
+						std::cout << "filename : " << web.clients[k].file_name << std::endl;
 						maxFd(web);
 						return ;
 					}

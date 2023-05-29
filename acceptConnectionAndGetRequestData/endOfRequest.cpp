@@ -6,12 +6,11 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/16 14:02:55 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/05/23 21:11:19 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/05/29 12:54:42 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../webserv.hpp"
-
 
 //char    temp[2048] = "HTTP/1.0 200 OK\r\n Server: webserver-c\r\n Content-type: text/html\r\n\r\n <html>hello, world    </html>\r\n";
 
@@ -122,7 +121,7 @@ int	contentLength(std::string	buffer, unsigned long& content_len)
 	}
 	return (0);
 }
-
+/*
 int		getBoundary(std::string buffer, std::string& boundary)
 {
 	int				i;
@@ -150,7 +149,7 @@ int		getBoundary(std::string buffer, std::string& boundary)
 	boundary += "--";
 	return (0);
 }
-
+*/
 void	getBodyType(std::string buffer, struct body& bodys)
 {
 	int				i;
@@ -258,6 +257,10 @@ void	getBodyType(std::string buffer, struct body& bodys)
 		bodys.cr_nl_flag = 1;
 		bodys.get_body_type = 1;
 	}
+	if (bodys.cr_index == -1)
+	{
+		bodys.cr_index = buffer.find("\r\n\r\n") + 4;
+	}
 }
 
 
@@ -269,7 +272,7 @@ int	endOfChunks(std::string	buffer, struct body& bodys)
 	std::string	hex;
 	i = 0;
 	size = buffer.size();
-	while (1)
+	/*while (1)
 	{
 		if (size >= (bodys.cr_index + bodys.chunks_len))
 		{
@@ -299,12 +302,12 @@ int	endOfChunks(std::string	buffer, struct body& bodys)
 					break;
 		}
 		else
-			break;
-		if (buffer.size() > 6 && (buffer.substr(buffer.size() - 8, 7) == "0\r\n\r\n\r\n"))
+			break;*/
+		if (buffer.size() >= 5 && (buffer.substr(buffer.size() - 5, 5) == "0\r\n\r\n"))
 		{
 			return (1);
 		}
-	}
+	//}
 	return (0);
 }
 
@@ -335,8 +338,9 @@ int	endOfTheRequest(std::string buffer, struct body& bodys)
 	}
 	if (bodys.content_length_flag)
 	{
-		find = buffer.find("\r\n\r\n") + 4;
-		if (buffer.size() >= (bodys.content_len + find))
+		//find = buffer.find("\r\n\r\n") + 4;
+		//if (buffer.size() >= (bodys.content_len + find))
+		if (buffer.size() >= (bodys.content_len + bodys.cr_index))
 		{
 			return (0);
 		}
