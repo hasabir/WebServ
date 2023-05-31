@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/22 06:56:52 by hasabir           #+#    #+#             */
-/*   Updated: 2023/05/31 21:10:13 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/05/31 21:51:26 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ unsigned long stringToInt(std::string str)
 std::string	getRequestLine(std::string line, std::unordered_map<std::string, std::string> &map)
 {
 	std::stringstream lineToParse(line);
-	std::string token;
+ 	std::string token;
 
 	getline(lineToParse, token, ' ');
 	map["Method"] = token;
@@ -125,8 +125,8 @@ int getLocation(struct client &clt, struct webserv &web, int i,
 			return 404;//! check error page first
 		}
 		location += web.config[i].location[j].pattern;
-		// if (!web.config[i].location[j].redirect.empty()) isRedirectExist = true;
-		// locations.push_back(std::make_pair(isRedirectExist, location));
+		if (!web.config[i].location[j].redirect.empty()) isRedirectExist = true;
+		locations.push_back(std::make_pair(isRedirectExist, location));
 	}
 	return 0;
 }
@@ -140,10 +140,10 @@ int parsLocation(struct client &clt,
 	if ((returnValue = getLocation(clt, web, i, locations)))
 		return returnValue;
 	
-    // std::vector<std::pair<int, std::string> >::iterator it;
-    // for (it = locations.begin(); it != locations.end(); it++) {
-    //     std::cout << "is redirect: " << it->first << ", location: " << it->second << std::endl;
-    // }
+    std::vector<std::pair<int, std::string> >::iterator it;
+    for (it = locations.begin(); it != locations.end(); it++) {
+        std::cout << "is redirect: " << it->first << ", location: " << it->second << std::endl;
+    }
 	// if (web.config[i * -1].location)
 	return 0;
 }
@@ -163,10 +163,10 @@ void	parseRequest(struct webserv& web, struct client& clt)
 {
 	std::cout << "-----------------------------------------------------------\n";	
 	fillRequestData(clt);
-	// std::cout << "\033[91m**********  " <<  parseRequestData(clt, web) << "  *******\033[00m\n";
+	std::cout << "\033[91m**********  " <<  parseRequestData(clt, web) << "  *******\033[00m\n";
 	// std::cout << "max body s = " << web.config.at(5) 
         // std::cout << "Size: " << web.config.at().max_body_size <<  std::endl;
 	// check listen
 }
 
-	// std::cout<<std::string(clt.buffer.str(), 65005)<<std::endl;
+ // 	// std::cout<<std::string(clt.buffer.str(), 65005)<<std::endl;
