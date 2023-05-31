@@ -6,13 +6,11 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/22 06:56:52 by hasabir           #+#    #+#             */
-/*   Updated: 2023/05/29 17:11:11 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/05/31 21:10:13 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../webserv.hpp"
-#include <map>
-#include <unordered_map>
 
 unsigned long stringToInt(std::string str)
 {
@@ -45,18 +43,19 @@ std::string	getRequestLine(std::string line, std::unordered_map<std::string, std
 	return line;
 }
 
-std::string	fillRequestData(struct client& clt,	std::unordered_map<std::string, std::string> &map)
+std::string	fillRequestData(struct client& clt)
 {
 	std::string line, key, value, requestLine;
-	
 	clt.file->open(clt.file_name, std::ios::in);
+	std::cout << "hiiiiiiiiiiiii\n";
 	if (!clt.file->is_open())
 	{
 		std::cout << "can't\n";
 		return "";
 	}
 	std::getline(*clt.file, line);
-	getRequestLine(line, map);
+	std::cout << "line = " << line << std::endl;
+	getRequestLine(line, clt.map);
 	while (getline(*clt.file, line))
 	{
 		if (line == "\r")
@@ -65,38 +64,37 @@ std::string	fillRequestData(struct client& clt,	std::unordered_map<std::string, 
 		getline(lineToParse, key, ':');
 		getline(lineToParse, value, '\r');
 		value.erase(0, 1);
-		map[key] = value;
+		clt.map[key] = value;
 	}
 	std::unordered_map<std::string, std::string>::iterator iter;
 	int i = 0;
-	for (iter = map.begin(); iter != map.end();i++, iter++) {
+	for (iter = clt.map.begin(); iter != clt.map.end();i++, iter++) {
         std::cout << "\033[92m" <<  iter->first << " | " << iter->second << "\033[00m\n";
     }
 	return requestLine;
 } 
-int isRequestWellFormed(std::unordered_map<std::string, std::string> map, struct client &clt,
-						struct webserv &web)
+int isRequestWellFormed(struct client &clt, struct webserv &web)
 {
 	std::vector<std::string>::iterator port;
 	std::string serverName;
 	
-	if ( (map["URI"].find_first_not_of(
+	if ( (clt.map["URI"].find_first_not_of(
 		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~:/?#[]@!$&'()*+,;=%")
 		!= std::string::npos)
-		|| (map["Method"] == "POST" && map.find("Transfer-Encoding") == map.end()
-		&& map.find("Content-Length") == map.end()))
+		|| (clt.map["Method"] == "POST" && clt.map.find("Transfer-Encoding") == clt.map.end()
+		&& clt.map.find("Content-Length") == clt.map.end()))
 		return 400;
 	
-	if (clt.bodys.chunks_flag && map["Transfer-Encoding"] != "chunked")
+	if (clt.bodys.chunks_flag && clt.map["Transfer-Encoding"] != "chunked")
 		return 501;
 	
-	if (map["URI"].size() > 2048)
+	if (clt.map["URI"].size() > 2048)
 		return 414;
 	int i = 0;
 	for (; i < web.config.size(); i++)
 	{
 		port = std::find(web.config[i].listen.begin(), web.config[i].listen.end(),
-				map["Host"].substr(map["Host"].find(":") + 1));
+				clt.map["Host"].substr(clt.map["Host"].find(":") + 1));
 		if (port != web.config[i].listen.end())
 		{
 			std::cout << "port = " << *port << std::endl;
@@ -109,39 +107,54 @@ int isRequestWellFormed(std::unordered_map<std::string, std::string> map, struct
 		return 413;
 	return i * -1;
 }
+int getLocation(struct client &clt, struct webserv &web, int i, 
+				std::vector<std::pair<int, std::string> > &locations)
+{
+	std::string location;
+	bool isRootExist(true), isRedirectExist(false);
 
-int parsLocation(std::unordered_map<std::string, std::string> map, struct client &clt,
+	if ((location = web.config[i].root) == "")
+		isRootExist = false;
+	for (int j = 0; j < web.config[i].location.size(); j++)
+	{
+		if (!web.config[i].location[j].root.empty())
+			location = web.config[i].location[j].root;
+		if (location == "")
+		{
+			std::cout << "--> location = [" << location << "]" << std::endl;
+			return 404;//! check error page first
+		}
+		location += web.config[i].location[j].pattern;
+		// if (!web.config[i].location[j].redirect.empty()) isRedirectExist = true;
+		// locations.push_back(std::make_pair(isRedirectExist, location));
+	}
+	return 0;
+}
+
+int parsLocation(struct client &clt,
 						struct webserv &web, int i)
 {
-	//!getLocation(map, clt, web, i)
-	// clt.file->seekg(0, std::ios::end);
-	// std::streampos fileSize = clt.file->tellg();
-	// clt.file->seekg(0, std::ios::beg);
-	// std::cout << "fileSize = " << static_cast<int>(fileSize) << std::endl;
-	// std::cout << "send = " << (send(clt.fd, clt.file, static_cast<int>(fileSize), 0)) << std::endl;
-	// if (send(clt.fd, clt.file, static_cast<int>(fileSize), 0) == -1)
-	// {
-	// 	close(clt.fd);
-	// 	return 404;
-	// }
-
-	for (int j = 0; j < web.config[i * -1].location.size(); j++)
-	{
-		for (int k = 0; k < web.config[i * -1].location[j].allow.size(); k++)
-			std::cout << "allow = " << web.config[i * -1].location[j].allow[k] << std::endl;
-		std::cout << "******************\n";
-	}
+	std::vector<std::pair<int, std::string> > locations;
+	int returnValue;
+	
+	if ((returnValue = getLocation(clt, web, i, locations)))
+		return returnValue;
+	
+    // std::vector<std::pair<int, std::string> >::iterator it;
+    // for (it = locations.begin(); it != locations.end(); it++) {
+    //     std::cout << "is redirect: " << it->first << ", location: " << it->second << std::endl;
+    // }
 	// if (web.config[i * -1].location)
 	return 0;
 }
 
-int	parseRequestData(std::unordered_map<std::string, std::string> map, struct client &clt,
-						struct webserv &web)
+int	parseRequestData(struct client &clt,  struct webserv &web)
 {
 	int returnValue;
-	if ((returnValue = isRequestWellFormed(map, clt, web)) > 0)
+	if ((returnValue = isRequestWellFormed(clt, web)) > 0)
 		return returnValue;
-	if ((returnValue = parsLocation(map, clt, web, returnValue)))
+
+	if ((returnValue = parsLocation(clt, web, returnValue * -1)))
 		return returnValue;
 	return 0;
 }
@@ -149,9 +162,8 @@ int	parseRequestData(std::unordered_map<std::string, std::string> map, struct cl
 void	parseRequest(struct webserv& web, struct client& clt)
 {
 	std::cout << "-----------------------------------------------------------\n";	
-	std::unordered_map<std::string, std::string> map;
-	fillRequestData(clt, map);
-	std::cout << "\033[91m**********  " <<  parseRequestData(map, clt, web) << "  *******\033[00m\n";
+	fillRequestData(clt);
+	// std::cout << "\033[91m**********  " <<  parseRequestData(clt, web) << "  *******\033[00m\n";
 	// std::cout << "max body s = " << web.config.at(5) 
         // std::cout << "Size: " << web.config.at().max_body_size <<  std::endl;
 	// check listen

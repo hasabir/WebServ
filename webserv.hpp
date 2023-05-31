@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 20:01:49 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/05/29 17:02:29 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/05/31 21:11:30 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,26 +72,7 @@ struct	location
 	std::string											cgi_path;
 	std::string											redirect;
 };
-// serverfile struct hold information from confige file each variable is hold one value or multiple if it std::string so its hold one value
-// and if its std::vector so it hold mutiple value 
-// the struct serverfile have internal vector the take a struct location in its template argument
-// there some variable that have the same name in serverfile sturct and location struct and thats mean that the variable can
-// being in server block and also in location block but the variable in location block override thet one in server block
-// except for root varibale (directive) that if there is two root directive in server and location block the root in 
-// location block is relative and must be add to the end of root variable in server block and that what i try to do 
-// listen = the port(s) witch the server must be listen to
-// server_name = the domain name(s) in that server
-// error page = it consist of two value error code and default file , default file that needs to be serve is a particular error happen
-// max body size = maximum number of byte that allowed to be uploded , only three unit i cover G M K (byte)
-// root = the root director in witch you will be search to serve a particular request
-// index = default file to serve
-// location = block that holde muliple value
-// pattern = uri for that loaction 
-// allow = allowed methods in this loaction
-// autoindex = hold on or off value , allow directory listen in a particular location
-// upload = hold on or of value , allow upload of file in a particular location 
-// cgi = extension of cgi file or request (i don't know till now) to be serve in a partocular location
-// cgi_path = path to the file that will execute for a cgi
+
 struct	serverfile
 {
 	std::string											host;
@@ -104,12 +85,6 @@ struct	serverfile
 	std::vector<struct location>						location;
 };
 
-
-// client struct the shall be hold the information about the request or response 
-// reqest and response is std::vector that take pair as its template arg so you can save key value from the reqest and response
-// addr is a sockaddr_storage struct the can serve ipv4 and ipv6 address but we can change it to ipv4 struct cause we just handle ipv4 connections
-// len is the length of the addr struct a variable that we need it in a call of some functions
-// fd is the file descriptor of the client returned from  accept function
 
 struct uploadFiles
 {
