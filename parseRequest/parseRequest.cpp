@@ -3,154 +3,74 @@
 /*                                                        :::      ::::::::   */
 /*   parseRequest.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hp <hp@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/22 06:56:52 by hasabir           #+#    #+#             */
-/*   Updated: 2023/06/01 19:04:51 by hp               ###   ########.fr       */
+/*   Updated: 2023/06/01 22:54:14by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../webserv.hpp"
 
-unsigned long stringToInt(std::string str)
+int getLocation(struct client &clt, struct webserv &web, int i, std::string &location)
 {
-	long long n(0);
-	std::string::iterator iter(str.begin());
+	bool isRedirectExist(false);
+	int count(0), length, stock_count(-1);
+	std::string stock_location;
 
-	for (; iter != str.end() && std::isdigit(*iter); iter++)
-		n = n * 10 + *iter - '0';
-	if (iter != str.end() || str.empty())
-	{
-		if (*iter == 'M')
-			n *= 1000000;
-		else if (*iter == 'k')
-			n *= 1000;
-	}
-	return n;
-}
-
-
-std::string	getRequestLine(std::string line, std::map<std::string, std::string> &map)
-{
-	std::stringstream lineToParse(line);
- 	std::string token;
-
-	getline(lineToParse, token, ' ');
-	map["Method"] = token;
-	getline(lineToParse, token, ' ');
-	map["URI"] = token;
-	getline(lineToParse, token, ' ');
-	map["Version"] = token;
-	return line;
-}
-
-std::string	fillRequestData(struct client& clt)
-{
-	std::string line, key, value, requestLine;
-	clt.file->open(clt.file_name.c_str(), std::ios::in);
-	if (!clt.file->is_open())
-	{
-		std::cout << "can't\n";
-		return "";
-	}
-	std::getline(*clt.file, line);
-	std::cout << "line = " << line << std::endl;
-	getRequestLine(line, clt.map);
-	while (getline(*clt.file, line))
-	{
-		if (line == "\r")
-			break ;
-		std::stringstream lineToParse(line);
-		getline(lineToParse, key, ':');
-		getline(lineToParse, value, '\r');
-		value.erase(0, 1);
-		clt.map[key] = value;
-	}
-	std::map<std::string, std::string>::iterator iter;
-	int i = 0;
-	for (iter = clt.map.begin(); iter != clt.map.end();i++, iter++) {
-        std::cout << "\033[92m" <<  iter->first << " | " << iter->second << "\033[00m\n";
-    }
-	return requestLine;
-} 
-int isRequestWellFormed(struct client &clt, struct webserv &web)
-{
-	std::vector<std::string>::iterator port;
-	std::string serverName;
-	
-	if ( (clt.map["URI"].find_first_not_of(
-		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~:/?#[]@!$&'()*+,;=%")
-		!= std::string::npos)
-		|| (clt.map["Method"] == "POST" && clt.map.find("Transfer-Encoding") == clt.map.end()
-		&& clt.map.find("Content-Length") == clt.map.end()))
-		return 400;
-	if (clt.bodys.chunks_flag && clt.map["Transfer-Encoding"] != "chunked")
-		return 501;
-	
-	if (clt.map["URI"].size() > 2048)
-		return 414;
-	int i = 0;
-	for (; i < web.config.size(); i++)
-	{
-		port = std::find(web.config[i].listen.begin(), web.config[i].listen.end(),
-				clt.map["Host"].substr(clt.map["Host"].find(":") + 1));
-		if (port != web.config[i].listen.end())
-		{
-			std::cout << "port = " << *port << std::endl;
-			break;
-		}
-	}
-	unsigned long tmp_len;
-	tmp_len = clt.bodys.content_len;
-	if (clt.map["Method"] == "POST" && tmp_len >  stringToInt(web.config[i].max_body_size)) //! need to handle chunks and boundary
-		return 413;
-	std::cout << " | *******************************\n";
-	return i * -1;
-}
-
-int getLocation(struct client &clt, struct webserv &web, int i, 
-				std::vector<std::pair<int, std::string> > &locations)
-{
-	std::string location, stockm;
-	int count(0), length, tmp_count(-1);
-	bool isRootExist(true), isRedirectExist(false);
-
-	if ((location = web.config[i].root) == "")
-		isRootExist = false;
 	for (int j = 0; j < web.config[i].location.size(); j++)
 	{
+		location = web.config[i].root;
 		if (!web.config[i].location[j].root.empty())
 			location = web.config[i].location[j].root;
 		if (location == "")
 		{
 			std::cout << "--> location = [" << location << "]" << std::endl;
-			return 404;//! check error page first
+			return -404;
 		}
-		//? first check if uri == / 
 		length = std::min(clt.map["URI"].length(), web.config[i].location[j].pattern.length());
-		for (int i(0); i < length && clt.map["URI"][i] == web.config[i].location[j].pattern[i]
-			; count++, i++);
-		location += web.config[i].location[j].pattern;
-		if (!web.config[i].location[j].redirect.empty()) isRedirectExist = true;
-		locations.push_back(std::make_pair(isRedirectExist, location));
+		if (clt.map["URI"].length() != 1)
+			location += web.config[i].location[j].pattern;
+		for (count = 0; count < length && clt.map["URI"][count] == web.config[i].location[j].pattern[count]
+			; count++);
+		std::cout << "stock location = " << stock_location << std::endl;
+		if (count > stock_count || (length == 1 && web.config[i].location[j].pattern == clt.map["URI"]))
+		{
+			if (web.config[i].location[j].redirect.empty())
+				stock_location = location;
+			else
+				location = web.config[i].location[j].redirect;
+			if (length == 1 && web.config[i].location[j].pattern == clt.map["URI"])
+				return 1;
+			stock_count = count;
+		}
 	}
-	return 0;
+	if (clt.map["URI"].length() == 1)
+	{
+		location = web.config[i].root;
+		if (!web.config[i].location[0].root.empty())
+			location = web.config[i].location[0].root;
+		if (!web.config[i].location[0].redirect.empty())
+				location = web.config[i].location[0].redirect;
+	}
+	return stock_count;
 }
 
 int parsLocation(struct client &clt,
 						struct webserv &web, int i)
 {
-	std::vector<std::pair<int, std::string> > locations;
+	std::string location;
 	int returnValue;
-	
-	if ((returnValue = getLocation(clt, web, i, locations)))
+
+	if (web.config[i].location.empty())
+	{
+		location = web.config[i].root;
+		if (location.empty())
+			return 404;
+	}
+	else if ((returnValue = getLocation(clt, web, i, location)) < 0)
 		return returnValue;
-	
-    std::vector<std::pair<int, std::string> >::iterator it;
-    for (it = locations.begin(); it != locations.end(); it++) {
-        std::cout << "is redirect: " << it->first << ", location: " << it->second << std::endl;
-    }
-	// if (web.config[i * -1].location)
+	std::cout << "location = [" << location << "] | count = "<< returnValue << "\n";
 	return 0;
 }
 
@@ -160,8 +80,8 @@ int	parseRequestData(struct client &clt,  struct webserv &web)
 	if ((returnValue = isRequestWellFormed(clt, web)) > 0)
 		return returnValue;
 
-	// if ((returnValue = parsLocation(clt, web, returnValue * -1)))
-	// 	return returnValue;
+	if ((returnValue = parsLocation(clt, web, returnValue * -1)))
+		return returnValue;
 	return 0;
 }
 

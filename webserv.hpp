@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hp <hp@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 20:01:49 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/06/01 17:40:59 by hp               ###   ########.fr       */
+/*   Updated: 2023/06/01 19:53:12 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -248,10 +248,13 @@ void			getResponse(struct webserv web, struct client& clt);
 void			response(struct webserv& web, int fd);
 void			responseToRequest(struct server serv, struct client clt, struct respReslt& hepl);
 
-//parseRequest.cpp
+/* ************************** parseRequest *******************************************/
 
-void    parseRequest(struct webserv& web, struct client& clt);
-
+void			parseRequest(struct webserv& web, struct client& clt);
+unsigned long	stringToInt(std::string str);
+std::string		fillRequestData(struct client& clt);
+int				isRequestWellFormed(struct client &clt, struct webserv &web);
+/**************************************************************************************/
 // parse request // 
 //void	parseRequests(struct webserv web, std::stringstream& buffer);
 void    receiveRequest(struct webserv& web, struct client& clt, int i);

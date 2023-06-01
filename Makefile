@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: hp <hp@student.42.fr>                      +#+  +:+       +#+         #
+#    By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/16 14:11:30 by tel-bouh          #+#    #+#              #
-#    Updated: 2023/06/01 17:30:15 by hp               ###   ########.fr        #
+#    Updated: 2023/06/02 00:30:52 by hasabir          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -28,13 +28,14 @@ SRCS = ./main.cpp \
 	   parseConfigFile/checkConfigdata.cpp \
 	   parseConfigFile/splitSemiColons.cpp \
 	   parseConfigFile/valides.cpp  \
-	   parseRequest/parseRequest.cpp client.cpp
+	   parseRequest/parseRequest.cpp client.cpp\
+	   parseRequest/utils.cpp parseRequest/parsRequestHeader.cpp
 # parseRequest.cpp
 
 OBJS = ${SRCS:.cpp=.o}
 
 CC = c++
-FLAGS = -std=c++11
+FLAGS = -std=c++98
 
 all : ${NAME}
 
