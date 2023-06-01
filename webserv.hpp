@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
+/*   By: hp <hp@student.42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 20:01:49 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/05/31 21:39:59 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/06/01 17:40:59 by hp               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 # include <sys/errno.h>
 # include <arpa/inet.h>
 # include <sys/select.h>
-# include <sys/event.h>
+// # include <sys/event.h>
 # include <sys/time.h>
 # include <fcntl.h>
 # include <cmath>
@@ -33,7 +33,9 @@
 #include <string>
 #include <cctype>
 #include <sys/stat.h>
-#include <unordered_map>
+#include <map>
+#include <algorithm>
+
 
 # define MAX_CONNECTION 355
 # define HOST "localhost"
@@ -96,7 +98,7 @@ struct uploadFiles
 struct client
 {
 	std::vector<std::pair<std::string, std::string> >	request;
-	std::unordered_map<std::string, std::string> map;
+	std::map<std::string, std::string> map;
 	std::vector<std::pair<std::string, std::string> >	response;
 	struct sockaddr_storage								addr;
 	socklen_t											len;

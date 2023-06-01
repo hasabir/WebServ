@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+         #
+#    By: hp <hp@student.42.fr>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/16 14:11:30 by tel-bouh          #+#    #+#              #
-#    Updated: 2023/05/29 14:17:27 by hasabir          ###   ########.fr        #
+#    Updated: 2023/06/01 17:30:15 by hp               ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -34,7 +34,7 @@ SRCS = ./main.cpp \
 OBJS = ${SRCS:.cpp=.o}
 
 CC = c++
-FLAGS = -std=c++98
+FLAGS = -std=c++11
 
 all : ${NAME}
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   splitBody.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
+/*   By: hp <hp@student.42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 22:54:29 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/05/29 12:55:02 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/06/01 17:25:43 by hp               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,7 +132,7 @@ void	splitBody(std::string buffer, struct client& clt)
 			{
 				if (index)
 				{
-					clt.upload_files[index - 1].file->open(clt.upload_files[index - 1].filename,  std::fstream::app | std::fstream::out);
+					clt.upload_files[index - 1].file->open(clt.upload_files[index - 1].filename.c_str(),  std::fstream::app | std::fstream::out);
 					temp = buffer.substr(start, end);
 					clt.upload_files[index - 1].file->write(temp.c_str(), temp.size());
 					clt.upload_files[index - 1].file->close();
