@@ -12,9 +12,9 @@
 
 #include "../webserv.hpp"
 
+
 int getLocation(struct client &clt, struct webserv &web, int i, std::string &location)
 {
-	bool isRedirectExist(false);
 	int count(0), length, stock_count(-1);
 	std::string stock_location;
 
@@ -56,9 +56,35 @@ int getLocation(struct client &clt, struct webserv &web, int i, std::string &loc
 	return stock_count;
 }
 
+void replaceSubstring(std::string& str, const std::string& oldSubStr, const std::string& newSubStr) {
+	size_t pos = 0;
+	while ((pos = str.find(oldSubStr, pos)) != std::string::npos) {
+		str.replace(pos, oldSubStr.length(), newSubStr);
+		pos += newSubStr.length();
+	}
+}
+
+int search(struct client &clt, struct webserv &web, int i, bool isRedirectExist)
+{
+	std::string::iterator iter;
+	std::string location;
+
+	for (int j = 0; j < web.config[i].location.size(); j++)
+	{
+		int found = clt.map["URI"].find(web.config[i].location[j].pattern);
+		if (found != std::string::npos)
+		{
+			std::cout << "pattern = " << web.config[i].location[j].pattern << std::endl;
+			return j;
+		}
+	}
+	return -1;
+}
+
 int parsLocation(struct client &clt,
 						struct webserv &web, int i)
 {
+	bool isRedirectExist(false);
 	std::string location;
 	int returnValue;
 
@@ -68,8 +94,10 @@ int parsLocation(struct client &clt,
 		if (location.empty())
 			return 404;
 	}
-	else if ((returnValue = getLocation(clt, web, i, location)) < 0)
-		return returnValue;
+	if ((returnValue =  search(clt, web, i, isRedirectExist)) < 0)
+	{
+		location = 
+	}
 	std::cout << "location = [" << location << "] | count = "<< returnValue << "\n";
 	return 0;
 }
