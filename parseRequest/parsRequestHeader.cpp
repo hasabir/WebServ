@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/01 19:50:33 by hasabir           #+#    #+#             */
-/*   Updated: 2023/06/02 16:48:51 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/06/02 21:17:18 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,15 +77,15 @@ int isRequestWellFormed(struct client &clt, struct webserv &web)
 		!= std::string::npos)
 		|| (clt.map_request["Method"] == "POST" && clt.map_request.find("Transfer-Encoding") == clt.map_request.end()
 		&& clt.map_request.find("Content-Length") == clt.map_request.end()))
-		return 400;
+		return sendResponse(clt, web, 400);
 	if (clt.bodys.chunks_flag && clt.map_request["Transfer-Encoding"] != "chunked")
-		return 501;
+		return sendResponse(clt, web, 501);
 	
 	if (clt.map_request["URI"].size() > 2048)
-		return 414;
+		return sendResponse(clt, web, 414);
 	unsigned long tmp_len;
 	tmp_len = clt.bodys.content_len;
 	if (clt.map_request["Method"] == "POST" && tmp_len >  stringToInt(web.config[i].max_body_size)) //! need to handle chunks and boundary
-		return 413;
+		return sendResponse(clt, web, 413);
 	return 0;
 }

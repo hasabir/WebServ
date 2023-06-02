@@ -6,13 +6,12 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/16 14:04:07 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/06/02 17:36:45 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/06/02 21:27:27 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../webserv.hpp"
 
-char    temp[2048] = "HTTP/1.0 200 OK\r\n Server: webserver-c\r\n Content-type: text/    html\r\n\r\n <html> Daba machimochkil    </html>\r\n";
 
 
 void	closeConnection(struct webserv& web, int client_i)
@@ -106,7 +105,7 @@ void	handleConnection(struct webserv& web)
 		{
 			if (web.clients[i].request_is_ready == true && web.clients[i].response_is_ready == true)
 			{
-				send(web.clients[i].fd, temp, strlen(temp), 0);
+
 				closeConnection(web, i);
 			}
 		}

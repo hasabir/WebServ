@@ -1,10 +1,12 @@
-GET / HTTP/1.1
-Host: 0.0.0.0:8086
+POST / HTTP/1.1
+Transfer-Encoding: chunkjhkj
+Content-Type: text/plain
+User-Agent: PostmanRuntime/7.32.2
+Accept: */*
+Postman-Token: 9c900dc3-4fb1-4b38-9f75-0d9da59048ea
+Host: 0.0.0.0:8080
+Accept-Encoding: gzip, deflate, br
 Connection: keep-alive
-Cache-Control: max-age=0
-Upgrade-Insecure-Requests: 1
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36
-Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
-Accept-Encoding: gzip, deflate
-Accept-Language: en-GB,en;q=0.9,fr-FR;q=0.8,fr;q=0.7,en-US;q=0.6
+Content-Length: 60
 
+hellosdfsfasfafadfasdfasdfasdaafghjkl;dfghjkl;fghjkldfghjkl;

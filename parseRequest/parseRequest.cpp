@@ -40,7 +40,8 @@ int parsLocation(struct client &clt, struct webserv &web, int i)
 	if ((clt.location = search(clt, web, i)) < 0)
 	{
 		if (clt.map_request["URI"] != "/" || web.config[i].root.empty())
-		return send_404(clt);
+		return sendResponse(clt, web, 404);
+		// return send_404(clt);
 		clt.map_request["URI"] = web.config[i].root;
 		std::cout << "location = [" << clt.map_request["URI"] << "]\n";
 		return 0;
@@ -56,7 +57,7 @@ int parsLocation(struct client &clt, struct webserv &web, int i)
 										 web.config[i].location[clt.location].pattern,
 										 web.config[i].root);
 	else
-			return 404;
+		return sendResponse(clt, web, 404);
 	std::cout << "location = [" << clt.map_request["URI"] << "]\n";
 	return 0;
 }
@@ -73,18 +74,19 @@ int parseRequestData(struct client &clt, struct webserv &web)
 	std::vector<std::string>::iterator iter = std::find(web.config[clt.config].location[clt.location].allow.begin(),
 		web.config[clt.config].location[clt.location].allow.end(), clt.map_request["Method"]);
 	if (iter == web.config[clt.config].location[clt.location].allow.end())
-		return 405;
+		return sendResponse(clt, web, 405);
 	return 0;
 }
-
+char    temp[2048] = "HTTP/1.0 200 OK\r\n Server: webserver-c\r\n Content-type: text/    html\r\n\r\n <html> Daba machimochkil  </html>\r\n";
 void parseRequest(struct webserv &web, struct client &clt)
 {
 	std::cout << "-----------------------------------------------------------\n";
+	clt.response_is_ready = true;
 	clt.config = -1;
 	clt.location = -1;
-	clt.response_is_ready = true;
 	fillRequestData(clt);
-	std::cout << "\033[91m**********  " << parseRequestData(clt, web) << "  *******\033[00m\n";
+	if (!parseRequestData(clt, web))
+			send(clt.fd, temp, strlen(temp), 0);
 	std::cout << "clt.config = " << clt.config << " | clt.location = " << clt.location << std::endl;
 }
 

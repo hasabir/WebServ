@@ -6,7 +6,7 @@
 #    By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/16 14:11:30 by tel-bouh          #+#    #+#              #
-#    Updated: 2023/06/02 17:26:33 by hasabir          ###   ########.fr        #
+#    Updated: 2023/06/02 20:16:03 by hasabir          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -36,7 +36,7 @@ SRCS = ./main.cpp \
 OBJS = ${SRCS:.cpp=.o}
 
 CC = c++
-FLAGS = -std=c++11
+FLAGS = -std=c++98
 
 all : ${NAME}
 

@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 20:01:49 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/06/02 17:26:18 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/06/02 21:15:50 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -260,6 +260,7 @@ int				isRequestWellFormed(struct client &clt, struct webserv &web);
 
 /* ************************* sendResponse ****************************************** */
 int send_404(struct client &clt) ;
+int sendResponse(struct client &clt, struct webserv &web, int statusCode);
 /**************************************************************************************/
 // parse request // 
 //void	parseRequests(struct webserv web, std::stringstream& buffer);
