@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 20:01:49 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/06/01 19:53:12 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/06/02 17:26:18 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,10 @@ struct uploadFiles
 struct client
 {
 	std::vector<std::pair<std::string, std::string> >	request;
-	std::map<std::string, std::string> map;
+	std::map<std::string, std::string> 					map_request;
+	std::map<std::string, std::string>					map_response;
+	int 												config;
+	int													location;
 	std::vector<std::pair<std::string, std::string> >	response;
 	struct sockaddr_storage								addr;
 	socklen_t											len;
@@ -254,6 +257,9 @@ void			parseRequest(struct webserv& web, struct client& clt);
 unsigned long	stringToInt(std::string str);
 std::string		fillRequestData(struct client& clt);
 int				isRequestWellFormed(struct client &clt, struct webserv &web);
+
+/* ************************* sendResponse ****************************************** */
+int send_404(struct client &clt) ;
 /**************************************************************************************/
 // parse request // 
 //void	parseRequests(struct webserv web, std::stringstream& buffer);
