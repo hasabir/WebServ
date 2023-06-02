@@ -12,56 +12,12 @@
 
 #include "../webserv.hpp"
 
-
-int getLocation(struct client &clt, struct webserv &web, int i, std::string &location)
+std::string replaceLocation(std::string uri, std::string pattern, std::string root)
 {
-	int count(0), length, stock_count(-1);
-	std::string stock_location;
-
-	for (int j = 0; j < web.config[i].location.size(); j++)
-	{
-		location = web.config[i].root;
-		if (!web.config[i].location[j].root.empty())
-			location = web.config[i].location[j].root;
-		if (location == "")
-		{
-			std::cout << "--> location = [" << location << "]" << std::endl;
-			return -404;
-		}
-		length = std::min(clt.map["URI"].length(), web.config[i].location[j].pattern.length());
-		if (clt.map["URI"].length() != 1)
-			location += web.config[i].location[j].pattern;
-		for (count = 0; count < length && clt.map["URI"][count] == web.config[i].location[j].pattern[count]
-			; count++);
-		std::cout << "stock location = " << stock_location << std::endl;
-		if (count > stock_count || (length == 1 && web.config[i].location[j].pattern == clt.map["URI"]))
-		{
-			if (web.config[i].location[j].redirect.empty())
-				stock_location = location;
-			else
-				location = web.config[i].location[j].redirect;
-			if (length == 1 && web.config[i].location[j].pattern == clt.map["URI"])
-				return 1;
-			stock_count = count;
-		}
-	}
-	if (clt.map["URI"].length() == 1)
-	{
-		location = web.config[i].root;
-		if (!web.config[i].location[0].root.empty())
-			location = web.config[i].location[0].root;
-		if (!web.config[i].location[0].redirect.empty())
-				location = web.config[i].location[0].redirect;
-	}
-	return stock_count;
-}
-
-void replaceSubstring(std::string& str, const std::string& oldSubStr, const std::string& newSubStr) {
-	size_t pos = 0;
-	while ((pos = str.find(oldSubStr, pos)) != std::string::npos) {
-		str.replace(pos, oldSubStr.length(), newSubStr);
-		pos += newSubStr.length();
-	}
+	std::string location(uri);
+	int position = uri.find(pattern);
+	location.replace(position, pattern.length(), root);
+	return location;
 }
 
 int search(struct client &clt, struct webserv &web, int i, bool isRedirectExist)
@@ -73,54 +29,60 @@ int search(struct client &clt, struct webserv &web, int i, bool isRedirectExist)
 	{
 		int found = clt.map["URI"].find(web.config[i].location[j].pattern);
 		if (found != std::string::npos)
-		{
-			std::cout << "pattern = " << web.config[i].location[j].pattern << std::endl;
 			return j;
-		}
 	}
 	return -1;
 }
 
 int parsLocation(struct client &clt,
-						struct webserv &web, int i)
+				 struct webserv &web, int i)
 {
 	bool isRedirectExist(false);
 	std::string location;
-	int returnValue;
+	int j;
 
-	if (web.config[i].location.empty())
+	if ((j = search(clt, web, i, isRedirectExist)) < 0)
 	{
-		location = web.config[i].root;
-		if (location.empty())
+		if (clt.map["URI"] != "/" || web.config[i].root.empty())
 			return 404;
+		clt.map["URI"] = web.config[i].root;
+		std::cout << "location = [" << location << "]\n";
+		return 0;
 	}
-	if ((returnValue =  search(clt, web, i, isRedirectExist)) < 0)
-	{
-		location = 
-	}
-	std::cout << "location = [" << location << "] | count = "<< returnValue << "\n";
+	if (!web.config[i].location[j].redirect.empty())
+		clt.map["URI"] = web.config[i].location[j].redirect;
+	else if (!web.config[i].location[j].root.empty())
+		clt.map["URI"] = replaceLocation(clt.map["URI"],
+										 web.config[i].location[j].pattern, web.config[i].location[j].root);
+	else if (!web.config[i].root.empty())
+		clt.map["URI"] = replaceLocation(clt.map["URI"],
+										 web.config[i].location[j].pattern, web.config[i].root);
+	else
+		return 404;
+	std::cout << "location = [" << location << "]\n";
+	return -j;
+}
+
+int parseRequestData(struct client &clt, struct webserv &web)
+{
+	int i, j;
+	if ((i = isRequestWellFormed(clt, web)) > 0)
+		return i;
+
+	if ((j = parsLocation(clt, web, i * -1)) > 0)
+		return j;
+
+	std::vector<std::string>::iterator iter = std::find(web.config[-i].location[-j].allow.begin(), web.config[-i].location[-j].allow.end(), clt.map["Method"]);
+	if (iter == web.config[-i].location[-j].allow.end())
+		return 405;
 	return 0;
 }
 
-int	parseRequestData(struct client &clt,  struct webserv &web)
+void parseRequest(struct webserv &web, struct client &clt)
 {
-	int returnValue;
-	if ((returnValue = isRequestWellFormed(clt, web)) > 0)
-		return returnValue;
-
-	if ((returnValue = parsLocation(clt, web, returnValue * -1)))
-		return returnValue;
-	return 0;
-}
-
-void	parseRequest(struct webserv& web, struct client& clt)
-{
-	std::cout << "-----------------------------------------------------------\n";	
+	std::cout << "-----------------------------------------------------------\n";
 	fillRequestData(clt);
-	std::cout << "\033[91m**********  " <<  parseRequestData(clt, web) << "  *******\033[00m\n";
-	// std::cout << "max body s = " << web.config.at(5) 
-        // std::cout << "Size: " << web.config.at().max_body_size <<  std::endl;
-	// check listen
+	std::cout << "\033[91m**********  " << parseRequestData(clt, web) << "  *******\033[00m\n";
 }
 
- // 	// std::cout<<std::string(clt.buffer.str(), 65005)<<std::endl;
+// 	// std::cout<<std::string(clt.buffer.str(), 65005)<<std::endl;
