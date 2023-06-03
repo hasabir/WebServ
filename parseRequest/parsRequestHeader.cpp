@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/01 19:50:33 by hasabir           #+#    #+#             */
-/*   Updated: 2023/06/02 21:17:18 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/06/03 15:51:51 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,8 +78,16 @@ int isRequestWellFormed(struct client &clt, struct webserv &web)
 		|| (clt.map_request["Method"] == "POST" && clt.map_request.find("Transfer-Encoding") == clt.map_request.end()
 		&& clt.map_request.find("Content-Length") == clt.map_request.end()))
 		return sendResponse(clt, web, 400);
-	if (clt.bodys.chunks_flag && clt.map_request["Transfer-Encoding"] != "chunked")
+	if (clt.map_request.find("Transfer-Encoding") != clt.map_request.end()
+		&& clt.map_request["Transfer-Encoding"] != "chunked")
 		return sendResponse(clt, web, 501);
+		
+	
+	// if (clt.bodys.chunks_flag && clt.map_request["Transfer-Encoding"] != "chunked")
+	// {
+	// 	std::cout << "***********\n";
+	// 	return sendResponse(clt, web, 501);
+	// }
 	
 	if (clt.map_request["URI"].size() > 2048)
 		return sendResponse(clt, web, 414);

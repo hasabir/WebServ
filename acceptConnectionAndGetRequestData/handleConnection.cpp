@@ -6,13 +6,14 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/16 14:04:07 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/06/02 21:27:27 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/06/03 16:33:43 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../webserv.hpp"
 
 
+char    tempo[2048] = "HTTP/1.0 200 OK\r\n Server: webserver-c\r\n Content-type: text/    html\r\n\r\n <html> Daba machimochkil  </html>\r\n";
 
 void	closeConnection(struct webserv& web, int client_i)
 {
@@ -34,6 +35,7 @@ void	handleConnection(struct webserv& web)
 	int				j;
 	int				size;
 	int				k;
+	int				returnValue;
 	
 	size = web.servers.size();	
 	i = 0;
@@ -88,7 +90,7 @@ void	handleConnection(struct webserv& web)
 			{
 				FD_CLR(web.clients[i].fd , &web.reads);
 
-				parseRequest(web, web.clients[i]);
+				returnValue = parseRequest(web, web.clients[i]);
 				//handle request data;
 				//std::ofstream file;
 				//file.open("name.txt");
@@ -103,9 +105,11 @@ void	handleConnection(struct webserv& web)
 	{
 		if (FD_ISSET(web.clients[i].fd, &web.tmp_write) )
 		{
-			if (web.clients[i].request_is_ready == true && web.clients[i].response_is_ready == true)
+			if (web.clients[i].request_is_ready == true /*&& web.clients[i].response_is_ready == true*/)
 			{
 
+				// if (!returnValue)
+				// 	send(web.clients[i].fd, tempo, strlen(tempo), 0);
 				closeConnection(web, i);
 			}
 		}

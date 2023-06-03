@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 20:01:49 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/06/02 21:15:50 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/06/03 16:54:33 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -251,10 +251,12 @@ void			getResponse(struct webserv web, struct client& clt);
 void			response(struct webserv& web, int fd);
 void			responseToRequest(struct server serv, struct client clt, struct respReslt& hepl);
 
-/* ************************** parseRequest *******************************************/
-
-void			parseRequest(struct webserv& web, struct client& clt);
+/* ************************** utils.cpp ********************************************* */
 unsigned long	stringToInt(std::string str);
+std::string intToString(int n);
+/* ************************** parseRequest ****************************************** */
+
+int				parseRequest(struct webserv& web, struct client& clt);
 std::string		fillRequestData(struct client& clt);
 int				isRequestWellFormed(struct client &clt, struct webserv &web);
 

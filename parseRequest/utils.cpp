@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/01 19:45:42 by hasabir           #+#    #+#             */
-/*   Updated: 2023/06/01 19:46:21 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/06/03 16:57:54 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,4 +27,16 @@ unsigned long stringToInt(std::string str)
 			n *= 1000;
 	}
 	return n;
+}
+std::string intToString(int n)
+{
+	std::string str;
+	char c;
+	while (n > 0)
+	{
+		c = (n % 10 + '0');
+		str = c + str;
+		n /= 10;
+	}
+	return str;
 }

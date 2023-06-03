@@ -75,19 +75,21 @@ int parseRequestData(struct client &clt, struct webserv &web)
 		web.config[clt.config].location[clt.location].allow.end(), clt.map_request["Method"]);
 	if (iter == web.config[clt.config].location[clt.location].allow.end())
 		return sendResponse(clt, web, 405);
+	sendResponse(clt, web, 200);
 	return 0;
 }
 char    temp[2048] = "HTTP/1.0 200 OK\r\n Server: webserver-c\r\n Content-type: text/    html\r\n\r\n <html> Daba machimochkil  </html>\r\n";
-void parseRequest(struct webserv &web, struct client &clt)
+
+int parseRequest(struct webserv &web, struct client &clt)
 {
 	std::cout << "-----------------------------------------------------------\n";
 	clt.response_is_ready = true;
 	clt.config = -1;
 	clt.location = -1;
 	fillRequestData(clt);
-	if (!parseRequestData(clt, web))
-			send(clt.fd, temp, strlen(temp), 0);
-	std::cout << "clt.config = " << clt.config << " | clt.location = " << clt.location << std::endl;
+	return parseRequestData(clt, web);
+	// send(clt.fd, temp, strlen(temp), 0);
+	// std::cout << "clt.config = " << clt.config << " | clt.location = " << clt.location << std::endl;
 }
 
 // 	// std::cout<<std::string(clt.buffer.str(), 65005)<<std::endl;
