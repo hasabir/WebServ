@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   sendResponse.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
+/*   By: hp <hp@student.42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/02 16:04:39 by hasabir           #+#    #+#             */
-/*   Updated: 2023/06/03 17:47:14 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/06/06 11:55:29 by hp               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,23 +87,19 @@ void fillResponseHeader(struct client &clt, struct webserv &web, int statusCode)
 	std::vector<std::pair<std::string, std::string> >::iterator iter;
 	std::string response;
 	std::string filePath;
-	if (clt.location < 0 || web.config[clt.config].error_page.empty())
-	{
-		response += " Content-type: text/html\r\n";
-		if ((clt.location < 0 && web.config[clt.config].error_page.empty())
-		|| (((clt.location < 0 || !web.config[clt.config].error_page.empty())
-		|| (clt.location && web.config[clt.config].location[clt.location].error_page.empty()))
-		&& (std::find(web.config[clt.config].error_page.begin(),
-				web.config[clt.config].error_page.end(), intToString(statusCode))
-				!= web.config[clt.config].error_page.end())))
-		filePath = "Default";
-	}
-	// else if (clt.location && )
-	// {
-		
-	// }
-
-	intToString(145);
+	
+	if (clt.location && (iter = 
+		std::find(web.config[clt.config].location[clt.location].error_page.begin(),
+		web.config[clt.config].location[clt.location].error_page.end(),
+		intToString(statusCode)))!= web.config[clt.config].location[clt.location].error_page.end())
+		filePath = iter->second;
+	else if ((iter = std::find(web.config[clt.config].error_page.begin(),
+		web.config[clt.config].error_page.end(),
+		intToString(statusCode)))!= web.config[clt.config].error_page.end())
+		filePath = iter->second;
+	else
+		filePath = "";
+	
 	getDefaultFile(clt, statusCode, response, "");
 	send(clt.fd, response.c_str(), strlen(response.c_str()), 0);
 	// }
