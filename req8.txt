@@ -1,8 +1,15 @@
-GET /upload/file HTTP/1.1
+GET / HTTP/1.1
+Transfer-Encoding: chunked
+Content-Type: text/plain
 User-Agent: PostmanRuntime/7.32.2
 Accept: */*
-Postman-Token: 28fa4563-3ea9-4eb1-934d-d1604ce9cc77
-Host: 0.0.0.0:8087
+Postman-Token: 9b8f54bb-9e7d-411a-b3d2-78329475d441
+Host: localhost:8082
 Accept-Encoding: gzip, deflate, br
 Connection: keep-alive
+Content-Length: 60
+
+3c
+hellosdfsfasfafadfasdfasdfasdaafghjkl;dfghjkl;fghjkldfghjkl;
+0
 

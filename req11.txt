@@ -1,10 +1,15 @@
-GET /srcs HTTP/1.1
-Host: 0.0.0.0:8080
+PUT /srcs HTTP/1.1
+Transfer-Encoding: chunked
+Content-Type: text/plain
+User-Agent: PostmanRuntime/7.32.2
+Accept: */*
+Postman-Token: 4becf6ed-5897-421a-9886-18f3461245aa
+Host: localhost:8080
+Accept-Encoding: gzip, deflate, br
 Connection: keep-alive
-Cache-Control: max-age=0
-Upgrade-Insecure-Requests: 1
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36
-Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
-Accept-Encoding: gzip, deflate
-Accept-Language: en-GB,en;q=0.9,fr-FR;q=0.8,fr;q=0.7,en-US;q=0.6
+Content-Length: 60
+
+3c
+hellosdfsfasfafadfasdfasdfasdaafghjkl;dfghjkl;fghjkldfghjkl;
+0
 

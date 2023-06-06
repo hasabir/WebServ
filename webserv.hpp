@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 20:01:49 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/06/03 16:54:33 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/06/06 18:43:37 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -254,6 +254,7 @@ void			responseToRequest(struct server serv, struct client clt, struct respReslt
 /* ************************** utils.cpp ********************************************* */
 unsigned long	stringToInt(std::string str);
 std::string intToString(int n);
+void fillMapContentTypes(std::map<std::string, std::string> &contentTypes);
 /* ************************** parseRequest ****************************************** */
 
 int				parseRequest(struct webserv& web, struct client& clt);
@@ -271,3 +272,14 @@ void    maxFd(struct webserv& web);
 int		toInt(std::string nbr);
 void    splitBody(std::string buffer, struct client& clt);
 #endif
+
+
+/*
+
+
+check for the extention of the file to return
+*/
+
+//?pattern is  not in beginning of uri
+
+//! check the host first than the port number

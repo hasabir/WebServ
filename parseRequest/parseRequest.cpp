@@ -27,8 +27,10 @@ int search(struct client &clt, struct webserv &web, int i)
 
 	for (int j = 0; j < web.config[i].location.size(); j++)
 	{
+		if (web.config[i].location[j].pattern.size() == 1 && clt.map_request["URI"].size() != 1)
+			continue;
 		int found = clt.map_request["URI"].find(web.config[i].location[j].pattern);
-	std::cout << "pattern = " << web.config[i].location[j].pattern << std::endl;
+		std::cout << "pattern = " << web.config[i].location[j].pattern << std::endl;
 		if (found != std::string::npos)
 			return j;
 	}

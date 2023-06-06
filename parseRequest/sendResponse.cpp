@@ -3,83 +3,105 @@
 /*                                                        :::      ::::::::   */
 /*   sendResponse.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hp <hp@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: hasabir <hasabir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/02 16:04:39 by hasabir           #+#    #+#             */
-/*   Updated: 2023/06/06 11:55:29 by hp               ###   ########.fr       */
+/*   Updated: 2023/06/06 20:49:20 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../webserv.hpp"
 
-std::string readFileContent(std::string filePath)
+std::string readFileContent(std::string &filePath, int statusCode)
 {
-	std::string responseBody;
+	std::stringstream responseBody;
 	std::fstream file;
+
+	if (filePath == "Default")
+		filePath = "/Users/hasabir/Desktop/WebServ/www/error/"
+					+ intToString(statusCode) + ".html";
 	file.open(filePath.c_str(), std::ios::in);
 	if (!file.is_open())
-		return "Ther is a problem in opening html file";
-	getline(file, responseBody, '\0');
-	return responseBody;
+	{
+		filePath = "/Users/hasabir/Desktop/WebServ/www/error/"
+					+ intToString(statusCode) + ".html";
+		file.open(filePath.c_str(), std::ios::in);
+	}
+	responseBody << file;
+	return responseBody.str();
 }
 
-
-void getDefaultFile(struct client &clt, int statusCode, std::string &response, std::string filePath)
+std::string getContentType(std::string filePath)
 {
-	std::cout << "\n at least i am here\n";
+	std::string type;
+	std::map<std::string, std::string> contentTypes;
+	int index;
+	
+	fillMapContentTypes(contentTypes);
+	index = filePath.rfind('.');
+	type = filePath.substr(index, filePath.size());
+	return "plain";
+	
+}
+
+void getResponse(struct client &clt, int statusCode,
+			std::string &response, std::string responseContent, std::string filePath)
+{
 	switch (statusCode)
 	{
 		case 400:
 			response = "HTTP/1.1 400 Bad Request\r\n";
 			response += "Connection: close\r\nServer: webserver-c\r\n ";
-			response += "Content-Length: 16\r\n\r\n";
+			// response += "Content-Type: " + getContentType(filePath);
+			response += "Content-Length:" + intToString(responseContent.size()) +"\r\n\r\n";
+			// response += responseContent;
 			response += "400 Bad Request";
 			break;
 		case 501:
 			response = "HTTP/1.1 501 Bad Request\r\n";
 			response += "Connection: close\r\nServer: webserver-c\r\n ";
 			response += "Content-Length: 23\r\n\r\n";
+			// response += responseContent;
+			
 			response += "501 Not Implemented";
 			break;
 		case 414:
 			response = "HTTP/1.1 414 Request-URI Too Long\r\n";
 			response += "Connection: close\r\nServer: webserver-c\r\n ";
 			response += "Content-Length: 25\r\n\r\n";
+			// response += responseContent;
 			response += "414 Request-URI Too Long";
 			break;
 		case 423:
 			response = "HTTP/1.1 413 Request Entity Too Large\r\n";
 			response += "Connection: close\r\nServer: webserver-c\r\n ";
 			response += "Content-Length: 29\r\n\r\n";
+			// response += responseContent;
 			response += "413 Request Entity Too Large";
 			break;
 		case 404:
-			std::cout << "i am suppose to be here\n";
 			response = "HTTP/1.1 404 Not Found\r\n";
 			response += "Connection: close\r\nServer: webserver-c\r\n ";
 			response += "Content-Length: 14\r\n\r\n";
+			// response += responseContent;
 			response += "404 Not Found";
 			break;
 		case 405:
-			std::cout << "i am not suppose to be here\n";
 			response = "HTTP/1.1 405 Method Not Allowed\r\n";
 			response += "Connection: close\r\nServer: webserver-c\r\n ";
 			response += "Content-Length: 23\r\n\r\n";
+			// response += responseContent;
 			response += "405 Method Not Allowed";
 			break;
 		case 200:
 			response = "HTTP/1.0 200 OK\r\nn";
 			response += "Connection: \r\nServer: webserver-c\r\n ";
 			response +=  "Content-type: text/html\r\n\r\n";
+			// response += responseContent;
 			response += " <html> Daba machimochkil  </html>\r\n";
 			break;
 	}
 }
-void locationNotExist(std::string &fileName, struct client &clt, struct webserv &web, int statusCode)
-{
-	
-}
-
 
 void fillResponseHeader(struct client &clt, struct webserv &web, int statusCode)
 {
@@ -88,21 +110,31 @@ void fillResponseHeader(struct client &clt, struct webserv &web, int statusCode)
 	std::string response;
 	std::string filePath;
 	
-	if (clt.location && (iter = 
-		std::find(web.config[clt.config].location[clt.location].error_page.begin(),
-		web.config[clt.config].location[clt.location].error_page.end(),
-		intToString(statusCode)))!= web.config[clt.config].location[clt.location].error_page.end())
-		filePath = iter->second;
-	else if ((iter = std::find(web.config[clt.config].error_page.begin(),
-		web.config[clt.config].error_page.end(),
-		intToString(statusCode)))!= web.config[clt.config].error_page.end())
-		filePath = iter->second;
-	else
-		filePath = "";
-	
-	getDefaultFile(clt, statusCode, response, "");
+
+	if (clt.location >= 0)
+	{
+		for (iter = web.config[clt.config].location[clt.location].error_page.begin();
+		iter != web.config[clt.config].location[clt.location].error_page.end()
+		&& iter->first != intToString(statusCode); iter++);
+		if (iter != web.config[clt.config].location[clt.location].error_page.end())
+			filePath = iter->second;
+	}
+	if (clt.location < 0
+		|| iter == web.config[clt.config].location[clt.location].error_page.end())
+	{
+		for (iter = web.config[clt.config].error_page.begin();
+			iter != web.config[clt.config].error_page.end()
+			&& iter->first != intToString(statusCode); iter++);
+		if (iter != web.config[clt.config].error_page.end())
+			filePath = iter->second;
+	}
+	if (iter == web.config[clt.config].error_page.end())
+		filePath = "default";
+	getResponse(clt, statusCode, response, readFileContent(filePath, statusCode), filePath);
+	if (statusCode != 200)
+		readFileContent(filePath, statusCode);
+	getContentType(filePath);
 	send(clt.fd, response.c_str(), strlen(response.c_str()), 0);
-	// }
 }
 
 
@@ -110,17 +142,4 @@ int sendResponse(struct client &clt, struct webserv &web, int statusCode)
 {
 	fillResponseHeader(clt, web, statusCode);
 	return statusCode;
-}
-
-int send_404(struct client &clt) {
-
-	std::cout <<"content file = " << readFileContent("/Users/hasabir/Desktop/WebServ/www/error/404.html") << std::endl;
-	clt.response_is_ready = true;
-	const char *c404 = "HTTP/1.1 404 Not Found\r\n"
-		"Connection: close\r\n"
-		"Content-Length: 9\r\n\r\nNot Found";
-	send(clt.fd , c404, strlen(c404), 0);
-	// closeConnection(web, i);
-	return 404;
-	// drop_client(client);
 }

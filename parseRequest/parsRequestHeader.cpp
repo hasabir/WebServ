@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsRequestHeader.cpp                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
+/*   By: hasabir <hasabir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/01 19:50:33 by hasabir           #+#    #+#             */
-/*   Updated: 2023/06/03 15:51:51 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/06/06 20:48:53 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,34 +66,29 @@ int isRequestWellFormed(struct client &clt, struct webserv &web)
 		port = std::find(web.config[i].listen.begin(), web.config[i].listen.end(),
 				clt.map_request["Host"].substr(clt.map_request["Host"].find(":") + 1));
 		if (port != web.config[i].listen.end())
-		{
-			std::cout << "port = " << *port << std::endl;
 			break;
-		}
 	}
+	if (port == web.config[i].listen.end())
+		web.config[0].listen.begin();
+	std::cout << "port = " << *port << std::endl;
 	clt.config = i;
 	if ( (clt.map_request["URI"].find_first_not_of(
 		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~:/?#[]@!$&'()*+,;=%")
 		!= std::string::npos)
-		|| (clt.map_request["Method"] == "POST" && clt.map_request.find("Transfer-Encoding") == clt.map_request.end()
+		|| (clt.map_request["Method"] == "POST" 
+		&& clt.map_request.find("Transfer-Encoding") == clt.map_request.end()
 		&& clt.map_request.find("Content-Length") == clt.map_request.end()))
 		return sendResponse(clt, web, 400);
 	if (clt.map_request.find("Transfer-Encoding") != clt.map_request.end()
 		&& clt.map_request["Transfer-Encoding"] != "chunked")
 		return sendResponse(clt, web, 501);
 		
-	
-	// if (clt.bodys.chunks_flag && clt.map_request["Transfer-Encoding"] != "chunked")
-	// {
-	// 	std::cout << "***********\n";
-	// 	return sendResponse(clt, web, 501);
-	// }
-	
 	if (clt.map_request["URI"].size() > 2048)
 		return sendResponse(clt, web, 414);
 	unsigned long tmp_len;
 	tmp_len = clt.bodys.content_len;
-	if (clt.map_request["Method"] == "POST" && tmp_len >  stringToInt(web.config[i].max_body_size)) //! need to handle chunks and boundary
+	if (clt.map_request["Method"] == "POST"
+	&& tmp_len >  stringToInt(web.config[i].max_body_size)) //! need to handle chunks and boundary
 		return sendResponse(clt, web, 413);
 	return 0;
 }

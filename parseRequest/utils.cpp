@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/01 19:45:42 by hasabir           #+#    #+#             */
-/*   Updated: 2023/06/03 16:57:54 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/06/06 18:43:15 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,4 +39,22 @@ std::string intToString(int n)
 		n /= 10;
 	}
 	return str;
+}
+
+void fillMapContentTypes(std::map<std::string, std::string> &contentTypes)
+{
+	contentTypes[".html"] = "text/html";
+	contentTypes[".htm"] = "text/html";
+	contentTypes[".txt"] = "text/plain";
+	contentTypes[".css"] = "text/css";
+	contentTypes[".js"] = "text/javascript";
+	contentTypes[".json"] = "application/json";
+	contentTypes[".xml"] = "application/xml";
+	contentTypes[".pdf"] = "application/pdf";
+	contentTypes[".zip"] = "application/zip";
+	contentTypes[".jpeg"] = contentTypes["jpg"] = "image/jpeg";
+	contentTypes[".png"] = "image/png";
+	contentTypes[".gif"] = "image/gif";
+	contentTypes[".mp3"] = "audio/mpeg";
+	contentTypes[".mp4"] = "video/mp4";
 }
