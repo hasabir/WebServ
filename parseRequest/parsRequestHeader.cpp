@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsRequestHeader.cpp                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hasabir <hasabir@student.42.fr>            +#+  +:+       +#+        */
+/*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/01 19:50:33 by hasabir           #+#    #+#             */
-/*   Updated: 2023/06/06 20:48:53 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/06/07 20:49:22 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ std::string	fillRequestData(struct client& clt)
 		return "";
 	}
 	std::getline(*clt.file, line);
-	std::cout << "line = " << line << std::endl;
+	// // std::cout << "line = " << line << std::endl;
 	getRequestLine(line, clt.map_request);
 	while (getline(*clt.file, line))
 	{
@@ -48,13 +48,14 @@ std::string	fillRequestData(struct client& clt)
 		value.erase(0, 1);
 		clt.map_request[key] = value;
 	}
-	std::map<std::string, std::string>::iterator iter;
-	int i = 0;
-	for (iter = clt.map_request.begin(); iter != clt.map_request.end();i++, iter++) {
-        std::cout << "\033[92m" <<  iter->first << " | " << iter->second << "\033[00m\n";
-    }
+	// // std::map<std::string, std::string>::iterator iter;
+	// // int i = 0;
+	// // for (iter = clt.map_request.begin(); iter != clt.map_request.end();i++, iter++) {
+    // //     std::cout << "\033[92m" <<  iter->first << " | " << iter->second << "\033[00m\n";
+    // // }
 	return requestLine;
-} 
+}
+
 int isRequestWellFormed(struct client &clt, struct webserv &web)
 {
 	std::vector<std::string>::iterator	port;
@@ -70,7 +71,7 @@ int isRequestWellFormed(struct client &clt, struct webserv &web)
 	}
 	if (port == web.config[i].listen.end())
 		web.config[0].listen.begin();
-	std::cout << "port = " << *port << std::endl;
+	// // std::cout << "port = " << *port << std::endl;
 	clt.config = i;
 	if ( (clt.map_request["URI"].find_first_not_of(
 		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~:/?#[]@!$&'()*+,;=%")
@@ -85,6 +86,7 @@ int isRequestWellFormed(struct client &clt, struct webserv &web)
 		
 	if (clt.map_request["URI"].size() > 2048)
 		return sendResponse(clt, web, 414);
+	
 	unsigned long tmp_len;
 	tmp_len = clt.bodys.content_len;
 	if (clt.map_request["Method"] == "POST"

@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/02 16:04:39 by hasabir           #+#    #+#             */
-/*   Updated: 2023/06/07 14:06:55 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/06/07 20:37:26 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ void fillResponseHeader(struct client &clt, struct webserv &web, int statusCode)
 	std::cout << "status code = " << statusCode << std::endl;
 	std::vector<std::pair<std::string, std::string> >::iterator iter;
 	std::string response;
+	std::string fileBody;
 	std::string filePath;
 	
 
@@ -41,10 +42,11 @@ void fillResponseHeader(struct client &clt, struct webserv &web, int statusCode)
 	}
 	if (iter == web.config[clt.config].error_page.end())
 		filePath = "default";
-	if (statusCode != 200 && statusCode != 301)
-		readFileContent(filePath, statusCode);
-	getResponse(clt, statusCode, response, readFileContent(filePath, statusCode), filePath);
-	// std::cout << "type = " << getContentType(filePath) << std::endl;
+	if (statusCode == 200)
+		filePath = clt.map_request["URI"];
+	if (statusCode != 301)
+		fileBody = readFileContent(filePath, statusCode);
+	getResponse(clt, statusCode, response, fileBody, filePath);
 	send(clt.fd, response.c_str(), strlen(response.c_str()), 0);
 }
 

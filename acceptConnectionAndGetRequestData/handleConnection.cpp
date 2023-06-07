@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/16 14:04:07 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/06/06 16:27:46 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/06/07 20:48:26 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,6 +91,13 @@ void	handleConnection(struct webserv& web)
 				FD_CLR(web.clients[i].fd , &web.reads);
 
 				returnValue = parseRequest(web, web.clients[i]);
+				if (returnValue == 200 && web.clients[i].map_request["Method"] == "GET")
+					get(web, web.clients[i]);
+				else if (returnValue == 200 && web.clients[i].map_request["Method"] == "POST")
+					post(web, web.clients[i]);
+				else if (returnValue == 200 && web.clients[i].map_request["Method"] == "DELETE")
+					deleteResponse(web, web.clients[i]);
+				std::cout << "\033[00m";
 				//handle request data;
 				//std::ofstream file;
 				//file.open("name.txt");

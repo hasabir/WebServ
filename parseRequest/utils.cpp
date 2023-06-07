@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/01 19:45:42 by hasabir           #+#    #+#             */
-/*   Updated: 2023/06/07 13:42:04 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/06/07 20:46:09 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ int search(struct client &clt, struct webserv &web, int i)
 		if (web.config[i].location[j].pattern.size() == 1 && clt.map_request["URI"].size() != 1)
 			continue;
 		int found = clt.map_request["URI"].find(web.config[i].location[j].pattern);
-		std::cout << "pattern = " << web.config[i].location[j].pattern << std::endl;
+		// std::cout << "pattern = " << web.config[i].location[j].pattern << std::endl;
 		if (found != std::string::npos)
 			return j;
 	}

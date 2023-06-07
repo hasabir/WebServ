@@ -71,5 +71,8 @@
 		"mutex": "cpp",
 		"ratio": "cpp",
 		"stack": "cpp"
-	}
+	},
+	"cSpell.words": [
+		"webserver"
+	]
 }

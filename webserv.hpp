@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 20:01:49 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/06/07 14:05:28 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/06/07 19:44:05 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -273,6 +273,13 @@ std::string getContentType(std::string filePath);
 void getResponse(struct client &clt, int statusCode,
 	std::string &response, std::string responseContent, std::string filePath);
 /**************************************************************************************/
+
+
+int		get(struct webserv& web, struct client& clt);
+void	post(struct webserv& web, struct client& clt);
+void	deleteResponse(struct webserv& web, struct client& clt);
+
+
 // parse request // 
 //void	parseRequests(struct webserv web, std::stringstream& buffer);
 void    receiveRequest(struct webserv& web, struct client& clt, int i);

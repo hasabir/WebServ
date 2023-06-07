@@ -25,10 +25,9 @@ int parsLocation(struct client &clt, struct webserv &web, int i)
 	if (!web.config[i].location[clt.location].redirect.empty())
 	{
 		clt.map_request["URI"] = web.config[i].location[clt.location].redirect;
-		char whitSpace[] = {'\n', '\t', '\r', ' ', '\r', '\v'};
-		std::string::iterator iter = std::find_first_of(clt.map_request["URI"].begin(), clt.map_request["URI"].end(),
-				std::begin(whitSpace), std::end(whitSpace));
-		if (iter != clt.map_request["URI"].end())
+		char whitSpace[] = {'\t', ' ', '\v'};
+		if (std::find_first_of(clt.map_request["URI"].begin(), clt.map_request["URI"].end(),
+				std::begin(whitSpace), std::end(whitSpace)) != clt.map_request["URI"].end())
 		{
 			std::stringstream redirect(clt.map_request["URI"]);
 			std::string statusCode;
@@ -55,32 +54,28 @@ int parsLocation(struct client &clt, struct webserv &web, int i)
 
 int parseRequestData(struct client &clt, struct webserv &web)
 {
-	int i, j;
-	if ((i = isRequestWellFormed(clt, web)))
-		return i;
+	int error;
+	if ((error = isRequestWellFormed(clt, web)))
+		return error;
 
-	if ((j = parsLocation(clt, web, clt.config)))
-		return j;
+	if ((error = parsLocation(clt, web, clt.config)))
+		return error;
 
 	std::vector<std::string>::iterator iter = std::find(web.config[clt.config].location[clt.location].allow.begin(),
 		web.config[clt.config].location[clt.location].allow.end(), clt.map_request["Method"]);
 	if (iter == web.config[clt.config].location[clt.location].allow.end())
 		return sendResponse(clt, web, 405);
-	sendResponse(clt, web, 200);
-	return 0;
+	return 200;
 }
-char    temp[2048] = "HTTP/1.0 200 OK\r\n Server: webserver-c\r\n Content-type: text/    html\r\n\r\n <html> Daba machimochkil  </html>\r\n";
 
 int parseRequest(struct webserv &web, struct client &clt)
 {
-	std::cout << "-----------------------------------------------------------\n";
+	std::cout << "\033[91m-----------------------------------------------------------\n";
 	clt.response_is_ready = true;
 	clt.config = -1;
 	clt.location = -1;
 	fillRequestData(clt);
 	return parseRequestData(clt, web);
-	// send(clt.fd, temp, strlen(temp), 0);
-	// std::cout << "clt.config = " << clt.config << " | clt.location = " << clt.location << std::endl;
 }
 
 // 	// std::cout<<std::string(clt.buffer.str(), 65005)<<std::endl;
