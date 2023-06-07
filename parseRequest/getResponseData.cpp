@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/07 13:49:11 by hasabir           #+#    #+#             */
-/*   Updated: 2023/06/07 20:40:35 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/06/07 22:43:06 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,9 @@ void getResponse(struct client &clt, int statusCode,
 		case 405:
 			response = "HTTP/1.1 405 Method Not Allowed\r\n";
 			break;
+		case 403:
+			response = "HTTP/1.1 403 Forbidden\r\n";
+			break;
 		case 302:
 			response = "HTTP/1.1 302 Found\r\n";
 			response += "location: " + clt.map_request["URI"];
@@ -47,9 +50,6 @@ void getResponse(struct client &clt, int statusCode,
 			return;
 		case 200:
 			response = "HTTP/1.0 200 OK\r\nn";
-			// response += "Connection: \r\nServer: webserver-c\r\n ";
-			// response +=  "Content-type: text/html\r\n\r\n";
-			// response += " <html> <h1> Daba machimochkil <h1>  </html>\r\n";
 			break ;
 		case 0:
 			response = "HTTP/1.0 200 OK\r\nn";
