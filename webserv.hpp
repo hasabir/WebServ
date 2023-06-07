@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 20:01:49 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/06/06 21:44:57 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/06/07 14:05:28 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -253,8 +253,10 @@ void			responseToRequest(struct server serv, struct client clt, struct respReslt
 
 /* ************************** utils.cpp ********************************************* */
 unsigned long	stringToInt(std::string str);
-std::string intToString(int n);
-void fillMapContentTypes(std::map<std::string, std::string> &contentTypes);
+int				search(struct client &clt, struct webserv &web, int i);
+std::string		replaceLocation(std::string uri, std::string pattern, std::string root);
+std::string		intToString(int n);
+void			fillMapContentTypes(std::map<std::string, std::string> &contentTypes);
 /* ************************** parseRequest ****************************************** */
 
 int				parseRequest(struct webserv& web, struct client& clt);
@@ -268,6 +270,8 @@ int sendResponse(struct client &clt, struct webserv &web, int statusCode);
 
 std::string readFileContent(std::string &filePath, int statusCode);
 std::string getContentType(std::string filePath);
+void getResponse(struct client &clt, int statusCode,
+	std::string &response, std::string responseContent, std::string filePath);
 /**************************************************************************************/
 // parse request // 
 //void	parseRequests(struct webserv web, std::stringstream& buffer);
@@ -279,11 +283,11 @@ void    splitBody(std::string buffer, struct client& clt);
 
 
 /*
-
-
-check for the extention of the file to return
+check if return exists
+if return an redirect both exist return error
 */
 
-//?pattern is  not in beginning of uri
+//?| pattern is  not in beginning of uri 
+//?| + pattern is a part of uri but not directory nor file
 
 //! check the host first than the port number

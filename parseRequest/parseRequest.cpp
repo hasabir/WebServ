@@ -12,44 +12,33 @@
 
 #include "../webserv.hpp"
 
-std::string replaceLocation(std::string uri, std::string pattern, std::string root)
-{
-	std::string location(uri);
-	int position = uri.find(pattern);
-	location.replace(position, pattern.length(), root);
-	return location;
-}
-
-int search(struct client &clt, struct webserv &web, int i)
-{
-	std::string::iterator iter;
-	std::string location;
-
-	for (int j = 0; j < web.config[i].location.size(); j++)
-	{
-		if (web.config[i].location[j].pattern.size() == 1 && clt.map_request["URI"].size() != 1)
-			continue;
-		int found = clt.map_request["URI"].find(web.config[i].location[j].pattern);
-		std::cout << "pattern = " << web.config[i].location[j].pattern << std::endl;
-		if (found != std::string::npos)
-			return j;
-	}
-	return -1;
-}
-
 int parsLocation(struct client &clt, struct webserv &web, int i)
 {
 	if ((clt.location = search(clt, web, i)) < 0)
 	{
 		if (clt.map_request["URI"] != "/" || web.config[i].root.empty())
-		return sendResponse(clt, web, 404);
-		// return send_404(clt);
+			return sendResponse(clt, web, 404);
 		clt.map_request["URI"] = web.config[i].root;
 		std::cout << "location = [" << clt.map_request["URI"] << "]\n";
 		return 0;
 	}
 	if (!web.config[i].location[clt.location].redirect.empty())
+	{
 		clt.map_request["URI"] = web.config[i].location[clt.location].redirect;
+		char whitSpace[] = {'\n', '\t', '\r', ' ', '\r', '\v'};
+		std::string::iterator iter = std::find_first_of(clt.map_request["URI"].begin(), clt.map_request["URI"].end(),
+				std::begin(whitSpace), std::end(whitSpace));
+		if (iter != clt.map_request["URI"].end())
+		{
+			std::stringstream redirect(clt.map_request["URI"]);
+			std::string statusCode;
+
+			redirect >> statusCode;
+			redirect >> clt.map_request["URI"];
+			std::cout << "location = [" << clt.map_request["URI"] << "]\n";
+			return sendResponse(clt, web, stringToInt(statusCode));
+		}
+	}
 	else if (!web.config[i].location[clt.location].root.empty())
 		clt.map_request["URI"] = replaceLocation(clt.map_request["URI"],
 										 web.config[i].location[clt.location].pattern, 

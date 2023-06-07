@@ -6,7 +6,7 @@
 #    By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/16 14:11:30 by tel-bouh          #+#    #+#              #
-#    Updated: 2023/06/06 17:24:45 by hasabir          ###   ########.fr        #
+#    Updated: 2023/06/07 14:07:43 by hasabir          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,7 +30,7 @@ SRCS = ./main.cpp \
 	   parseConfigFile/valides.cpp  \
 	   parseRequest/parseRequest.cpp client.cpp\
 	   parseRequest/utils.cpp parseRequest/parsRequestHeader.cpp\
-	   parseRequest/sendResponse.cpp
+	   parseRequest/sendResponse.cpp parseRequest/getResponseData.cpp
 # parseRequest.cpp
 
 OBJS = ${SRCS:.cpp=.o}

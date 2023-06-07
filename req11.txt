@@ -1,11 +1,15 @@
-PUT /srcs HTTP/1.1
+GET /srcs HTTP/1.1
+Transfer-Encoding: chunked
 Content-Type: text/plain
-User-Agent: PostmanRuntime/7.25.0
+User-Agent: PostmanRuntime/7.32.2
 Accept: */*
-Postman-Token: 3d74f4c1-f212-420d-b431-2ba7cec693f7
-Host: 0.0.0.0:8080
+Postman-Token: c2d4b70a-cba5-4c8e-bff6-1033b3e4aa06
+Host: localhost:8080
 Accept-Encoding: gzip, deflate, br
 Connection: keep-alive
-Content-Length: 13
+Content-Length: 60
 
-dsdfsdfsafasf
+3c
+hellosdfsfasfafadfasdfasdfasdaafghjkl;dfghjkl;fghjkldfghjkl;
+0
+
