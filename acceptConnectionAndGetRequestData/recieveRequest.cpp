@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/15 11:40:12 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/05/29 12:54:57 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/06/12 18:03:08 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ void	maxFd(struct webserv& web)
 	web.maxReadFd = max;
 }
 
-void	receiveRequest(struct webserv& web, struct client& clt, int clt_i)
+void	receiveRequest(struct webserv& web, struct client& clt, int clt_i, int& flag_fail)
 {
 	char							line[100000];
 	int 							i;
@@ -62,11 +62,17 @@ void	receiveRequest(struct webserv& web, struct client& clt, int clt_i)
 	if (n_byte_readed < 0)
 	{
 		closeConnection(web, clt_i);	
+		flag_fail = 0;
 		return ;
 	}
 	if (n_byte_readed == 0)
 	{
-		clt.request_is_ready = true;
+		if (clt.nbr_of_reads == 0)
+		{
+			FD_CLR(web.clients[i].fd , &web.reads);
+			closeConnection(web, clt_i);
+			flag_fail = 0;
+		}
 		return ;
 	}
 	else
@@ -76,38 +82,62 @@ void	receiveRequest(struct webserv& web, struct client& clt, int clt_i)
 		else
 			clt.file->open(clt.file_name.c_str(),  std::fstream::app | std::fstream::out);
 		if (!clt.file->is_open())
-			std::cout << "not  opened " << std::endl;
+		{
+			std::cerr << "Can not open file." << std::endl;
+			closeConnection(web, clt_i);
+			flag_fail = 0;
+			return;
+		}
 		//you need to check for file is opned and doing what the sutiation needs
 		clt.file->write((char *) line, n_byte_readed); //	clt.buffer << line;
 		clt.file->close();
 		clt.bodys.rd_bytes = clt.bodys.rd_bytes + n_byte_readed;
-		buff.assign(line);
+		buff.assign(line, n_byte_readed);
 		if (clt.nbr_of_reads == 0)
-		{	
-			if (buff.find("POST") >= 0)
+		{
+			if (buff.find("POST") == 0)
 			{
-				std::cout << "Post req : " << buff.find("POST") << std::endl;
 				clt.post_flag = 1;
 			}
-			clt.nbr_of_reads++;
 		}
+		clt.nbr_of_reads++;
 	}
-	//if (endOfTheRequest(clt.buffer.str(), clt.bodys) == 0)
+
+	/*****************************************************************/
+	std::cout << "clt_i = " << clt_i << std::endl;
+	if (clt.nbr_of_reads == 1
+		&& (web.clients[clt_i].response.statusCode = parseRequest(web, web.clients[clt_i])))
+	{
+		web.clients[clt_i].response.error = true;
+		FD_CLR(web.clients[clt_i].fd , &web.reads);
+		sendResponse(web.clients[clt_i], web, web.clients[clt_i].response.statusCode);
+		closeConnection(web, clt_i);
+		flag_fail = 0;
+		return ;
+	}
+	/*****************************************************************/
+
+	web.clients[clt_i].response.error = false;
 	if (clt.post_flag == 1)
+	{
 		splitBody(buff, clt);
+	}
+	else
+	{
+		i = buff.find("\r\n\r\n");
+		if (i != -1)
+		{
+			clt.request_is_ready = true;
+			FD_SET(clt.fd, &web.writes);
+			return;
+		}
+
+	}
 	if (endOfTheRequest(buff, clt.bodys) == 0)
 	{
 		clt.request_is_ready = true;
-		//std::cout << "Headers : [" << clt.headers << "]" << std::endl;  
-		/*std::fstream s;
-
-		s.open("req.txt");
-		if (!s.is_open())
-		{
-			std::cout << errno << std::endl;
-			std::cout << "Not opned " << std::endl;
-		}
-		s.close();*/
+		if (clt.post_flag)
+			getFilesLength(clt);
 		FD_SET(clt.fd, &web.writes);
 	}
 }

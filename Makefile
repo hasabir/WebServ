@@ -6,34 +6,32 @@
 #    By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/16 14:11:30 by tel-bouh          #+#    #+#              #
-#    Updated: 2023/06/07 16:52:32 by hasabir          ###   ########.fr        #
+#    Updated: 2023/06/12 15:21:44 by hasabir          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME = webserv
+NAME = webserv.out
 
-SRCS = ./main.cpp \
-	   acceptConnectionAndGetRequestData/recieveRequest.cpp \
-	   acceptConnectionAndGetRequestData/splitBody.cpp \
-	   acceptConnectionAndGetRequestData/endOfRequest.cpp \
-	   acceptConnectionAndGetRequestData/handleConnection.cpp  \
-	   init/displayHostPort.cpp ./init/initServer.cpp \
-	   init/initWebStructAndFree.cpp ./init/activeSocket.cpp\
-	   parseConfigFile/parseConfigFile.cpp \
-	   parseConfigFile/getConfigData.cpp \
-	   parseConfigFile/parseConfigFun1.cpp \
-	   parseConfigFile/moveBracketsToNextLine.cpp \
-	   parseConfigFile/valideServersBlock.cpp \
-	   parseConfigFile/displayServerFile.cpp \
-	   parseConfigFile/checkConfigdata.cpp \
-	   parseConfigFile/splitSemiColons.cpp \
-	   parseConfigFile/valides.cpp  \
-	   parseRequest/parseRequest.cpp client.cpp\
-	   parseRequest/get.cpp parseRequest/post.cpp\
-	   parseRequest/deleteResponse.cpp\
-	   parseRequest/utils.cpp parseRequest/parsRequestHeader.cpp\
-	   parseRequest/sendResponse.cpp parseRequest/getResponseData.cpp
-# parseRequest.cpp
+SRCS = 	main.cpp \
+		acceptConnectionAndGetRequestData/endOfRequest.cpp\
+		acceptConnectionAndGetRequestData/handleConnection.cpp\
+		acceptConnectionAndGetRequestData/multiTypes.cpp\
+		acceptConnectionAndGetRequestData/recieveRequest.cpp\
+		acceptConnectionAndGetRequestData/splitBody.cpp\
+		acceptConnectionAndGetRequestData/getFilesLength.cpp\
+		init/activeSocket.cpp init/displayHostPort.cpp\
+		init/initServer.cpp init/initWebStructAndFree.cpp\
+		parseConfigFile/checkConfigdata.cpp parseConfigFile/displayServerFile.cpp\
+		parseConfigFile/getConfigData.cpp\
+		parseConfigFile/moveBracketsToNextLine.cpp\
+		parseConfigFile/parseConfigFile.cpp parseConfigFile/parseConfigFun1.cpp\
+		parseConfigFile/splitSemiColons.cpp parseConfigFile/valideServersBlock.cpp\
+		parseConfigFile/valides.cpp\
+		parseRequest/parsRequestHeader.cpp\
+		parseRequest/parseRequest.cpp parseRequest/utils.cpp\
+		response/deleteResponse.cpp\
+		response/getResponse.cpp response/postResponse.cpp response/sendResponse.cpp\
+		client.cpp\
 
 OBJS = ${SRCS:.cpp=.o}
 
@@ -58,52 +56,3 @@ fclean: clean
 
 re: fclean all
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# NAME = webserv.out
-
-# SRCS = ./main.cpp \
-# 	   ./acceptConnectionAndGetRequestData/recieveRequest.cpp \
-# 	   ./acceptConnectionAndGetRequestData/splitBody.cpp \
-# 	   ./acceptConnectionAndGetRequestData/endOfRequest.cpp \
-# 	   ./acceptConnectionAndGetRequestData/handleConnection.cpp  \
-# 	   ./init/displayHostPort.cpp ./init/initServer.cpp \
-# 	   ./init/initWebStructAndFree.cpp ./init/activeSocket.cpp\
-# 	   ./parseConfigFile/parseConfigFile.cpp \
-# 	   ./parseConfigFile/getConfigData.cpp \
-# 	   ./parseConfigFile/parseConfigFun1.cpp \
-# 	   ./parseConfigFile/moveBracketsToNextLine.cpp \
-# 	   ./parseConfigFile/valideServersBlock.cpp \
-# 	   ./parseConfigFile/displayServerFile.cpp \
-# 	   ./parseConfigFile/checkConfigData.cpp \
-# 	   ./parseConfigFile/splitSemiColons.cpp \
-# 	   ./parseConfigFile/valides.cpp  \
-# 	   ./parseRequest.cpp ./client.cpp
-
-# INCLUDES = .
-
-# FLAGS =  -std=c++98
-
-# CC = c++
-
-# all : $(NAME)
-
-# $(NAME) :
-# 	$(CC) $(FLAGS) $(SRCS) -I $(INCLUDES) -o $(NAME)
-
-# fclean :
-# 	/bin/rm -rf $(NAME)
-
-# re : fclean all

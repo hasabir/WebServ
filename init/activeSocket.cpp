@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/16 16:31:49 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/05/29 12:55:08 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/06/08 19:18:52 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,26 +52,6 @@ void	activeWriteSocket(struct webserv& web)
 	}
 }
 
-void	activeExceptSocket(struct webserv& web)
-{
-	int	i;
-	int	j;
-	int size;
-
-	size = web.servers.size();
-	i = 0;
-	while (i < size)
-	{
-		j = 0;
-		while (j < web.servers[i].socketFd.size())
-		{
-			FD_SET(web.servers[i].socketFd[j], &web.exceps);
-			j++;
-		}
-		i++;
-	}
-}
-
 void	activeSocket(struct webserv& web)
 {
 	int	i;
@@ -81,7 +61,6 @@ void	activeSocket(struct webserv& web)
 
 	FD_ZERO(&web.reads);
 	FD_ZERO(&web.writes);
-	FD_ZERO(&web.exceps);
 	activeReadSocket(web);
 	activeWriteSocket(web);
 	i = 0;

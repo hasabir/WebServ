@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/02 21:52:47 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/05/29 12:55:23 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/06/09 23:22:54 by tel-bouh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,13 +53,19 @@ void	initWebStrcut(struct webserv& web)
 	web.hints.ai_family = AF_INET;
 	web.hints.ai_socktype = SOCK_STREAM;
 	web.hints.ai_flags = AI_PASSIVE;
+	web.hints.ai_flags = AI_NUMERICHOST;
 	web.hints.ai_protocol = IPPROTO_TCP;
 	i = 0;
 	while (i < size)
 	{
 		j = 0;
+		char *host;
 		len = web.servers[i].serverConfig.listen.size();
-		char *host = const_cast<char*>( web.servers[i].serverConfig.host.c_str());	
+		if (web.servers[i].serverConfig.host.size() == 0)
+			web.servers[i].serverConfig.host = "0.0.0.0";
+		else if (web.servers[i].serverConfig.host == "localhost")
+			web.servers[i].serverConfig.host = "127.0.0.1";
+		host = const_cast<char*>( web.servers[i].serverConfig.host.c_str());
 		while (j < len)
 		{
 			char *port = const_cast<char*>( web.servers[i].serverConfig.listen[j].c_str());
@@ -72,7 +78,9 @@ void	initWebStrcut(struct webserv& web)
 				std::cout << web.servers[i].serverConfig.listen[j] << std::endl;
 			}
 			else
+			{
 				flag++;
+			}
 			j++;
 		}
 		i++;

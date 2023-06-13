@@ -6,36 +6,38 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/16 14:04:07 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/06/07 20:48:26 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/06/13 17:12:08 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../webserv.hpp"
-
-
-char    tempo[2048] = "HTTP/1.0 200 OK\r\n Server: webserver-c\r\n Content-type: text/    html\r\n\r\n <html> Daba machimochkil  </html>\r\n";
 
 void	closeConnection(struct webserv& web, int client_i)
 {
    	std::vector<client>::iterator it;
 
 	it = web.clients.begin();
+	FD_CLR(web.clients[client_i].fd , &web.reads);
 	FD_CLR(web.clients[client_i].fd , &web.writes);
 	close(web.clients[client_i].fd);
+	if (!((web.clients[client_i].response.error || (!web.clients[client_i].map_request.empty()
+		&& web.clients[client_i].map_request["Method"] == "GET"))
+		&&!std::remove(web.clients[client_i].file_name.c_str())))
+		std::cout << "req not file removed " <<  web.clients[client_i].file_name << std::endl;
 	while (client_i < web.clients.size() && (*it).fd != web.clients[client_i].fd && it != web.clients.end())
 		it++;
-	web.clients.erase(it);
+	if (it != web.clients.end())
+		web.clients.erase(it);
 	maxFd(web);
 }
 
 void	handleConnection(struct webserv& web)
 {
-	struct client 	newClient;
 	int				i;
 	int				j;
 	int				size;
 	int				k;
-	int				returnValue;
+	int				flag_fail;
 	
 	size = web.servers.size();	
 	i = 0;
@@ -46,6 +48,7 @@ void	handleConnection(struct webserv& web)
 		{
 			if (FD_ISSET(web.servers[i].socketFd[j], &web.tmp_read))
 			{
+					struct client 	newClient;
 					newClient.len = sizeof(newClient.addr);
 					newClient.fd = accept(web.servers[i].socketFd[j], (struct sockaddr *)&newClient.addr, &newClient.len);
 					if (newClient.fd < 0)
@@ -57,6 +60,7 @@ void	handleConnection(struct webserv& web)
 					{
 						FD_SET(newClient.fd, &web.reads);
 						web.clients.push_back(newClient);
+						size = web.servers.size();	
 						k = web.clients.size() - 1;
 						web.clients[k].bodys.chunks_flag = 0;
 						web.clients[k].bodys.boundary_flag = 0;
@@ -68,8 +72,9 @@ void	handleConnection(struct webserv& web)
 						web.clients[k].bodys.n_chunks = 0;
 						web.clients[k].bodys.cr_index = -1;
 						web.clients[k].bodys.get_body_type = 0;
-						web.clients[k].file_name = "req" + std::to_string(web.clients[k].fd) + ".txt";
-						std::cout << "filename : " << web.clients[k].file_name << std::endl;
+						web.clients[k].file_name = "req" + std::to_string(web.req_nbr) + ".txt";
+						web.clients[k].body_length = 0;
+						web.req_nbr++;
 						maxFd(web);
 						return ;
 					}
@@ -84,40 +89,47 @@ void	handleConnection(struct webserv& web)
 	{
 		if (FD_ISSET(web.clients[i].fd, &web.tmp_read))
 		{
-			receiveRequest(web, web.clients[i], i);
-			
-			if (web.clients[i].request_is_ready == true)
+			flag_fail = 1;
+			receiveRequest(web, web.clients[i], i, flag_fail);
+			//size = web.clients.size();	
+			if (flag_fail && web.clients[i].request_is_ready == true)
 			{
 				FD_CLR(web.clients[i].fd , &web.reads);
-
-				returnValue = parseRequest(web, web.clients[i]);
-				if (returnValue == 200 && web.clients[i].map_request["Method"] == "GET")
-					get(web, web.clients[i]);
-				else if (returnValue == 200 && web.clients[i].map_request["Method"] == "POST")
+				
+				// web.clients[i].statusCode = parseRequest(web, web.clients[i]);
+				std::cout << "uri = [" << web.clients[i].map_request["URI"] << "]\n";
+				if (!web.clients[i].response.statusCode && web.clients[i].map_request["Method"] == "GET")
+				{
+					std::cout << "Sending get response ...\n";
+					web.clients[i].response.statusCode = get(web, web.clients[i]);
+				}
+				else if (!web.clients[i].response.statusCode && web.clients[i].map_request["Method"] == "POST")
 					post(web, web.clients[i]);
-				else if (returnValue == 200 && web.clients[i].map_request["Method"] == "DELETE")
+				else if (!web.clients[i].response.statusCode && web.clients[i].map_request["Method"] == "DELETE")
 					deleteResponse(web, web.clients[i]);
 				std::cout << "\033[00m";
-				//handle request data;
-				//std::ofstream file;
-				//file.open("name.txt");
-				//std::cout << web.clients[i].buffer.str();
-				//file.close();	
+
+			}
+			else if (flag_fail == 0)
+			{
+				i--;
+				size = web.clients.size();
 			}
 		}
 		i++;
 	}
 	i = 0;
+	size = web.clients.size();	
 	while (i < size)
 	{
 		if (FD_ISSET(web.clients[i].fd, &web.tmp_write) )
 		{
-			if (web.clients[i].request_is_ready == true /*&& web.clients[i].response_is_ready == true*/)
+			if (web.clients[i].request_is_ready == true)// * && web.clients[i].response_is_ready == true *//*)
 			{
-
-				// if (!returnValue)
-				// 	send(web.clients[i].fd, tempo, strlen(tempo), 0);
-				closeConnection(web, i);
+				std::cout << "hi\n";
+				sendResponse(web.clients[i], web, web.clients[i].response.statusCode);
+				if (web.clients[i].response.finishReading)
+					closeConnection(web, i);
 			}
 		}
 		i++;

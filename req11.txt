@@ -1,8 +1,0 @@
-GET /file HTTP/1.1
-User-Agent: PostmanRuntime/7.32.2
-Accept: */*
-Postman-Token: f79fd238-be29-4b25-8a22-139eff4590d7
-Host: 0.0.0.0:8080
-Accept-Encoding: gzip, deflate, br
-Connection: keep-alive
-

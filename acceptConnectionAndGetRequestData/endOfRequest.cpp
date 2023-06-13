@@ -6,10 +6,11 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/16 14:02:55 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/05/29 12:54:42 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/06/08 23:34:39 by tel-bouh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "../webserv.hpp"
 #include "../webserv.hpp"
 
 //char    temp[2048] = "HTTP/1.0 200 OK\r\n Server: webserver-c\r\n Content-type: text/html\r\n\r\n <html>hello, world    </html>\r\n";
@@ -24,7 +25,7 @@ int				hexIndex(char c)
 	{
 		if (i < 10 && c == base[i])
 			return (i);
-		if (i > 10 && (c == base[i] || c == (base[i] - 32)))
+		if (i >= 10 && (c == base[i] || c == (base[i] - 32)))
 			   return (i);
 		i++;
 	}
@@ -86,70 +87,6 @@ int	handleContinue(char	*line)
 	return (1);
 }
 
-int	contentLength(std::string	buffer, unsigned long& content_len)
-{
-	int i;
-	int j;
-	int size;
-	int find;
-	
-	size = buffer.size();
-	if (content_len == 0)
-	{
-		find = buffer.find("Content-Length:");
-		if (find > 0)
-		{
-			i = find + 15;
-			while (i < size && buffer[i] == ' ')
-				i++;
-			j = 0;
-			while (i + j < size && (buffer[i + j] >= '0' && buffer[i + j] <= '9'))
-				j++;
-			content_len = toInt(buffer.substr(i, j));
-		}
-		else
-			content_len = -1;
-	}
-	if (content_len > 0)
-	{
-		find = buffer.find("\r\n\r\n") + 4;
-		if (find > 0)
-		{
-			if (buffer.size() >= (content_len + find))
-				return (1);
-		}
-	}
-	return (0);
-}
-/*
-int		getBoundary(std::string buffer, std::string& boundary)
-{
-	int				i;
-	int				size;
-	int 			find;
-	std::string		temp;
-
-	find = buffer.find("Content-Type:");
-	if (find == -1)
-		return (-1);
-	i = 0;
-	size = buffer.size();
-	while (find + i < size && buffer[find + i] != '\n')
-		i++;
-	temp.assign(buffer.substr(find, i));
-	find = temp.find("boundary=");
-	if (find == -1)
-		return (-1);
-	i = 0;
-	find = find + 9;
-	size = temp.size();
-	while (find + i < size && (temp[find + i] != '\n' && temp[find + i] != ' ' && temp[find + i] != '\t'))
-		i++;
-	boundary = temp.substr(find, i - 1);
-	boundary += "--";
-	return (0);
-}
-*/
 void	getBodyType(std::string buffer, struct body& bodys)
 {
 	int				i;
@@ -158,9 +95,9 @@ void	getBodyType(std::string buffer, struct body& bodys)
 	int				find;
 	std::string		temp;
 	std::string		hex;
-
+	
 	find = buffer.find("Content-Type:");
-	if (find >= 0)
+	if (find >= 0 && buffer[find - 1] == '\n')
 	{
 		size = buffer.size();
 		while (find + i < size && buffer[find + i] != '\n')
@@ -177,14 +114,14 @@ void	getBodyType(std::string buffer, struct body& bodys)
 			bodys.boundary = temp.substr(find, i - 1);
 			if (bodys.boundary.size())
 			{
-				bodys.boundary += "--";
+				bodys.boundary = "--" + bodys.boundary + "--";
 				bodys.boundary_flag = 1;
 				bodys.get_body_type = 1;
 			}
 		}
 	}
 	find = buffer.find("Transfer-Encoding:");
-	if (find >= 0)
+	if (find >= 0 && buffer[find - 1] == '\n')
 	{
 		size = buffer.size();
 		i = find + 19;
@@ -198,7 +135,7 @@ void	getBodyType(std::string buffer, struct body& bodys)
 		if (find >= 0)
 		{
 			find = buffer.find("Content-Length:");
-			if (find >= 0)
+			if (find >= 0 && buffer[find - 1] == '\n')
 			{
 				size = buffer.size();
 				i = find + 15;
@@ -234,7 +171,7 @@ void	getBodyType(std::string buffer, struct body& bodys)
 		}
 	}
 	find = buffer.find("Content-Length:");
-	if (find >= 0)
+	if (find >= 0 && buffer[find - 1] == '\n')
 	{
 		size = buffer.size();
 		i = find + 15;
@@ -245,7 +182,10 @@ void	getBodyType(std::string buffer, struct body& bodys)
 			j++;
 		bodys.content_len = toInt(buffer.substr(i, j));
 		if (bodys.content_len > 0)
+		{
 			bodys.content_length_flag = 1;
+			bodys.get_body_type = 1;
+		}
 		else
 		{
 			bodys.cr_nl_flag = 1;
@@ -257,7 +197,7 @@ void	getBodyType(std::string buffer, struct body& bodys)
 		bodys.cr_nl_flag = 1;
 		bodys.get_body_type = 1;
 	}
-	if (bodys.cr_index == -1)
+	if (bodys.cr_index == -1 || bodys.chunks_flag == 0)
 	{
 		bodys.cr_index = buffer.find("\r\n\r\n") + 4;
 	}
@@ -272,42 +212,10 @@ int	endOfChunks(std::string	buffer, struct body& bodys)
 	std::string	hex;
 	i = 0;
 	size = buffer.size();
-	/*while (1)
+	if (buffer.size() >= 5 && (buffer.substr(buffer.size() - 5, 5) == "0\r\n\r\n"))
 	{
-		if (size >= (bodys.cr_index + bodys.chunks_len))
-		{
-				i = bodys.cr_index + bodys.chunks_len;
-				while (i < size && (buffer[i] == '\r' || buffer[i] == '\n'))
-					i++;
-				j = 0;
-				while (i + j < size && buffer[i + j] != '\n' && buffer[i + j] != '\r')
-					j++;
-				if (j && buffer[i + j] == '\r')
-				{
-					hex = buffer.substr(i , j);
-					bodys.chunks_len = hexToDec(hex);
-					if (bodys.chunks_len == 0)
-					{
-						return (1);
-					}
-					else
-					{
-						i = i + j;
-						while (i < size && (buffer[i] == '\r' || buffer[i] == '\n'))
-							i++;
-						bodys.cr_index = i;
-					}
-				}
-				else
-					break;
-		}
-		else
-			break;*/
-		if (buffer.size() >= 5 && (buffer.substr(buffer.size() - 5, 5) == "0\r\n\r\n"))
-		{
-			return (1);
-		}
-	//}
+		return (1);
+	}
 	return (0);
 }
 
@@ -319,7 +227,7 @@ int	endOfTheRequest(std::string buffer, struct body& bodys)
 	int find;
 	int i;
 	int len;
-	
+
 	if (bodys.get_body_type == 0)
 		getBodyType(buffer, bodys);
 	if (bodys.boundary_flag)
@@ -338,9 +246,7 @@ int	endOfTheRequest(std::string buffer, struct body& bodys)
 	}
 	if (bodys.content_length_flag)
 	{
-		//find = buffer.find("\r\n\r\n") + 4;
-		//if (buffer.size() >= (bodys.content_len + find))
-		if (buffer.size() >= (bodys.content_len + bodys.cr_index))
+		if (bodys.rd_bytes >= (bodys.content_len + bodys.cr_index))
 		{
 			return (0);
 		}

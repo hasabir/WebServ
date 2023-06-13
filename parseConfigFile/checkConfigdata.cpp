@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/28 21:03:29 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/05/29 18:23:43 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/06/08 19:18:52 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,8 +71,8 @@ int	valideListenDirective(std::vector<std::string>& listen, std::vector<std::str
 	{
 		if (validePort(listen[i]))   
 		{
-			if (DuplicatePort(listen[i], port) == 1)
-				return (1);
+			//if (DuplicatePort(listen[i], port) == 1)
+			//	return (1);
 			port.push_back(listen[i]);
 			i++;
 		}
@@ -162,7 +162,7 @@ int	checkConfigData(struct webserv& web)
 		else 
 			i++;
 	}
-	//? displayServerFile(web.config);
+	//displayServerFile(web.config);
 	return (0);
 }
 

@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/01 19:45:42 by hasabir           #+#    #+#             */
-/*   Updated: 2023/06/07 20:46:09 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/06/13 15:13:52 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ unsigned long stringToInt(std::string str)
 			n *= 1000000;
 		else if (*iter == 'k')
 			n *= 1000;
+		//! else if (G)
 	}
 	return n;
 }
@@ -48,6 +49,14 @@ std::string replaceLocation(std::string uri, std::string pattern, std::string ro
 	location.replace(position, pattern.length(), root);
 	return location;
 }
+std::string host(std::string host)
+{
+	if (host.empty())
+		return "0.0.0.0";
+	if (host == "localhost")
+		return "127.0.0.1";
+	return host;
+}
 
 int search(struct client &clt, struct webserv &web, int i)
 {
@@ -66,6 +75,26 @@ int search(struct client &clt, struct webserv &web, int i)
 	return -1;
 }
 
+std::string getStatusMessage(int statusCode)
+{
+	std::map<int, std::string> map;
+	
+	map[400] = "Bad Request\r\n";
+	map[403] = "Forbidden\r\n";
+	map[404] = "Not Found\r\n";
+	map[413] = "Content Too Large\r\n";
+	map[414] = "Request-URI Too Long\r\n";
+	map[501] = "Bad Request\r\n";
+	map[423] = "Request Entity Too Large\r\n";
+	map[405] = "Method Not Allowed\r\n";
+	map[302] = "Found\r\n";
+	map[301] = "Moved Permanently\r\n";
+	map[200] = "OK\r\n";
+	map[-302] = "Found\r\n";
+	map[0] = "OK\r\n";
+	return map[statusCode];
+}
+
 void fillMapContentTypes(std::map<std::string, std::string> &contentTypes)
 {
 	contentTypes[".html"] = "text/html";
@@ -82,4 +111,7 @@ void fillMapContentTypes(std::map<std::string, std::string> &contentTypes)
 	contentTypes[".gif"] = "image/gif";
 	contentTypes[".mp3"] = "audio/mpeg";
 	contentTypes[".mp4"] = "video/mp4";
+	contentTypes[".cpp"] = "text/x-c++src";
+	contentTypes[".c"] = "text/x-csrc";
+	contentTypes[".py"] = "text/x-python";
 }

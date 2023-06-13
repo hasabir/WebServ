@@ -6,12 +6,12 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/19 17:44:50 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/05/29 12:56:25 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/06/08 19:18:52 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../webserv.hpp"
-char directives[15][21] = {"listen", "host", "servername", "error_page", "client_max_body_size", "location"    , "allow", "root", "autoindex", "index", "upload", "upload_store", "cgi", "redirect", "script_filename"};
+char directives[14][21] = {"listen", "host", "servername", "error_page", "client_max_body_size", "location"    , "allow", "root", "autoindex", "index", "upload", "upload_store", "cgi", "redirect"};
 
 std::string	getDirectiveKey(std::string line)
 {
@@ -184,9 +184,7 @@ void	fillServerBlock(struct webserv& web, std::vector<std::string> serv)
 				if (key == "root")
 					loc.root.assign(value);
 				if (key == "cgi")
-					loc.cgi_ext.assign(value);
-				if (key == "script_filename")
-					loc.cgi_path.assign(value);
+					getPairValue(loc.cgi, value);
 				if (key == "upload")
 					loc.upload.assign(value);
 				if (key == "upload_store")
@@ -243,7 +241,7 @@ void	getConfigData(struct webserv& web, std::vector<std::string> file)
 					key = getDirectiveKey(file[i]);
 					flag = 0;
 					j = 0;
-					while (j < 15)
+					while (j < 14)
 					{
 						if (key.compare(0, key.size(), directives[j]) == 0)
 							flag = 1;

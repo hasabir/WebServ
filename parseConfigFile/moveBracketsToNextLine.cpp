@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/20 12:46:10 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/05/29 12:56:27 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/06/08 19:18:52 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ void	moveBracketsToNextLine(std::vector<std::string>& file)
 			{
 				file.insert(it + i + 1, file[i].substr(find + 1, file[i].size() - find));
 				file[i].assign("}");
-			}	
+			}
 			else if (tab == 3)
 			{
 				file.insert(it + i + 1, "\t}");
@@ -80,7 +80,7 @@ void	moveBracketsToNextLine(std::vector<std::string>& file)
 				it = file.begin();
 				file.insert(it + i + 2, file[i].substr(find + 1, file[i].size() - find));
 				file[i].assign(file[i].substr(0, find));
-				
+
 			}
 			size = file.size();
 			it = file.begin();
@@ -122,8 +122,8 @@ int	isaBlockWithOpenBrackets(std::string& line)
 	return  (0);
 }
 
-//ckeck if close curly bracket is alone in a line 
-//return 0 alone 
+//ckeck if close curly bracket is alone in a line
+//return 0 alone
 //return 1 data before curly bracket
 //return 2 data after curly bracket
 //return 3 data before and after curly bracket
@@ -155,7 +155,7 @@ int	isDirectiveWithCloseBrackets(std::string& line)
 			flag = 3;
 		else
 			flag = 2;
-	}	
+	}
 	return (flag);
 }
 
