@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/16 14:04:07 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/06/13 17:12:08 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/06/14 14:29:01 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,10 +126,12 @@ void	handleConnection(struct webserv& web)
 		{
 			if (web.clients[i].request_is_ready == true)// * && web.clients[i].response_is_ready == true *//*)
 			{
-				std::cout << "hi\n";
 				sendResponse(web.clients[i], web, web.clients[i].response.statusCode);
 				if (web.clients[i].response.finishReading)
+				{
+					std::cout << "Connection Closed\n" << std::endl;
 					closeConnection(web, i);
+				}
 			}
 		}
 		i++;

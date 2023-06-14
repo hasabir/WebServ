@@ -6,7 +6,7 @@
 #    By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/16 14:11:30 by tel-bouh          #+#    #+#              #
-#    Updated: 2023/06/12 15:21:44 by hasabir          ###   ########.fr        #
+#    Updated: 2023/06/14 13:19:55 by hasabir          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,7 +29,7 @@ SRCS = 	main.cpp \
 		parseConfigFile/valides.cpp\
 		parseRequest/parsRequestHeader.cpp\
 		parseRequest/parseRequest.cpp parseRequest/utils.cpp\
-		response/deleteResponse.cpp\
+		response/deleteResponse.cpp response/ResponseUtils.cpp\
 		response/getResponse.cpp response/postResponse.cpp response/sendResponse.cpp\
 		client.cpp\
 
