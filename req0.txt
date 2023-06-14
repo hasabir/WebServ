@@ -1,8 +1,0 @@
-GET /srcs/hands-on-network-programming.pdf HTTP/1.1
-User-Agent: PostmanRuntime/7.25.0
-Accept: */*
-Postman-Token: 5a4f6ee5-c47e-4c1e-83f5-82cf4a9c6295
-Host: 0.0.0.0:8090
-Accept-Encoding: gzip, deflate, br
-Connection: keep-alive
-
