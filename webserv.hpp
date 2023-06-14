@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 20:01:49 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/06/13 16:02:01 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/06/14 12:09:36 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,6 +112,7 @@ class Response
 		int					nbrFrames;
 		unsigned long		fileSize;
 		unsigned long		len;
+		std::streampos		position;
 		std::string			responseData;
 		std::vector<char>	responseBody;
 

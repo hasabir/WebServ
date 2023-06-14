@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/02 16:04:39 by hasabir           #+#    #+#             */
-/*   Updated: 2023/06/13 17:13:42 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/06/14 12:12:16 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,8 @@ void getResponse(struct client &clt, int statusCode, std::string filePath)
 	clt.response.responseData += "Connection: close\r\nServer: webserver-c\r\n ";
 	clt.response.responseData += "Content-Type: " + getContentType(filePath) + "\r\n";
 	clt.response.responseData += "Content-Length:" + intToString(clt.response.len) +"\r\n\r\n";
+	clt.response.responseData.insert(clt.response.responseData.end(),
+		clt.response.responseBody.begin(), clt.response.responseBody.end());
 }
 
 void	readFile(std::string &filePath, int statusCode, struct client &clt)
@@ -65,6 +67,7 @@ void	readFile(std::string &filePath, int statusCode, struct client &clt)
 		file.seekg(0, std::ios::beg);
 		clt.response.nbrFrames = static_cast<unsigned long>(clt.response.fileSize) / 1024;
 		clt.response.len = clt.response.fileSize;
+		clt.response.position = file.tellg();
 	}
 	
 	if (clt.response.nbrFrames == 0)
@@ -73,14 +76,20 @@ void	readFile(std::string &filePath, int statusCode, struct client &clt)
 		sizeFrame = clt.response.fileSize;
 	}
 	else
+	{
 		clt.response.fileSize -= sizeFrame;
+		clt.response.nbrFrames--;
+	}
 	std::vector<char> buffer(sizeFrame);
+	file.seekg(clt.response.position);
+
+	std::cout << "\033[92mposition = " << clt.response.position << "\033[00m\n";
+	std::cout << "\033[92mframe size = " << sizeFrame << "\033[00m\n";
+
 	file.read(buffer.data(), sizeFrame);
-	clt.response.responseBody.insert(clt.response.responseBody.end(),
-			buffer.begin(), buffer.end());
+	clt.response.responseBody = buffer;
+	clt.response.position = file.tellg();
 	file.close();
-	clt.response.responseData.insert(clt.response.responseData.end(),
-		clt.response.responseBody.begin(), clt.response.responseBody.end());
 }
 
 std::string getContentType(std::string filePath)
@@ -125,11 +134,20 @@ void fillResponseHeader(struct client &clt, struct webserv &web, int statusCode)
 		filePath = "default";
 	if (statusCode == 200 || statusCode == -302)
 		filePath = clt.map_request["URI"];
+
 	if (!clt.response.header)
 		getResponse(clt, statusCode, filePath);
 	if (statusCode != 301 && statusCode != 302)
 		readFile(filePath, statusCode, clt);
-	if (send(clt.fd, clt.response.responseData.data(), clt.response.responseData.size(), 0) < 0)
+	if (!clt.response.header)
+		getResponse(clt, statusCode, filePath);
+	else
+		clt.response.responseData = clt.response.responseBody.data();
+	std::cout << "/------------------------------------------------------------/\n";
+	std::cout << clt.response.responseData << std::endl;
+	std::cout << "/------------------------------------------------------------/\n";
+	if (send(clt.fd, clt.response.responseData.data(),
+		clt.response.responseData.size(), 0) < 0)
 		std::cout << "ERROR: send\n";
 }
 
