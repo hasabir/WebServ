@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 20:01:49 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/06/14 13:19:02 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/06/15 21:24:58 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@
 # include <cctype>
 # include <sys/stat.h>
 # include <cstdio>
-
+#include <dirent.h>
 #include <algorithm>
 
 # define MAX_CONNECTION 355
@@ -108,16 +108,19 @@ class Response
 		bool				header;
 		bool				error;
 		bool				finishReading;
+		bool				autoindex;
 		int					statusCode;
 		int					nbrFrames;
+		unsigned long		sizeFrame;
 		unsigned long		fileSize;
 		unsigned long		len;
 		std::string			responseData;
-		std::string			responseBody;
 		std::string			filePath;
 		std::streampos		position;
+		std::vector<char>		responseBody;
 
-		Response():header(0), nbrFrames(-1), finishReading(0){};
+		Response():header(0), nbrFrames(-1)
+		, finishReading(0), autoindex(0), statusCode(0){};
 };
 
 
@@ -340,28 +343,41 @@ int 	initServer(struct webserv& web);
 
 /* ************************** utils.cpp ********************************************* */
 unsigned long	stringToInt(std::string str);
-int				search(struct client &clt, struct webserv &web, int i);
+std::vector<int>	search2(struct client &clt, struct webserv &web);
+int				search(struct client &clt, struct webserv &web);
 std::string		replaceLocation(std::string uri, std::string pattern, std::string root);
 std::string		intToString(int n);
 void			fillMapContentTypes(std::map<std::string, std::string> &contentTypes);
 std::string		host(std::string host);
 std::string		getStatusMessage(int statusCode);
+
 /* ************************** parseRequest ****************************************** */
 
 int				parseRequest(struct webserv& web, struct client& clt);
-void		fillRequestData(struct client& clt);
+void			fillRequestData(struct client& clt);
 int				isRequestWellFormed(struct client &clt, struct webserv &web);
 
 /* ************************* sendResponse ****************************************** */
 
-int send_404(struct client &clt) ;
-int sendResponse(struct client &clt, struct webserv &web, int statusCode);
+int				sendResponse(struct client &clt, struct webserv &web, int statusCode);
+std::string		readFileContent(std::string &filePath, int statusCode);
+void			getResponse(struct client &clt, int statusCode,
+					std::string &response, std::string responseContent, std::string filePath);
+void			getResponseHeader(struct client &clt, int statusCode, std::string filePath);
+/* ************************** responseUtils *************************************** */
 
-std::string readFileContent(std::string &filePath, int statusCode);
-std::string getContentType(std::string filePath);
-void getResponse(struct client &clt, int statusCode,
-	std::string &response, std::string responseContent, std::string filePath);
-std::string getFilePath(struct client& clt, struct webserv &web, int statusCode);
+std::string 	getFilePath(struct client& clt, struct webserv &web, int statusCode);
+std::string 	getContentType(std::string filePath);
+std::string 	decimalToHex(int decimalNumber);
+void			initData(struct client &clt, std::string filePath, std::ifstream &file);
+
+
+/* ************************** seneErrorResponse *********************************** */
+
+void	readeErrorFile(struct client &clt, int statusCode);
+void	fillErrorResponse(struct client &clt, struct webserv &web, int statusCode);
+void	getResponseHeaderError(struct client &clt, int statusCode);
+
 /**************************************************************************************/
 
 

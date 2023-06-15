@@ -6,13 +6,55 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/07 16:49:06 by hasabir           #+#    #+#             */
-/*   Updated: 2023/06/13 20:25:37 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/06/15 21:27:47 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../webserv.hpp"
 
-// int sendIndex()
+
+int autoindex(struct client& clt)
+{
+	std::ofstream autoindex((clt.map_request["URI"] + "/autoindex.html").c_str());
+	DIR* directory;
+	struct dirent* en;
+
+	clt.response.autoindex = true;
+	if (!autoindex)
+	{
+		std::cerr << "Failed to create autoindex.html" << std::endl;
+		return 404;
+	}
+
+	autoindex << "<html>\n"
+				<< "<head><title>Index of " << clt.map_request["URI"] << "</title></head>\n"
+				<< "<body>\n"
+				<< "<h1>Index of " << clt.map_request["URI"] << "</h1>\n"
+				<< "<hr>\n"
+				<< "<ul>\n";
+
+	directory = opendir(clt.map_request["URI"].c_str());
+	if (directory)
+	{
+		while ((en = readdir(directory)) != NULL)
+		{
+			autoindex << "<li>" << en->d_name << "</li>\n";
+		}
+		closedir(directory);
+	}
+
+	autoindex << "</ul>\n"
+				<< "<hr>\n"
+				<< "</body>\n"
+				<< "</html>\n";
+
+	autoindex.close();
+
+	clt.map_request["URI"] +=  "/autoindex.html";
+	return 200;
+}
+
+
 
 int	get(struct webserv& web, struct client& clt)
 {
@@ -23,7 +65,12 @@ int	get(struct webserv& web, struct client& clt)
 	{
 		if (clt.location >= 0
 			&& !web.config[clt.config].location[clt.location].redirect.empty())
+		{
+			std::cout << "status code = " << clt.response.statusCode << std::endl;
+			if (clt.response.statusCode)
+				return clt.response.statusCode;
 			return 302;
+		}
 		return 404;
 	} 
 	if (!S_ISDIR(pathStat.st_mode))
@@ -51,11 +98,10 @@ int	get(struct webserv& web, struct client& clt)
 	}
 	if (clt.location >= 0)
 	{
-		// std::cout << "auto index = " << web.config[clt.config].location[clt.location].autoindex << std::endl;
 		if (web.config[clt.config].location[clt.location].autoindex.empty() ||
 			web.config[clt.config].location[clt.location].autoindex == "off")
 			return 403;
 	}
-	//! auto index
+	return autoindex(clt);
 	return 0;
 }
