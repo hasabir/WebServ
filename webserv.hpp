@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
+/*   By: hp <hp@student.42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 20:01:49 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/06/15 21:24:58 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/06/27 23:45:32 by hp               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,14 @@
 # define WEBSERV_HPP
 
 # include <unistd.h>
-# include <string.h>
+# include <cstring>
 # include <sys/types.h>
 # include <sys/socket.h>
 # include <netdb.h>
 # include <sys/errno.h>
 # include <arpa/inet.h>
 # include <sys/select.h>
-# include <sys/event.h>
+// # include <sys/event.h>
 # include <sys/time.h>
 # include <fcntl.h>
 # include <cmath>
@@ -34,8 +34,9 @@
 # include <cctype>
 # include <sys/stat.h>
 # include <cstdio>
-#include <dirent.h>
-#include <algorithm>
+# include <dirent.h>
+# include <algorithm>
+# include <cstdlib>
 
 # define MAX_CONNECTION 355
 # define HOST "localhost"
@@ -43,6 +44,7 @@
 # define CONTINUE "HTTP/1.0 100-continue"
 # define CONFIGFILE	"./configFile/server.conf";
 # define MAXINT	100000
+# define CRLF "\r\n"
 
 
 struct body
@@ -102,55 +104,62 @@ struct uploadFiles
 	uploadFiles&	operator=(const uploadFiles& rhs);
 };
 
-class Response
+struct Response
 {
 	public:
 		bool				header;
 		bool				error;
 		bool				finishReading;
 		bool				autoindex;
+		bool				generateError;
+		bool				body;
 		int					statusCode;
 		int					nbrFrames;
 		unsigned long		sizeFrame;
 		unsigned long		fileSize;
 		unsigned long		len;
-		std::string			responseData;
 		std::string			filePath;
 		std::streampos		position;
-		std::vector<char>		responseBody;
+		std::vector<char>	responseBody;
+		std::vector<char>	responseData;
+		std::string			uri;
 
-		Response():header(0), nbrFrames(-1)
-		, finishReading(0), autoindex(0), statusCode(0){};
+		Response():header(0), nbrFrames(-1),
+		finishReading(0), autoindex(0),generateError(0),
+		body(0), statusCode(0){};
 };
 
-
+class CGI
+{
+	public:
+		std::map<std::string, std::string>	cgi_ENV;
+		std::map<std::string, std::string>	query;
+		std::vector<std::string> env;
+};
 struct client
 {
-	std::map<std::string, std::string> 					map_request;
-	// std::map<std::string, std::string>					map_response;
-	// std::string											response;
-	// int													statusCode;
+	std::map<std::string, std::string>	map_request;	
+	Response							response;
+	CGI									cgi;
 	
-	Response											response;
-	
-	int 												config;
-	int													location;
-	std::vector<std::pair<std::string, std::string> >	request;
-	// std::vector<std::pair<std::string, std::string> >	response;
-	bool						response_is_ready;
-	struct sockaddr_storage								addr;
-	socklen_t											len;
-	int													fd;
-	bool												request_is_ready;
-	struct body											bodys;
-	std::string											headers;
-	std::fstream										*file;			
-	std::string											file_name;
-	std::string											body_data;
-	int													nbr_of_reads;
-	int													post_flag;
-	std::vector<struct uploadFiles>						upload_files;
-	unsigned long										body_length;
+	int 								config;
+	int									location;
+	std::string							port;
+
+	bool								response_is_ready;
+	struct sockaddr_storage				addr;
+	socklen_t							len;
+	int									fd;
+	bool								request_is_ready;
+	struct body							bodys;
+	std::string							headers;
+	std::fstream						*file;			
+	std::string							file_name;
+	std::string							body_data;
+	int									nbr_of_reads;
+	int									post_flag;
+	std::vector<struct uploadFiles>		upload_files;
+	unsigned long						body_length;
 
 	client();
 	~client();
@@ -350,6 +359,7 @@ std::string		intToString(int n);
 void			fillMapContentTypes(std::map<std::string, std::string> &contentTypes);
 std::string		host(std::string host);
 std::string		getStatusMessage(int statusCode);
+int error(struct client &clt,int statusCode);
 
 /* ************************** parseRequest ****************************************** */
 
@@ -378,13 +388,19 @@ void	readeErrorFile(struct client &clt, int statusCode);
 void	fillErrorResponse(struct client &clt, struct webserv &web, int statusCode);
 void	getResponseHeaderError(struct client &clt, int statusCode);
 
+/* ************************** sendRedirecResponse ********************************* */
+
+void	fillRedirectResponse(struct client &clt, struct webserv &web, int statusCode);
+
+/* ************************** cgi ************************************************* */
+int cgi(struct webserv &web, struct client &clt);
+
 /**************************************************************************************/
 
 
 int		get(struct webserv& web, struct client& clt);
 void	post(struct webserv& web, struct client& clt);
 void	deleteResponse(struct webserv& web, struct client& clt);
-
 
 
 #endif
