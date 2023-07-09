@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   getResponse.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hp <hp@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/07 16:49:06 by hasabir           #+#    #+#             */
-/*   Updated: 2023/06/29 12:50:30 by hp               ###   ########.fr       */
+/*   Updated: 2023/07/09 11:46:58 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ int	get(struct webserv& web, struct client& clt)
 	struct stat pathStat;
 	std::string path;
 	
-	std::cout << "URI = " << clt.map_request["URI"] << std::endl;
+	// std::cout << "URI = " << clt.map_request["URI"] << std::endl;
 
 	if (stat(clt.map_request["URI"].c_str(), &pathStat))
 	{

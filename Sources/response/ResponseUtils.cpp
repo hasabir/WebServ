@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ResponseUtils.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hp <hp@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/14 13:18:03 by hasabir           #+#    #+#             */
-/*   Updated: 2023/06/29 12:50:30 by hp               ###   ########.fr       */
+/*   Updated: 2023/07/09 15:43:24 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,8 +42,9 @@ void	initData(struct client &clt, std::string filePath, std::ifstream &file)
 		clt.response.fileSize = file.tellg();
 		file.seekg(0, std::ios::beg);
 		clt.response.len = clt.response.fileSize;
-		clt.response.sizeFrame = clt.response.len * 0.1;
+		clt.response.sizeFrame = 477933;
+		// clt.response.sizeFrame = clt.response.len * 0.1;
 		clt.response.nbrFrames = static_cast<unsigned long>(clt.response.fileSize)
 								/ clt.response.sizeFrame;
-		clt.response.position = file.tellg();
+		clt.response.position = 0;
 }

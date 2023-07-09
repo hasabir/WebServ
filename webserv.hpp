@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hp <hp@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 20:01:49 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/06/27 23:45:32 by hp               ###   ########.fr       */
+/*   Updated: 2023/07/09 15:39:39 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,9 +115,9 @@ struct Response
 		bool				body;
 		int					statusCode;
 		int					nbrFrames;
-		unsigned long		sizeFrame;
-		unsigned long		fileSize;
-		unsigned long		len;
+		long				sizeFrame;
+		long				fileSize;
+		long				len;
 		std::string			filePath;
 		std::streampos		position;
 		std::vector<char>	responseBody;

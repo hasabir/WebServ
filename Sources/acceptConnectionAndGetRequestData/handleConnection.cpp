@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   handleConnection.cpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hp <hp@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/16 14:04:07 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/06/30 14:37:31 by hp               ###   ########.fr       */
+/*   Updated: 2023/07/09 14:41:47 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,9 +124,10 @@ void	handleConnection(struct webserv& web)
 		i++;
 	}
 	i = 0;
-	size = web.clients.size();	
+	size = web.clients.size();
 	while (i < size)
 	{
+		// std::cout << "client = " << i << std::endl;
 		if (FD_ISSET(web.clients[i].fd, &web.tmp_write) )
 		{
 			if (web.clients[i].request_is_ready == true)// * && web.clients[i].response_is_ready == true *//*)

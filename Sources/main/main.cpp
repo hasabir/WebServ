@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hp <hp@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 19:47:52 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/06/29 13:07:22 by hp               ###   ########.fr       */
+/*   Updated: 2023/07/09 12:42:16 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,12 @@ int	main(int ac, char **av)
 
 		}
 		else
+		{
+			
 			handleConnection(web);
+			
+
+		}
 		if (web.req_nbr == MAXINT)
 			web.req_nbr = 0;
 	}	
