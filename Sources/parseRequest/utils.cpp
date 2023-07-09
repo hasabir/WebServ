@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hp <hp@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/01 19:45:42 by hasabir           #+#    #+#             */
-/*   Updated: 2023/06/30 13:32:50 by hp               ###   ########.fr       */
+/*   Updated: 2023/07/09 16:33:04 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ int search(struct client &clt, struct webserv &web)
 	}
 	vec_iter = std::max_element(vec.begin(), vec.end());
 	for (j = 0; j < vec.size() && vec[j] != *vec_iter; j++);
-	std::cout << "max = " << *vec_iter << " => " << j << std::endl;
+	// std::cout << "max = " << *vec_iter << " => " << j << std::endl;
 	if (!j && !vec[j])
 		return -1;
 	return j;

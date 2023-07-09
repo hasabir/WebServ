@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/02 16:04:39 by hasabir           #+#    #+#             */
-/*   Updated: 2023/07/09 15:26:03 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/09 17:49:59 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void getResponseHeader(struct client &clt, int statusCode, std::string filePath)
 	response += "Content-Type: " + getContentType(filePath) + "\r\n";
 	response += "Content-Length: " + intToString(clt.response.len) +"\r\n\r\n";
 	clt.response.responseData.assign(response.begin(), response.end());
-	std::cout << clt.response.responseData.data() << std::endl;
+	// std::cout << clt.response.responseData.data() << std::endl;
 }
 
 void	readFile(int statusCode, struct client &clt, std::string filePath)
@@ -38,6 +38,7 @@ void	readFile(int statusCode, struct client &clt, std::string filePath)
 		error(clt, 500);
 		return ;
 	}
+	
 	if (clt.response.nbrFrames < 0)
 	{
 		initData(clt, filePath, file);
@@ -45,7 +46,11 @@ void	readFile(int statusCode, struct client &clt, std::string filePath)
 		return;
 	}
 	
-	std::cout << "\033[93mnbr frames = " << clt.response.nbrFrames << std::endl;; 
+	std::cout << "\033[93mlen file = " << clt.response.len 
+		<< " | position = " <<clt.response.position
+		<< " | fileSize = " << clt.response.fileSize << "\033[00m" << std::endl;
+	std::cout << "\033[92mlen - position = " << clt.response.len - clt.response.position << "\033[00m\n";
+	
 	if (clt.response.nbrFrames == 0)
 	{
 		clt.response.finishReading = true;
@@ -56,12 +61,13 @@ void	readFile(int statusCode, struct client &clt, std::string filePath)
 		clt.response.fileSize -= clt.response.sizeFrame;
 		clt.response.nbrFrames--;
 	}
-	std::cout << "Frame -> " << clt.response.sizeFrame  << "\033[00m" << std::endl;
 	std::vector<char> buffer(clt.response.sizeFrame);
 
 	file.seekg(clt.response.position);
+	// std::cout << "\033[93mnbr frames = " << clt.response.nbrFrames 
+	// << " | position = " <<clt.response.position << "\033[00m" << std::endl;
 	file.read(buffer.data(), clt.response.sizeFrame);
-	// clt.response.position = file.tellg();
+	clt.response.position = file.tellg();
 	clt.response.responseData.clear();
 	clt.response.responseData.assign(buffer.begin(), buffer.end());
 	file.close();
@@ -86,31 +92,30 @@ int sendResponse(struct client &clt, struct webserv &web, int statusCode)
 		fillRedirectResponse(clt, web, statusCode);
 	else
 		fillResponse(clt, web, statusCode);
-	try
+	// std::cout << clt.response.responseData.data() << std::endl;//!
+	long bitSent =
+		send(clt.fd, clt.response.responseData.data(), clt.response.responseData.size(), 0);
+	std::cout << "bitRead  = " << bitSent << std::endl;
+	std::cout << "-------------------------\n";
+	if(bitSent < 0)
 	{
-		long bitRead =
-			send(clt.fd, clt.response.responseData.data(), clt.response.responseData.size(), 0);
-		std::cout << "bitRead  = " << bitRead << std::endl;
-		std::cout << "-------------------------\n";
-		if(bitRead < 0)
-			throw std::runtime_error("Send operation failed");
-		else
-		{
-			if (clt.response.header)
-			{
-				std::cout << "***********\n";
-				clt.response.position += bitRead;
-			}
-			else
-				clt.response.header = true;
-		}
-	std::cout << "position = "<< clt.response.position << std::endl; 
+		std::cerr << "error send\n";
+		// error(clt, 500);
+		// throw std::runtime_error("Send operation failed");
 	}
-	catch (const std::exception& e) 
+	else
 	{
-        std::cerr << "Error occurred: " << e.what() << std::endl;
-    }
+		if (clt.response.header)
+			clt.response.position += bitSent;
+		else
+			clt.response.header = true;
+	}
+	// std::cout << "position = "<< clt.response.position << std::endl; 
 	if (clt.response.finishReading)
+	{
+		std::cout << "file len = " << clt.response.len << " | position = " << clt.response.position << std::endl;
 		clt.response.position = 0;
+	}
+	// std::cout << "*********************************************\n";
 	return statusCode;
 }
