@@ -16,12 +16,12 @@ SOURCES := $(foreach dir,$(SOURCESDIRS),$(wildcard $(dir)/*.cpp))
 OBJS = ${SOURCES:.cpp=.o}
 
 CC = c++
-CPPFLAGS = -std=c++11
+CPPFLAGS = -std=c++98
 RM = rm -rf
 
 all: $(NAME)
 
-%.o: %.cpp 
+%.o: %.cpp  webserv.hpp
 	@$(CC) $(CPPFLAGS) -c $< -o $@
 
 $(NAME): $(OBJS)

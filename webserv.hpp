@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hp <hp@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 20:01:49 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/07/10 13:09:21 by hp               ###   ########.fr       */
+/*   Updated: 2023/07/10 19:47:30 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,17 @@
 # define CONFIGFILE	"./configFile/server.conf";
 # define MAXINT	100000
 # define CRLF "\r\n"
+
+
+#define GRAY "\033[90m"
+#define RED "\033[91m"
+#define GREEN "\033[92m"
+#define YELLOW "\033[93m"
+#define BLUE "\033[94m"
+#define PURPLE "\033[95m"
+#define SKY "\033[96m"
+
+#define END "\033[00m"
 
 
 struct body
@@ -116,12 +127,12 @@ struct Response
 		bool				generateError;
 		bool				body;
 		int					statusCode;
-		int					nbrFrames;
+		int					nbrFrames;//!
 		long				sizeFrame;
 		long				fileSize;
 		long				len;
 		std::string			filePath;
-		std::streampos		position;
+		long				position;
 		std::vector<char>	responseBody;
 		std::vector<char>	responseData;
 		std::string			uri;
@@ -403,6 +414,12 @@ int cgi(struct webserv &web, struct client &clt);
 int		get(struct webserv& web, struct client& clt);
 void	post(struct webserv& web, struct client& clt);
 void	deleteResponse(struct webserv& web, struct client& clt);
+
+/************************************************************************************** */
+
+
+template <typename T>
+T min(T a, T b){return (a < b) ? a : b;}
 
 
 #endif

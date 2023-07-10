@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   recieveRequest.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hp <hp@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/15 11:40:12 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/06/29 12:50:30 by hp               ###   ########.fr       */
+/*   Updated: 2023/07/10 20:11:57 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,11 @@ void	receiveRequest(struct webserv& web, struct client& clt, int clt_i, int& fla
 
 	memset(line, 0, 100000);
 	n_byte_readed = 0;
-	n_byte_readed = recv(clt.fd, line, 99999, 0);
+	// n_byte_readed = recv(clt.fd, line, 99999, 0);
+	if ((n_byte_readed = recv(clt.fd, line, 99999, 0)) < 0)
+	{
+		throw std::runtime_error("----------------------- RECSEIV ");
+	}
 	line[n_byte_readed] = 0;
 	buff.assign("");
 	if (n_byte_readed < 0)

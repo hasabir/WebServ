@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/16 14:04:07 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/07/09 17:17:36 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/10 20:08:13 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,12 @@ void	closeConnection(struct webserv& web, int client_i)
 {
 	std::vector<client>::iterator it;
 
+	std::cout << RED << "Connection Closed\n" << END << std::endl;
 	it = web.clients.begin();
 	FD_CLR(web.clients[client_i].fd , &web.reads);
 	FD_CLR(web.clients[client_i].fd , &web.writes);
 	close(web.clients[client_i].fd);
+
 	if (!((web.clients[client_i].response.error
 		|| (!web.clients[client_i].map_request.empty()
 		&& web.clients[client_i].map_request["Method"] == "GET"))
@@ -31,6 +33,7 @@ void	closeConnection(struct webserv& web, int client_i)
 		if (std::remove(web.clients[client_i].map_request["URI"].c_str()))
 			std::cerr << "Failed to remove autoindex file\n";
 	}
+	
 	while (client_i < web.clients.size()
 		&& (*it).fd != web.clients[client_i].fd && it != web.clients.end())
 		it++;
@@ -124,28 +127,16 @@ void	handleConnection(struct webserv& web)
 		i++;
 	}
 	i = 0;
-	size = web.clients.size();
+		size = web.clients.size();
 	while (i < size)
 	{
-		// std::cout << "client = " << i << std::endl;
 		if (FD_ISSET(web.clients[i].fd, &web.tmp_write) )
 		{
 			if (web.clients[i].request_is_ready == true)// * && web.clients[i].response_is_ready == true *//*)
 			{
-				// try
-				// {
-					// std::cout << "******************************\n";
-					sendResponse(web.clients[i], web, web.clients[i].response.statusCode);
-					// std::cout << "|||||||||||||||||||||||\n";
-				// }
-				// catch (const std::exception& e) 
-				// {
-					// std::cerr << "Error occurred: " << e.what() << std::endl;
-					// continue;
-				// }
+				sendResponse(web.clients[i], web, web.clients[i].response.statusCode);
 				if (web.clients[i].response.finishReading || web.clients[i].response.error)
 				{
-					std::cout << "Connection Closed\n" << std::endl;
 					closeConnection(web, i);
 				}
 			}
@@ -153,3 +144,6 @@ void	handleConnection(struct webserv& web)
 		i++;
 	}
 }
+
+
+//TODO 
