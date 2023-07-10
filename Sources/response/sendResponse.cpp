@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   sendResponse.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
+/*   By: hp <hp@student.42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/02 16:04:39 by hasabir           #+#    #+#             */
-/*   Updated: 2023/07/09 17:49:59 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/10 13:11:40 by hp               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,22 +45,36 @@ void	readFile(int statusCode, struct client &clt, std::string filePath)
 		file.close();
 		return;
 	}
-	
+
 	std::cout << "\033[93mlen file = " << clt.response.len 
 		<< " | position = " <<clt.response.position
 		<< " | fileSize = " << clt.response.fileSize << "\033[00m" << std::endl;
-	std::cout << "\033[92mlen - position = " << clt.response.len - clt.response.position << "\033[00m\n";
 	
-	if (clt.response.nbrFrames == 0)
+	// if (clt.response.nbrFrames == 0)
+	// {
+	// 	clt.response.finishReading = true;
+	// 	clt.response.sizeFrame = clt.response.fileSize;
+	// }
+	if (clt.response.fileSize <= clt.response.sizeFrame)
 	{
+		std::cout << "\033[92m\nfile size (finale) = " << clt.response.fileSize << "\033[00m\n";
 		clt.response.finishReading = true;
 		clt.response.sizeFrame = clt.response.fileSize;
 	}
 	else
 	{
 		clt.response.fileSize -= clt.response.sizeFrame;
-		clt.response.nbrFrames--;
+		// clt.response.nbrFrames--;
 	}
+	
+	
+	// if (clt.response.position )
+	// {
+	// 	std::cout << "\033[92m\nfile size (finale) = " << clt.response.fileSize << "\033[00m\n";
+	// 	clt.response.finishReading = true;
+	// 	clt.response.sizeFrame = clt.response.fileSize;
+	// }
+	
 	std::vector<char> buffer(clt.response.sizeFrame);
 
 	file.seekg(clt.response.position);
@@ -92,11 +106,14 @@ int sendResponse(struct client &clt, struct webserv &web, int statusCode)
 		fillRedirectResponse(clt, web, statusCode);
 	else
 		fillResponse(clt, web, statusCode);
+		
 	// std::cout << clt.response.responseData.data() << std::endl;//!
+	
 	long bitSent =
 		send(clt.fd, clt.response.responseData.data(), clt.response.responseData.size(), 0);
-	std::cout << "bitRead  = " << bitSent << std::endl;
-	std::cout << "-------------------------\n";
+		
+	std::cout << "bitSent  = " << bitSent << std::endl;//!
+	// std::cout << "-------------------------\n";//!
 	if(bitSent < 0)
 	{
 		std::cerr << "error send\n";
@@ -106,7 +123,11 @@ int sendResponse(struct client &clt, struct webserv &web, int statusCode)
 	else
 	{
 		if (clt.response.header)
-			clt.response.position += bitSent;
+		{
+			std::cout << "position before = " << clt.response.position << std::endl;
+			clt.response.position = static_cast<std::streampos>(bitSent + clt.response.position);
+			std::cout << "position after = " << clt.response.position << std::endl;
+		}
 		else
 			clt.response.header = true;
 	}

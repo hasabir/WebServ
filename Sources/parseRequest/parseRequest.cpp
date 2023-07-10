@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parseRequest.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
+/*   By: hp <hp@student.42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/22 06:56:52 by hasabir           #+#    #+#             */
-/*   Updated: 2023/07/09 10:13:08 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/10 12:28:29 by hp               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,7 +152,7 @@ int parseRequestData(struct client &clt, struct webserv &web)
 
 int parseRequest(struct webserv &web, struct client &clt)
 {
-	std::cout << "\033[91m-----------------------------------------------------------\n";
+	// std::cout << "\033[91m--------------------------------------------------------\n";
 	clt.response_is_ready = true;
 	clt.config = -1;
 	clt.location = -1;
@@ -160,5 +160,6 @@ int parseRequest(struct webserv &web, struct client &clt)
 	fillRequestData(clt);
 
 	parseRequestData(clt, web);
+	//!displayServerFile(web.config);
 	return 0;
 }

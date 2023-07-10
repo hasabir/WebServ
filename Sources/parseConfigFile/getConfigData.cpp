@@ -6,7 +6,7 @@
 /*   By: hp <hp@student.42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/19 17:44:50 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/06/29 12:50:30 by hp               ###   ########.fr       */
+/*   Updated: 2023/07/10 12:24:31 by hp               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,7 +109,7 @@ void	getMultivalue(std::vector<std::string>& holder, std::string values)
 
 void	getPairValue(std::vector<std::pair<std::string, std::string> >& holder, std::string value)
 {
-	int i;
+	int i(0);
 	int j;
 	int size;
 	std::pair<std::string , std::string> pr;
