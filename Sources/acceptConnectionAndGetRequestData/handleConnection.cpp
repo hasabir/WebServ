@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/16 14:04:07 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/07/11 12:27:27 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/11 14:12:28 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,11 +22,11 @@ void	closeConnection(struct webserv& web, int client_i)
 	FD_CLR(web.clients[client_i].fd , &web.writes);
 	close(web.clients[client_i].fd);
 
-	if (!((web.clients[client_i].response.error
-		|| (!web.clients[client_i].map_request.empty()
-		&& web.clients[client_i].map_request["Method"] == "GET"))
-		&&!std::remove(web.clients[client_i].file_name.c_str())))
-		std::cerr << "req not file removed " <<  web.clients[client_i].file_name << std::endl;
+	// if (!((web.clients[client_i].response.error
+	// 	|| (!web.clients[client_i].map_request.empty()
+	// 	&& web.clients[client_i].map_request["Method"] == "GET"))
+	// 	&&!std::remove(web.clients[client_i].file_name.c_str())))
+	// 	std::cerr << "req not file removed " <<  web.clients[client_i].file_name << std::endl;
 	if (web.clients[client_i].response.autoindex
 		|| web.clients[client_i].response.generateError)
 	{

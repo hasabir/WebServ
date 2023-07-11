@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 20:01:49 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/07/10 19:47:30 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/11 14:16:19 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,6 +147,9 @@ class CGI
 	public:
 		std::map<std::string, std::string>	cgi_ENV;
 		std::map<std::string, std::string>	query;
+		std::string buffer;
+		std::string original_file_path;
+		std::string interpreter;
 		std::vector<std::string> env;
 };
 struct client
@@ -412,8 +415,8 @@ int cgi(struct webserv &web, struct client &clt);
 
 
 int		get(struct webserv& web, struct client& clt);
-void	post(struct webserv& web, struct client& clt);
-void	deleteResponse(struct webserv& web, struct client& clt);
+int		post(struct webserv& web, struct client& clt);
+int		deleteResponse(struct webserv& web, struct client& clt);
 
 /************************************************************************************** */
 
