@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/07 16:49:06 by hasabir           #+#    #+#             */
-/*   Updated: 2023/07/09 11:46:58 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/11 13:53:01 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,7 @@ int	get(struct webserv& web, struct client& clt)
 	
 	// std::cout << "URI = " << clt.map_request["URI"] << std::endl;
 
+	// std::cout << "T est 1" << std::endl;
 	if (stat(clt.map_request["URI"].c_str(), &pathStat))
 	{
 		if (clt.location >= 0
@@ -83,6 +84,7 @@ int	get(struct webserv& web, struct client& clt)
 		}
 		return error(clt, 404);
 	} 
+	// std::cout << "T est 2" << std::endl;
 	if (!S_ISDIR(pathStat.st_mode))
 	{
 		if (clt.location >= 0
@@ -100,12 +102,14 @@ int	get(struct webserv& web, struct client& clt)
 		}
 		return clt.response.statusCode = 200;
 	}
+	// std::cout << "T est 3" << std::endl;
 	if (*clt.map_request["URI"].rbegin() != '/')
 	{
 		clt.map_request["URI"] += "/";
 		clt.response.body = true;
 		clt.response.statusCode = 301;
 	}
+	// std::cout << "T est 4" << std::endl;
 	if (clt.location >= 0 && !web.config[clt.config].location[clt.location].index.empty())
 	{
 		path = clt.map_request["URI"] + web.config[clt.config].location[clt.location].index;
@@ -115,6 +119,7 @@ int	get(struct webserv& web, struct client& clt)
 	if (stat(path.c_str(), &pathStat))
 		path = clt.map_request["URI"] + "index.html";
 
+	// std::cout << "T est 5" << std::endl;
 	if (!stat(path.c_str(), &pathStat))
 	{
 		clt.map_request["URI"] = path;
@@ -122,12 +127,14 @@ int	get(struct webserv& web, struct client& clt)
 			clt.response.statusCode = 200;
 		return 0;
 	}
+	// std::cout << "T est 6" << std::endl;
 	if (clt.location >= 0)
 	{
 		if (web.config[clt.config].location[clt.location].autoindex.empty() ||
 			web.config[clt.config].location[clt.location].autoindex == "off")
 			return error(clt, 403);
 	}
+	// std::cout << "T est 7" << std::endl;
 	return autoindex(clt, web);
 	std::cout << "there is a problem \n";
 	return clt.response.statusCode = 500;

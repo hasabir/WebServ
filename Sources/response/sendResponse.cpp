@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/02 16:04:39 by hasabir           #+#    #+#             */
-/*   Updated: 2023/07/10 19:59:22 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/11 13:51:16 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,6 @@ void getResponseHeader(struct client &clt, int statusCode, std::string filePath)
 	response += "Content-Type: " + getContentType(filePath) + "\r\n";
 	response += "Content-Length: " + intToString(clt.response.len) +"\r\n\r\n";
 	clt.response.responseData.assign(response.begin(), response.end());
-	// std::string str(clt.response.responseData.begin(), clt.response.responseData.end());
-	// std::cout << str << std::endl;
 }
 
 void check(struct client &clt, std::ifstream &file, std::string filePath)
@@ -37,20 +35,21 @@ void check(struct client &clt, std::ifstream &file, std::string filePath)
 	}
 	if (clt.response.nbrFrames < 0)
 	{
+		std::cout << PURPLE << "INITTING DATA\n" << END;
 		initData(clt, filePath, file);
 		file.close();
 		throw std::exception();
 	}
 	if (clt.response.position == clt.response.fileSize)
 	{
-		// std::cout << "\033[92m\nfile size (finale) = " << clt.response.fileSize << "\033[00m\n";//!
+		std::cout << PURPLE << "FINISH READING\n" << END;
 		clt.response.finishReading = true;
 		file.close();
 		throw std::exception();
 	}
 	if (clt.response.position < 0)
 	{
-		std::cout << "position < 0\n";
+		std::cout << PURPLE << "POSITION < 0\n" << END;
 		throw std::exception();
 	}
 }
@@ -62,11 +61,7 @@ void	readFile(int statusCode, struct client &clt, std::string filePath)
 
 	file.open(filePath.c_str(), std::ios::binary);
 	try {check(clt, file, filePath);}
-	catch (std::exception &e)
-	{
-		// std::cout << "\033[95mException so i must go out\033[00m \n";//!
-		return ;
-	}
+	catch (std::exception &e){return ;}
 
 	// std::cout << "\033[93mFrame size = " << clt.response.sizeFrame 
 	// 	<< " | position = " <<clt.response.position
@@ -108,26 +103,27 @@ int sendResponse(struct client &clt, struct webserv &web, int statusCode)
 		fillResponse(clt, web, statusCode);
 	if (clt.response.finishReading)
 	{
-		// std::cout << "file len = " << clt.response.len << " | position = " << clt.response.position << std::endl;
+		std::cout << YELLOW <<  "file len = " << clt.response.len 
+				<< "| position = " << clt.response.position << END << std::endl;
 		clt.response.position = 0;
 		return statusCode;
 	}
 	try
 	{
-		// std::cout << "++++++++++++++++++++++++++++++++++++++\n";//!
 		std::string str(clt.response.responseData.begin(), clt.response.responseData.end());
-	// std::cout << str << std::endl;
-		if ((bitSent = send(clt.fd, str.c_str(), str.size(), 0)) < 0)
+		char	line[2];
+		int n_byte_readed = 0;
+	 	n_byte_readed = recv(clt.fd, line, 0, 0);
+		if (n_byte_readed >= 0 && (bitSent = send(clt.fd, str.c_str(), str.size(), 0)) <= 0)
 		{
 			std::cerr << "there is an error\n";
 			throw std::runtime_error("Send operation failed");
 		}
-		// std::cout << "************ I JUST SENT SOMETHING **************************\n";	//!
+		// std::cout << "Error code : " << bitSent << " " << n_byte_readed << std::endl; 
 	}
 	catch(std::exception &e)
 	{
 		std::cerr << e.what() << std::endl;
-		// return (-1);
 	}	
 	// std::cout << "bitSent  = " << bitSent << std::endl;//!
 	if (clt.response.header && bitSent > 0)

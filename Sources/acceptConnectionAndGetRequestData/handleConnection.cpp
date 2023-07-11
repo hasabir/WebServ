@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/16 14:04:07 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/07/10 20:08:13 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/11 12:27:27 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,11 +49,13 @@ void	handleConnection(struct webserv& web)
 	int				size;
 	int				k;
 	int				flag_fail;
+	// std::cout << "handle" << std::endl;
 	
 	size = web.servers.size();	
 	i = 0;
 	while (i < size)
 	{
+		
 		j = 0;
 		while (j < web.servers[i].socketFd.size())
 		{
@@ -62,6 +64,18 @@ void	handleConnection(struct webserv& web)
 					struct client 	newClient;
 					newClient.len = sizeof(newClient.addr);
 					newClient.fd = accept(web.servers[i].socketFd[j], (struct sockaddr *)&newClient.addr, &newClient.len);
+					std::cout << "ctl fd : " << newClient.fd << std::endl;
+					int flags = fcntl(newClient.fd, F_GETFL, 0);//!
+					//int status = fcntl(newClient.fd, F_SETFL, flags & O_NONBLOCK);
+					flags |= O_NONBLOCK;//!
+					int status = fcntl(newClient.fd, F_SETFL, flags);//!
+					status = fcntl(newClient.fd, F_GETFL, 0);
+					if (status & O_NONBLOCK)
+						std::cout << "client non blocking" << std::endl;
+					else
+						std::cout << "client is blocking" << std::endl;
+
+					//fcntl(newClient, F_SETFL, O_NONBLOCK);
 					if (newClient.fd < 0)
 					{
 						std::cerr << "Error : Fail connecting to client" << std::endl;
@@ -98,6 +112,7 @@ void	handleConnection(struct webserv& web)
 	i = 0;
 	while (i < size)
 	{
+		// std::cout << "in read" << std::endl;
 		if (FD_ISSET(web.clients[i].fd, &web.tmp_read))
 		{
 			flag_fail = 1;
@@ -130,11 +145,25 @@ void	handleConnection(struct webserv& web)
 		size = web.clients.size();
 	while (i < size)
 	{
+		// std::cout << "in write" << std::endl;
 		if (FD_ISSET(web.clients[i].fd, &web.tmp_write) )
 		{
 			if (web.clients[i].request_is_ready == true)// * && web.clients[i].response_is_ready == true *//*)
 			{
+				int n_byte_readed = 0;
+				char line[2];
+		        //n_byte_readed = send(clt.fd, "", 0, 0);
+		        n_byte_readed = recv(web.clients[i].fd, line, 0, 0);
+				// std::cout << "N read : " << n_byte_readed << std::endl;
+				if (n_byte_readed < 0)
+				{
+					// std::cout << "The connection is closed " << std::endl;
+					closeConnection(web, i);
+					return ;
+				}
+				// std::cout << "Before " << std::endl;
 				sendResponse(web.clients[i], web, web.clients[i].response.statusCode);
+				// std::cout << "After " << std::endl;
 				if (web.clients[i].response.finishReading || web.clients[i].response.error)
 				{
 					closeConnection(web, i);
@@ -143,6 +172,7 @@ void	handleConnection(struct webserv& web)
 		}
 		i++;
 	}
+	// std::cout << "Done " << std::endl;
 }
 
 
