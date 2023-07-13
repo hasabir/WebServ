@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/02 16:04:39 by hasabir           #+#    #+#             */
-/*   Updated: 2023/07/11 13:51:16 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/13 17:57:03 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,11 @@ int sendResponse(struct client &clt, struct webserv &web, int statusCode)
 	else if (!statusCode || (statusCode >= 300 && !clt.response.body))
 		fillRedirectResponse(clt, web, statusCode);
 	else
+	{
+		// std::cout << "++++++++++++++++++++++++++++\n";
 		fillResponse(clt, web, statusCode);
+		// std::cout << "||||||||||||||||||||||||||||\n";
+	}
 	if (clt.response.finishReading)
 	{
 		std::cout << YELLOW <<  "file len = " << clt.response.len 

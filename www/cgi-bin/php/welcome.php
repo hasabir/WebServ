@@ -1,6 +1,3 @@
-X-Powered-By: PHP/8.2.1
-Content-type: text/html; charset=UTF-8
-
 
 <!DOCTYPE html>
 <html>
@@ -11,7 +8,9 @@ Content-type: text/html; charset=UTF-8
 
 <body>
 	<h1><center> Hello
-	hajar	
+	<?php
+	   echo $_GET['first_name'] ;
+	?>	
 	</center> </h1>
 </body>
 </html>

@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 20:01:49 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/07/13 14:11:13 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/13 18:14:04 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,6 +146,8 @@ class CGI
 {
 	public:
 		std::map<std::string, std::string>	cgi_ENV;
+		std::string extention;
+		std::string interpreter;
 		std::vector<std::string> env;
 };
 struct client
@@ -407,7 +409,7 @@ void	fillRedirectResponse(struct client &clt, struct webserv &web, int statusCod
 /* ************************** cgi ************************************************* */
 
 int 	cgi(struct webserv &web, struct client &clt);
-int 	isCgiConfigured(struct client &clt, struct webserv &web, std::string &extention, std::string filePath);
+int 	isCgiConfigured(struct client &clt, struct webserv &web,  std::string filePath);
 void	fill_CGI_ENV(struct client &clt, struct webserv &web);
 int 	isCgi(struct client& clt, struct webserv &web);
 

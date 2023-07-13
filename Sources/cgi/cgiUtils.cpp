@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/13 12:00:54 by hasabir           #+#    #+#             */
-/*   Updated: 2023/07/13 12:45:20 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/13 18:11:08 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,22 +30,21 @@ void	fill_CGI_ENV(struct client &clt, struct webserv &web)
 	}
 }
 
-int isCgiConfigured(struct client &clt, struct webserv &web, std::string &extention, std::string filePath)
+int isCgiConfigured(struct client &clt, struct webserv &web,  std::string filePath)
 {
 	std::vector<std::pair<std::string, std::string> >::iterator iter;
 	
 	int	index = filePath.find_last_of('.');
 	if (index == std::string::npos)
 		return 0;
-	extention = filePath.substr(index, filePath.size());
+	clt.cgi.extention = filePath.substr(index, filePath.size());
 	for (iter = web.config[clt.config].location[clt.location].cgi.begin();
 		iter != web.config[clt.config].location[clt.location].cgi.end()
-		&& iter->first != extention;
+		&& iter->first != clt.cgi.extention;
 		iter++);
 	if (iter == web.config[clt.config].location[clt.location].cgi.end())
-	{
 		return 0;
-	}
+	clt.cgi.interpreter = iter->second;
 	return 1;
 }
 

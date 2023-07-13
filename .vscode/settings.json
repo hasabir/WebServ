@@ -70,5 +70,6 @@
 	},
 	"cSpell.words": [
 		"webserv"
-	]
+	],
+	"C_Cpp.errorSquiggles": "disabled"
 }
