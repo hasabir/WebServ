@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/16 14:04:07 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/07/11 14:12:28 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/13 09:17:22 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ void	closeConnection(struct webserv& web, int client_i)
 {
 	std::vector<client>::iterator it;
 
-	std::cout << RED << "Connection Closed\n" << END << std::endl;
+	std::cout << RED << "-----------------------------\nConnection Closed\n" << END << std::endl;
 	it = web.clients.begin();
 	FD_CLR(web.clients[client_i].fd , &web.reads);
 	FD_CLR(web.clients[client_i].fd , &web.writes);
@@ -64,16 +64,12 @@ void	handleConnection(struct webserv& web)
 					struct client 	newClient;
 					newClient.len = sizeof(newClient.addr);
 					newClient.fd = accept(web.servers[i].socketFd[j], (struct sockaddr *)&newClient.addr, &newClient.len);
-					std::cout << "ctl fd : " << newClient.fd << std::endl;
+					// std::cout << "ctl fd : " << newClient.fd << std::endl;
 					int flags = fcntl(newClient.fd, F_GETFL, 0);//!
 					//int status = fcntl(newClient.fd, F_SETFL, flags & O_NONBLOCK);
 					flags |= O_NONBLOCK;//!
 					int status = fcntl(newClient.fd, F_SETFL, flags);//!
 					status = fcntl(newClient.fd, F_GETFL, 0);
-					if (status & O_NONBLOCK)
-						std::cout << "client non blocking" << std::endl;
-					else
-						std::cout << "client is blocking" << std::endl;
 
 					//fcntl(newClient, F_SETFL, O_NONBLOCK);
 					if (newClient.fd < 0)

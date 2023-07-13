@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsRequestHeader.cpp                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hp <hp@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/01 19:50:33 by hasabir           #+#    #+#             */
-/*   Updated: 2023/06/29 12:50:30 by hp               ###   ########.fr       */
+/*   Updated: 2023/07/13 15:36:50 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ void	fillRequestData(struct client& clt)
 		value.erase(0, 1);
 		clt.map_request[key] = value;
 	}
+	clt.file->close();
 	// std::map<std::string, std::string>::iterator iter;
 	// int i = 0;
 	// for (iter = clt.map_request.begin(); iter != clt.map_request.end();i++, iter++) {

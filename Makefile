@@ -27,6 +27,7 @@ all: $(NAME)
 $(NAME): $(OBJS)
 	@$(CC) $(OBJS) -o $(NAME)
 	@echo "\033[92m|  Compilation Done  |\033[00m"
+# @rm req*
 
 clean:
 	@$(RM) ${OBJS}

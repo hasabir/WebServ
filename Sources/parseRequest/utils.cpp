@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/01 19:45:42 by hasabir           #+#    #+#             */
-/*   Updated: 2023/07/09 16:33:04 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/13 12:05:32 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ std::string getStatusMessage(int statusCode)
 	map[404] = "Not Found\r\n";
 	map[413] = "Content Too Large\r\n";
 	map[414] = "Request-URI Too Long\r\n";
-	map[501] = "Bad Request\r\n";
+	map[501] = "Not Implemented\r\n";
 	map[423] = "Request Entity Too Large\r\n";
 	map[405] = "Method Not Allowed\r\n";
 	map[302] = "Found\r\n";
@@ -130,4 +130,5 @@ void fillMapContentTypes(std::map<std::string, std::string> &contentTypes)
 	contentTypes[".cpp"] = "text/x-c++src";
 	contentTypes[".c"] = "text/x-csrc";
 	contentTypes[".py"] = "text/x-python";
+	contentTypes[".sh"] = "text/plain";
 }

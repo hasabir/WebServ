@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 20:01:49 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/07/11 14:16:19 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/13 14:11:13 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,10 +146,6 @@ class CGI
 {
 	public:
 		std::map<std::string, std::string>	cgi_ENV;
-		std::map<std::string, std::string>	query;
-		std::string buffer;
-		std::string original_file_path;
-		std::string interpreter;
 		std::vector<std::string> env;
 };
 struct client
@@ -363,7 +359,7 @@ void	activeSocket(struct webserv& web);
 // fun  name :
 int 	initServer(struct webserv& web);
 
-/*     ***********************************************     */
+//! *********************************************************************************************
 
 
 /* ************************** utils.cpp ********************************************* */
@@ -409,7 +405,12 @@ void	getResponseHeaderError(struct client &clt, int statusCode);
 void	fillRedirectResponse(struct client &clt, struct webserv &web, int statusCode);
 
 /* ************************** cgi ************************************************* */
-int cgi(struct webserv &web, struct client &clt);
+
+int 	cgi(struct webserv &web, struct client &clt);
+int 	isCgiConfigured(struct client &clt, struct webserv &web, std::string &extention, std::string filePath);
+void	fill_CGI_ENV(struct client &clt, struct webserv &web);
+int 	isCgi(struct client& clt, struct webserv &web);
+
 
 /**************************************************************************************/
 

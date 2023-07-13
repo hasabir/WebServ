@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   sendErrorResponse.cpp                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hp <hp@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/15 12:01:11 by hasabir           #+#    #+#             */
-/*   Updated: 2023/07/10 12:09:16 by hp               ###   ########.fr       */
+/*   Updated: 2023/07/13 09:12:25 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 std::string	generateErrorFile(struct client &clt, struct webserv &web, int statusCode)
 {
-	// std::cout << "generating error file path\n";
+	std::cout << RED << "generating error file path\n" << END;
 	std::string filePath("www/error/generated_"
 					+ intToString(statusCode) + ".html");
 	std::ofstream  errorFile(filePath);
