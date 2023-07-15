@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/01 19:50:33 by hasabir           #+#    #+#             */
-/*   Updated: 2023/07/13 15:36:50 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/15 12:46:04 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,6 @@ std::string	getRequestLine(std::string line, std::map<std::string, std::string> 
 void	fillRequestData(struct client& clt)
 {
 	std::string line, key, value, requestLine;
-	// std::cout << "clt.file_name = " <<  clt.file_name << std::endl;
 	clt.file->open(clt.file_name.c_str(), std::ios::in);
 	if (!clt.file->is_open())
 	{
@@ -43,7 +42,6 @@ void	fillRequestData(struct client& clt)
 		return ;
 	}
 	std::getline(*clt.file, line);
-	// std::cout << "line = " << line << std::endl;
 	getRequestLine(line, clt.map_request);
 	clt.response.uri = clt.map_request["URI"];
 	while (getline(*clt.file, line))

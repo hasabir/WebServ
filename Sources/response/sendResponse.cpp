@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/02 16:04:39 by hasabir           #+#    #+#             */
-/*   Updated: 2023/07/13 17:57:03 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/15 12:46:16 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,21 +35,21 @@ void check(struct client &clt, std::ifstream &file, std::string filePath)
 	}
 	if (clt.response.nbrFrames < 0)
 	{
-		std::cout << PURPLE << "INITTING DATA\n" << END;
+		// std::cout << PURPLE << "INITTING DATA\n" << END;
 		initData(clt, filePath, file);
 		file.close();
 		throw std::exception();
 	}
 	if (clt.response.position == clt.response.fileSize)
 	{
-		std::cout << PURPLE << "FINISH READING\n" << END;
+		// std::cout << PURPLE << "FINISH READING\n" << END;
 		clt.response.finishReading = true;
 		file.close();
 		throw std::exception();
 	}
 	if (clt.response.position < 0)
 	{
-		std::cout << PURPLE << "POSITION < 0\n" << END;
+		// std::cout << PURPLE << "POSITION < 0\n" << END;
 		throw std::exception();
 	}
 }
@@ -107,8 +107,8 @@ int sendResponse(struct client &clt, struct webserv &web, int statusCode)
 	}
 	if (clt.response.finishReading)
 	{
-		std::cout << YELLOW <<  "file len = " << clt.response.len 
-				<< "| position = " << clt.response.position << END << std::endl;
+		// std::cout << YELLOW <<  "file len = " << clt.response.len 
+		// 		<< "| position = " << clt.response.position << END << std::endl;
 		clt.response.position = 0;
 		return statusCode;
 	}
@@ -116,9 +116,15 @@ int sendResponse(struct client &clt, struct webserv &web, int statusCode)
 	{
 		std::string str(clt.response.responseData.begin(), clt.response.responseData.end());
 		char	line[2];
-		int n_byte_readed = 0;
-	 	n_byte_readed = recv(clt.fd, line, 0, 0);
-		if (n_byte_readed >= 0 && (bitSent = send(clt.fd, str.c_str(), str.size(), 0)) <= 0)
+		int n_byte_read = 0;
+	 	n_byte_read = recv(clt.fd, line, 0, MSG_PEEK);
+		if (n_byte_read < 0)
+		{
+			clt.response.error = true;
+			return 0;
+		}
+			
+		if ((bitSent = send(clt.fd, str.c_str(), str.size(), 0)) <= 0)
 		{
 			std::cerr << "there is an error\n";
 			throw std::runtime_error("Send operation failed");

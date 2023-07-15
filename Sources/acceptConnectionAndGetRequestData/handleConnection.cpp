@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/16 14:04:07 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/07/13 19:28:25 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/15 07:00:58 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,12 +149,13 @@ void	handleConnection(struct webserv& web)
 				int n_byte_readed = 0;
 				char line[2];
 		        //n_byte_readed = send(clt.fd, "", 0, 0);
-		        n_byte_readed = recv(web.clients[i].fd, line, 0, 0);
+		        n_byte_readed = recv(web.clients[i].fd, line, 0, MSG_PEEK);
 				// std::cout << "N read : " << n_byte_readed << std::endl;
 				if (n_byte_readed < 0)
 				{
 					// std::cout << "The connection is closed " << std::endl;
 					closeConnection(web, i);
+					std::cout << PURPLE << "--------------- 1 --------------- handleConnection ----------- \n" << END;
 					return ;
 				}
 				// std::cout << "Before " << std::endl;

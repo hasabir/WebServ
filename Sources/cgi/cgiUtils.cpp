@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/13 12:00:54 by hasabir           #+#    #+#             */
-/*   Updated: 2023/07/13 18:11:08 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/15 10:33:36 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	fill_CGI_ENV(struct client &clt, struct webserv &web)
 {
-	std::cout << "query string = " << clt.map_request["QUERY_STRING"] << std::endl;
+	// std::cout << "query string = " << clt.map_request["QUERY_STRING"] << std::endl;
 	clt.cgi.env.push_back("QUERY_STRING=" + clt.map_request["QUERY_STRING"]);
 	clt.cgi.env.push_back(std::string("REMOTE_ADDR=" + web.config[clt.config].host));
 	clt.cgi.env.push_back(std::string("REQUEST_METHOD=GET"));

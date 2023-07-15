@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/01 19:45:42 by hasabir           #+#    #+#             */
-/*   Updated: 2023/07/13 12:05:32 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/15 11:40:24 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,7 +121,8 @@ void fillMapContentTypes(std::map<std::string, std::string> &contentTypes)
 	contentTypes[".xml"] = "application/xml";
 	contentTypes[".pdf"] = "application/pdf";
 	contentTypes[".zip"] = "application/zip";
-	contentTypes[".jpeg"] = contentTypes["jpg"] = "image/jpeg";
+	contentTypes[".jpeg"] = "image/jpeg"; 
+	contentTypes[".jpg"] = "image/jpeg";
 	contentTypes[".png"] = "image/png";
 	contentTypes[".gif"] = "image/gif";
 	contentTypes[".mp3"] = "audio/mpeg";

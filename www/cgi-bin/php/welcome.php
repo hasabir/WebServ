@@ -9,7 +9,11 @@
 <body>
 	<h1><center> Hello
 	<?php
-	   echo $_GET['first_name'] ;
+	if (isset($_GET['first_name']))
+	   	echo $_GET['first_name'];
+	echo ' ';
+	if (isset($_GET['last_name']))
+		echo $_GET['last_name'];
 	?>	
 	</center> </h1>
 </body>

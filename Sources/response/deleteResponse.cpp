@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/07 16:47:18 by hasabir           #+#    #+#             */
-/*   Updated: 2023/07/11 14:11:33 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/15 10:34:14 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,7 @@ int	deleteResponse(struct webserv& web, struct client& clt)
 	struct stat pathStat;
 	std::string path;
 	
-	std::cout << "URI = " << clt.map_request["URI"] << std::endl;
+	// std::cout << "URI = " << clt.map_request["URI"] << std::endl;
 
 	if (stat(clt.map_request["URI"].c_str(), &pathStat) != 0)
 	{

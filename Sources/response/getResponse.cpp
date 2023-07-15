@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/07 16:49:06 by hasabir           #+#    #+#             */
-/*   Updated: 2023/07/13 13:18:33 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/15 10:34:17 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ int	get(struct webserv& web, struct client& clt)
 	std::string path;
 	int status;
 	
-	std::cout << "URI = " << clt.map_request["URI"] << std::endl;
+	// std::cout << "URI = " << clt.map_request["URI"] << std::endl;
 
 	if (stat(clt.map_request["URI"].c_str(), &pathStat))
 	{
@@ -121,7 +121,7 @@ int	get(struct webserv& web, struct client& clt)
 	}
 	if (!stat(path.c_str(), &pathStat))
 	{
-		std::cout << GREEN << "\nuri -> = " << path << END << std::endl;//!
+		// std::cout << GREEN << "\nuri -> = " << path << END << std::endl;//!
 		clt.map_request["URI"] = path;
 		if (cgi(web, clt))
 			return 0;

@@ -9,11 +9,11 @@ html_text += '<form action="welcome.py" method="get">'
 form = cgi.FieldStorage()
 if 'first_name' in form:
     first_name = form['first_name'].value
-    html_text += '<p>welcome: ' + first_name + '</p>'
+    html_text += '<center><p><h1>Welcome: ' + first_name + ' '
 if 'last_name' in form:
     last_name = form['last_name'].value
-    html_text += '<p>' + last_name + '</p>'
+    html_text +=  last_name 
 
-html_text += '</body>\n</html>\n'
+html_text += '</h1></p></center></body>\n</html>\n'
 
 print(html_text)
