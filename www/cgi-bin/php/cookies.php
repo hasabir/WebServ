@@ -27,9 +27,22 @@ if (isset($_GET['increment'])) {
     <title>Increment Counter Example</title>
 </head>
 <body>
-    <h1>Counter: <?php echo isset($_SESSION['counter']) ? $_SESSION['counter'] : 0; ?></h1>
+    <h1>Counter: <?php echo isset($_COOKIE['counter']) ? $_COOKIE['counter'] : 0; ?></h1>
     <form method="GET">
         <button type="submit" name="increment">Increment Counter</button>
     </form>
 </body>
 </html> 
+
+<!-- <!DOCTYPE html>
+<html>
+<head>
+    <title>Increment Counter Example</title>
+</head>
+<body>
+    <h1>Counter: <?php echo isset($_SESSION['counter']) ? $_SESSION['counter'] : 0; ?></h1>
+    <form method="GET">
+        <button type="submit" name="increment">Increment Counter</button>
+    </form>
+</body>
+</html>  -->
