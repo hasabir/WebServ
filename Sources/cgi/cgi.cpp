@@ -6,13 +6,13 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/19 16:05:26 by hasabir           #+#    #+#             */
-/*   Updated: 2023/07/15 13:01:06 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/15 17:49:58 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../webserv.hpp"
 
-std::string	parsePHPcgi(std::string fileName)
+std::string	parsePHPcgi(std::string fileName, std::string &header)
 {
 	std::ifstream	in(fileName);
 	std::string 	responseFileName;
@@ -32,6 +32,8 @@ std::string	parsePHPcgi(std::string fileName)
 				end = line.length() - 1;
 			content_type = line.substr(start, end - start);
 		}
+		else
+			header += line + "\n";
 	}
 	std::map<std::string, std::string> contentTypes;
 	std::map<std::string, std::string>::iterator iter;
@@ -42,8 +44,8 @@ std::string	parsePHPcgi(std::string fileName)
 		if (iter->second == content_type)
 		{
 			responseFileName = "cgi" + iter->first;
-			if (std::remove("cgi.html")< 0)
-				throw std::runtime_error("Error: remove");
+			// if (std::remove("cgi.html")< 0)
+			// 	throw std::runtime_error("Error: remove");
 			break;
 		}
 	}
@@ -61,19 +63,14 @@ std::string	parsePHPcgi(std::string fileName)
 void	executeCgi(struct client &clt,CGI &cgi, std::string &filePath)
 {
 	pid_t pid;
-	std::fstream out("out.html");
+    std::string outFile("out.html");
 
-	int fd_out = open("out.html", O_RDWR | O_TRUNC, 0644);
-	if (!out.is_open())
-	{
-		std::cerr << "Error: out file\n";
-		return;
-	}
+
+	int fd_out = open(outFile.c_str(), O_CREAT | O_RDWR | O_TRUNC, 0644);
+	if (fd_out == -1)
+		throw std::runtime_error("Error1: opening file\n");
 	if ((pid = fork()) == -1)
-	{
-		std::cerr << "Error : fork\n";
-		return;
-	}
+		throw std::runtime_error("Error: fork\n");
 	if (!pid)
 	{
 		dup2(fd_out, STDOUT_FILENO);
@@ -87,28 +84,27 @@ void	executeCgi(struct client &clt,CGI &cgi, std::string &filePath)
 		env[i++] = const_cast<char*>("REDIRECT_STATUS=1");  //! for php
 		env[i] = NULL;
 
-		if(clt.map_request["Method"] == "POST")
-		{
-			if(dup2(STDOUT_FILENO,STDIN_FILENO) == -1)
-			{
-				std::cerr << "Error: dup2\n";
-				exit(0);
-			}
-		}
+		// if(clt.map_request["Method"] == "POST")
+		// {
+		// 	if(dup2(STDOUT_FILENO,STDIN_FILENO) == -1)
+		// 	{
+		// 		std::cerr << "Error: dup2\n";
+		// 		exit(0);
+		// 	}
+		// }
 		if (execve(cgi.interpreter.c_str(), const_cast<char**>(arg), env) == -1)
 		{
 			std::cerr << "Error: execve\n";
 			exit(0);
 		}
 	}
-	out.close();
 	waitpid(pid, 0, 0);
 	if (cgi.extention == ".php")
 	{
-		filePath = parsePHPcgi("out.html");
+		filePath = parsePHPcgi(outFile, cgi.header);
 		return ;
 	}
-	filePath = "cgi.html";
+	filePath = "out.html";
 }
 
 
@@ -121,6 +117,13 @@ int cgi(struct webserv &web, struct client &clt)
 	if ((status = isCgiConfigured(clt, web, clt.map_request["URI"])) != 1)
 		return status;
 	fill_CGI_ENV(clt, web);
-	executeCgi(clt,clt.cgi, clt.map_request["URI"]);
+	try {
+		executeCgi(clt,clt.cgi, clt.map_request["URI"]);
+	}
+	catch (std::exception &e)
+	{
+		std::cout << e.what() << std::endl;
+		return error(clt, 500);
+	}
 	return clt.response.statusCode = 200;
 }

@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/15 12:01:11 by hasabir           #+#    #+#             */
-/*   Updated: 2023/07/13 09:12:25 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/15 17:55:03 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 std::string	generateErrorFile(struct client &clt, struct webserv &web, int statusCode)
 {
-	std::cout << RED << "generating error file path\n" << END;
+	// std::cout << RED << "generating error file path\n" << END;
 	std::string filePath("www/error/generated_"
 					+ intToString(statusCode) + ".html");
 	std::ofstream  errorFile(filePath);
@@ -63,14 +63,14 @@ std::string getFilePath(struct client& clt, struct webserv &web, int statusCode)
 	struct stat pathStat;
 	int status;
 
-	std::cout << "location = " << clt.location << std::endl;
+	// std::cout << "location = " << clt.location << std::endl;
 	// displayServerFile(web.config);
 	if (clt.location >= 0 )
 	{
 		for (iter = web.config[clt.config].location[clt.location].error_page.begin();
 		iter != web.config[clt.config].location[clt.location].error_page.end()
-		&& iter->first != intToString(statusCode); iter++)
-			std::cout << "statius code = " << iter->first << std::endl;
+		&& iter->first != intToString(statusCode); iter++);
+			// std::cout << "statius code = " << iter->first << std::endl;
 		if (iter != web.config[clt.config].location[clt.location].error_page.end())
 			filePath = iter->second;
 	}

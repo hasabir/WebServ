@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/16 14:04:07 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/07/15 13:01:57 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/15 17:10:39 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	closeConnection(struct webserv& web, int client_i)
 	// std::cerr << "req not file removed " <<  web.clients[client_i].file_name << std::endl;
 	if (web.clients[client_i].response.autoindex
 		|| web.clients[client_i].response.generateError
-		|| web.clients[client_i].response.cgi)
+		/*|| web.clients[client_i].response.cgi*/)
 	{
 		if (std::remove(web.clients[client_i].map_request["URI"].c_str()))
 			std::cerr << "Failed to remove autoindex file\n";
@@ -160,7 +160,9 @@ void	handleConnection(struct webserv& web)
 					return ;
 				}
 				// std::cout << "Before " << std::endl;
-				sendResponse(web.clients[i], web, web.clients[i].response.statusCode);
+				// try{
+					sendResponse(web.clients[i], web, web.clients[i].response.statusCode);
+				// }
 				// std::cout << "After " << std::endl;
 				if (web.clients[i].response.finishReading || web.clients[i].response.error)
 				{

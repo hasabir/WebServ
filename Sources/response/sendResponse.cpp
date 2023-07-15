@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/02 16:04:39 by hasabir           #+#    #+#             */
-/*   Updated: 2023/07/15 12:46:16 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/15 17:55:12 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,13 @@ void getResponseHeader(struct client &clt, int statusCode, std::string filePath)
 	response = "HTTP/1.1 " + intToString(statusCode) + " " + getStatusMessage(statusCode);
 	response += "Server: webserver-c\r\n";
 	response += "Connection: keep-alive\r\n";
-	response += "Content-Type: " + getContentType(filePath) + "\r\n";
-	response += "Content-Length: " + intToString(clt.response.len) +"\r\n\r\n";
+	response += "Content-Type: " + getContentType(filePath) + CRLF;
+	response += "Content-Length: " + intToString(clt.response.len) + CRLF;
+	if (clt.response.cgi)
+		response += clt.cgi.header;
+	response += CRLF;
 	clt.response.responseData.assign(response.begin(), response.end());
+	// std::cout << GREEN << clt.response.responseData.data() << END << std::endl;
 }
 
 void check(struct client &clt, std::ifstream &file, std::string filePath)

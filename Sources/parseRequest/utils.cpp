@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/01 19:45:42 by hasabir           #+#    #+#             */
-/*   Updated: 2023/07/15 11:40:24 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/15 17:19:57 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ int error(struct client &clt,int statusCode)
 {
 	clt.response.statusCode = statusCode;
 	clt.response.error = true;
-	return 0;
+	return statusCode;
 }
 
 std::string getStatusMessage(int statusCode)

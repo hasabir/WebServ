@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 20:01:49 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/07/15 13:00:00 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/15 16:34:51 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,6 +150,8 @@ class CGI
 		std::string extention;
 		std::string interpreter;
 		std::vector<std::string> env;
+		std::string header;
+	CGI():header(""){};
 };
 struct client
 {

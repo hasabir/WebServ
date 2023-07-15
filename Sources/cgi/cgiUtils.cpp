@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/13 12:00:54 by hasabir           #+#    #+#             */
-/*   Updated: 2023/07/15 10:33:36 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/15 18:21:25 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,9 @@ void	fill_CGI_ENV(struct client &clt, struct webserv &web)
 		clt.cgi.env.push_back("CONTENT_TYPE=" + clt.map_request["CONTENT-TYPE"]);
 		clt.cgi.env.push_back("CONTENT_LENGTH=" + clt.map_request["CONTENT-LENGTH"]);
 	}
+	if (!clt.map_request["Cookie"].empty())
+		clt.cgi.env.push_back("HTTP_COOKIE=" + clt.map_request["Cookie"]);
+	clt.cgi.env.push_back("COUNTER=10");
 }
 
 int isCgiConfigured(struct client &clt, struct webserv &web,  std::string filePath)
