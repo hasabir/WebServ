@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 20:01:49 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/07/15 10:27:07 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/15 13:00:00 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,6 +122,7 @@ struct Response
 	public:
 		bool				header;
 		bool				error;
+		bool				cgi;
 		bool				finishReading;
 		bool				autoindex;
 		bool				generateError;
@@ -137,9 +138,9 @@ struct Response
 		std::vector<char>	responseData;
 		std::string			uri;
 
-		Response():header(0), nbrFrames(-1),
+		Response():header(0),cgi(0), nbrFrames(-1),
 		finishReading(0), autoindex(0),generateError(0),
-		body(0), statusCode(0){};
+		body(0), statusCode(0) {};
 };
 
 class CGI

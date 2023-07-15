@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/19 16:05:26 by hasabir           #+#    #+#             */
-/*   Updated: 2023/07/15 12:46:38 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/15 13:01:06 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,11 @@
 
 std::string	parsePHPcgi(std::string fileName)
 {
-	std::ifstream in(fileName);
-	std::string responseFileName;
-	std::string			content_type;
+	std::ifstream	in(fileName);
+	std::string 	responseFileName;
+	std::string		content_type;
 	std::fstream 	out;
-	std::string line;
+	std::string 	line;
 
 	if (!in.is_open())
 		throw std::runtime_error("Error: opening file\n");
@@ -42,6 +42,8 @@ std::string	parsePHPcgi(std::string fileName)
 		if (iter->second == content_type)
 		{
 			responseFileName = "cgi" + iter->first;
+			if (std::remove("cgi.html")< 0)
+				throw std::runtime_error("Error: remove");
 			break;
 		}
 	}
@@ -115,6 +117,7 @@ int cgi(struct webserv &web, struct client &clt)
 	std::string extention;
 	int			status;
 
+	clt.response.cgi = true;
 	if ((status = isCgiConfigured(clt, web, clt.map_request["URI"])) != 1)
 		return status;
 	fill_CGI_ENV(clt, web);
