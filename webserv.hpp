@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 20:01:49 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/07/16 21:06:28 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/16 21:23:18 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,8 @@
 # include <algorithm>
 # include <cstdlib>
 #include <utility>
+#include <sys/wait.h>
+#include <signal.h>
 
 
 # define MAX_CONNECTION 355
@@ -153,7 +155,9 @@ class CGI
 		std::string							 header;
 		bool								loop_detected;
 		long								time;
+		pid_t								pid;
 		std::string							outFile;
+		
 	CGI():header(""), loop_detected(false), time(0){};
 };
 struct client

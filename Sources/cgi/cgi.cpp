@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/19 16:05:26 by hasabir           #+#    #+#             */
-/*   Updated: 2023/07/16 21:16:04 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/16 21:26:25 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,23 +21,26 @@ void	generate_CGI_file(struct client &clt,std::string &filePath)
 	}
 	else if (clt.cgi.extention == ".py" && !clt.cgi.loop_detected)
 		filePath = "out.html";
-	// if (clt.cgi.)
+	else if (clt.cgi.extention == ".py" && clt.cgi.loop_detected)
+	{
+		kill(clt.cgi.pid, SIGKILL);
+		error(clt, 508);
+		return ;
+	}
 	clt.response.statusCode = 200;
 }
 
 void	executeCgi(struct client &clt,CGI &cgi, std::string &filePath)
 {
-	pid_t pid;
-	
 	cgi.outFile = "out.html";
 	int fd_out = open(cgi.outFile.c_str(), O_CREAT | O_RDWR | O_TRUNC, 0644);
 	if (fd_out == -1)
 		throw std::runtime_error("Error1: opening file\n");
 	if (!cgi.loop_detected)
 	{
-		if ((pid = fork()) == -1)
+		if ((cgi.pid = fork()) == -1)
 			throw std::runtime_error("Error: fork\n");
-		if (!pid)
+		if (!cgi.pid)
 		{
 			dup2(fd_out, STDOUT_FILENO);
 			close(fd_out);
@@ -69,7 +72,7 @@ void	executeCgi(struct client &clt,CGI &cgi, std::string &filePath)
 		}
 	
 		sleep(1);
-		int returnValue = waitpid(pid, NULL, WNOHANG);
+		int returnValue = waitpid(cgi.pid, NULL, WNOHANG);
 		if (returnValue < 0)
 			throw std::runtime_error("Error: wait failed");
 		else if (returnValue)
