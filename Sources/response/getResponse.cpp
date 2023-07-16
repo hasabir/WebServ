@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/07 16:49:06 by hasabir           #+#    #+#             */
-/*   Updated: 2023/07/15 17:30:55 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/16 15:03:03 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ int autoindex(struct client& clt, struct webserv &web)
 	if (!autoindex)
 	{
 		std::cerr << "Failed to create autoindex.html" << std::endl;
-		return error(clt, 500);
+		return error(clt, 404);
 	}
 
 	clt.response.autoindex = true;

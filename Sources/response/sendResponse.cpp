@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/02 16:04:39 by hasabir           #+#    #+#             */
-/*   Updated: 2023/07/15 17:55:12 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/16 20:37:59 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ void check(struct client &clt, std::ifstream &file, std::string filePath)
 	if (!file.is_open())
 	{
 		// std::cerr << "COULD NOT OPEN FILE\n";//!
-		error(clt, 500);
+		error(clt, 500);//TODO
 		throw std::exception();
 	}
 	if (clt.response.nbrFrames < 0)
@@ -64,6 +64,9 @@ void	readFile(int statusCode, struct client &clt, std::string filePath)
 	std::string chunkHeader;
 
 	file.open(filePath.c_str(), std::ios::binary);
+	if (!file.is_open())
+		std::cerr << RED << "ERROR OPEN OUT TFO\n" << END;
+	
 	try {check(clt, file, filePath);}
 	catch (std::exception &e){return ;}
 
@@ -104,11 +107,7 @@ int sendResponse(struct client &clt, struct webserv &web, int statusCode)
 	else if (!statusCode || (statusCode >= 300 && !clt.response.body))
 		fillRedirectResponse(clt, web, statusCode);
 	else
-	{
-		// std::cout << "++++++++++++++++++++++++++++\n";
 		fillResponse(clt, web, statusCode);
-		// std::cout << "||||||||||||||||||||||||||||\n";
-	}
 	if (clt.response.finishReading)
 	{
 		// std::cout << YELLOW <<  "file len = " << clt.response.len 

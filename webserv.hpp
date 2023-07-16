@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 20:01:49 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/07/15 16:34:51 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/16 21:06:28 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,11 +147,14 @@ class CGI
 {
 	public:
 		std::map<std::string, std::string>	cgi_ENV;
-		std::string extention;
-		std::string interpreter;
-		std::vector<std::string> env;
-		std::string header;
-	CGI():header(""){};
+		std::string 						extention;
+		std::string 						interpreter;
+		std::vector<std::string> 			env;
+		std::string							 header;
+		bool								loop_detected;
+		long								time;
+		std::string							outFile;
+	CGI():header(""), loop_detected(false), time(0){};
 };
 struct client
 {
@@ -415,6 +418,10 @@ int 	cgi(struct webserv &web, struct client &clt);
 int 	isCgiConfigured(struct client &clt, struct webserv &web,  std::string filePath);
 void	fill_CGI_ENV(struct client &clt, struct webserv &web);
 int 	isCgi(struct client& clt, struct webserv &web);
+void	executeCgi(struct client &clt,CGI &cgi, std::string &filePath);
+// void	generate_CGI_file(class CGI &cgi, std::string file, std::string &filePath);
+void	generate_CGI_file(struct client &clt,std::string &filePath);
+std::string	parsePHPcgi(std::string fileName, std::string &header);
 
 
 /**************************************************************************************/
@@ -427,6 +434,7 @@ int		deleteResponse(struct webserv& web, struct client& clt);
 /************************************************************************************** */
 
 
+int get_time(class CGI& cgi);
 template <typename T>
 T min(T a, T b){return (a < b) ? a : b;}
 

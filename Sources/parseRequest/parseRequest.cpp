@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/22 06:56:52 by hasabir           #+#    #+#             */
-/*   Updated: 2023/07/13 12:18:20 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/16 17:38:56 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,7 +153,7 @@ int parseRequestData(struct client &clt, struct webserv &web)
 int parseRequest(struct webserv &web, struct client &clt)
 {
 	// std::cout << "\033[91m--------------------------------------------------------\n";
-	clt.response_is_ready = true;
+	// clt.response_is_ready = true;
 	clt.config = -1;
 	clt.location = -1;
 

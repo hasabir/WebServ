@@ -6,11 +6,25 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/13 12:00:54 by hasabir           #+#    #+#             */
-/*   Updated: 2023/07/15 18:21:25 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/16 21:17:58 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../webserv.hpp"
+
+int get_time(class CGI& cgi)
+{
+	struct timeval current_time;
+	long time;
+
+	gettimeofday(&current_time, NULL);
+	if (!cgi.time)
+		cgi.time = current_time.tv_sec;
+	time = current_time.tv_sec - cgi.time;
+	if (time < 0)
+		time *= -1;
+	return (time);
+}
 
 void	fill_CGI_ENV(struct client &clt, struct webserv &web)
 {
@@ -51,9 +65,49 @@ int isCgiConfigured(struct client &clt, struct webserv &web,  std::string filePa
 	return 1;
 }
 
-// int isCgi(struct client& clt, struct webserv &web)
-// {
-// 	DIR* directory;
-// 	struct dirent* en;
-// 	return 0;
-// }
+std::string	parsePHPcgi(std::string fileName, std::string &header)
+{
+	std::ifstream	in(fileName);
+	std::string 	responseFileName;
+	std::string		content_type;
+	std::fstream 	out;
+	std::string 	line;
+
+	if (!in.is_open())
+		throw std::runtime_error("Error: opening file\n");
+	while (getline(in, line,'\n') && line != "\r")
+	{
+		if ((line.find("Content-type")) != std::string::npos)
+		{
+			int start = line.find(':') + 2;
+			int end = line.find(';');
+			if (end == std::string::npos)
+				end = line.length() - 1;
+			content_type = line.substr(start, end - start);
+		}
+		else
+			header += line + "\n";
+	}
+	std::map<std::string, std::string> contentTypes;
+	std::map<std::string, std::string>::iterator iter;
+	
+	fillMapContentTypes(contentTypes);
+	for (iter = contentTypes.begin(); iter != contentTypes.end(); iter++)
+	{
+		if (iter->second == content_type)
+		{
+			responseFileName = "cgi" + iter->first;
+			// if (std::remove("cgi.html")< 0)
+			// 	throw std::runtime_error("Error: remove");
+			break;
+		}
+	}
+	if (iter == contentTypes.end())
+		responseFileName = "cgi.html";
+	out.open(responseFileName, std::ios::out);
+	while (getline(in, line))
+		out << line << std::endl;
+	out.close();
+	in.close();
+	return responseFileName;
+}
