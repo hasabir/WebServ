@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/19 16:05:26 by hasabir           #+#    #+#             */
-/*   Updated: 2023/07/16 21:26:25 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/17 10:45:05 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,11 @@ void	generate_CGI_file(struct client &clt,std::string &filePath)
 {
 	if (clt.cgi.extention == ".php")
 	{
-		filePath = parsePHPcgi(clt.cgi.outFile, clt.cgi.header);
+		filePath = parsePHPcgi(clt.cgi.outFile, clt.cgi.header, intToString(clt.fd));
 		std::cout << PURPLE << filePath << std::endl << END ;
 	}
 	else if (clt.cgi.extention == ".py" && !clt.cgi.loop_detected)
-		filePath = "out.html";
+		filePath = "out" + intToString(clt.fd) +".html";
 	else if (clt.cgi.extention == ".py" && clt.cgi.loop_detected)
 	{
 		kill(clt.cgi.pid, SIGKILL);
@@ -32,7 +32,7 @@ void	generate_CGI_file(struct client &clt,std::string &filePath)
 
 void	executeCgi(struct client &clt,CGI &cgi, std::string &filePath)
 {
-	cgi.outFile = "out.html";
+	cgi.outFile = "out" +intToString(clt.fd) + ".html";
 	int fd_out = open(cgi.outFile.c_str(), O_CREAT | O_RDWR | O_TRUNC, 0644);
 	if (fd_out == -1)
 		throw std::runtime_error("Error1: opening file\n");
@@ -88,14 +88,6 @@ void	executeCgi(struct client &clt,CGI &cgi, std::string &filePath)
 			return;
 		}
 	}
-	// if (cgi.extention == ".php")
-	// 	filePath = parsePHPcgi(outFile, cgi.header);
-	// if (cgi.extention == ".php")
-	// filePath = "out.html";
-	// clt.response.statusCode = 200;
-	// else if (cgi.extention == ".py")
-	// 		error(clt, 508);
-			// filePath = parsePHPcgi(outFile, cgi.header);
 }
 
 

@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/13 12:00:54 by hasabir           #+#    #+#             */
-/*   Updated: 2023/07/16 21:17:58 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/17 10:43:32 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ int isCgiConfigured(struct client &clt, struct webserv &web,  std::string filePa
 	return 1;
 }
 
-std::string	parsePHPcgi(std::string fileName, std::string &header)
+std::string	parsePHPcgi(std::string fileName, std::string &header, std::string suffix)
 {
 	std::ifstream	in(fileName);
 	std::string 	responseFileName;
@@ -96,14 +96,14 @@ std::string	parsePHPcgi(std::string fileName, std::string &header)
 	{
 		if (iter->second == content_type)
 		{
-			responseFileName = "cgi" + iter->first;
+			responseFileName = "cgi" + suffix + iter->first;
 			// if (std::remove("cgi.html")< 0)
 			// 	throw std::runtime_error("Error: remove");
 			break;
 		}
 	}
 	if (iter == contentTypes.end())
-		responseFileName = "cgi.html";
+		responseFileName = "cgi" + suffix + ".html";
 	out.open(responseFileName, std::ios::out);
 	while (getline(in, line))
 		out << line << std::endl;
