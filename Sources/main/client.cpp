@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hp <hp@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/26 00:19:32 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/06/29 13:07:08 by hp               ###   ########.fr       */
+/*   Updated: 2023/07/20 12:34:21 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 
 uploadFiles::uploadFiles()
 {
-	//std::cout << "Upload constructor called" << std::endl;
 	len = 0;
 	filename = "";
 	file = new std::fstream();
@@ -23,7 +22,6 @@ uploadFiles::uploadFiles()
 
 uploadFiles::~uploadFiles()
 {
-	//std::cout << "Upload destructor called" << std::endl;
 	delete file;
 }
 
@@ -86,11 +84,9 @@ client::client(const client& rhs)
 	int				i;
 	int				size;
 
-	// map_request = rhs.map_request;
-	// map_response = rhs.map_response;
+	map_request = rhs.map_request;
 	config = rhs.config;
 	location = rhs.location;
-	// request = rhs.request;
 	response = rhs.response;
 	addr = rhs.addr;
 	len = rhs.len;
@@ -127,6 +123,7 @@ client::client(const client& rhs)
 		upload_files.push_back(rhs.upload_files[i]);
 		i++;
 	}
+	cgi = rhs.cgi;
 }
 
 client&		client::operator=(const client& rhs)
@@ -136,11 +133,9 @@ client&		client::operator=(const client& rhs)
 
 	if (this != &rhs)
 	{
-		// map_request = rhs.map_request;
-		// map_response = rhs.map_response;
+		map_request = rhs.map_request;
 		config = rhs.config;
 		location = rhs.location;
-		// request = rhs.request;
 		response = rhs.response;
 		addr = rhs.addr;
 		len = rhs.len;
@@ -177,6 +172,45 @@ client&		client::operator=(const client& rhs)
 			upload_files.push_back(rhs.upload_files[i]);
 			i++;
 		}
+		cgi = rhs.cgi;
 	}
 	return (*this);
+}
+
+CGI::CGI() : header(""), loop_detected(false), time(0)
+{
+}
+
+CGI::CGI(const CGI& rhs)
+{
+	cgi_ENV = rhs.cgi_ENV;
+	interpreter = rhs.interpreter;
+	env = rhs.env;
+	header = rhs.header;
+	extention = rhs.extention;
+	loop_detected = rhs.loop_detected;
+	time = rhs.time;
+	pid = rhs.pid;
+	outFile = rhs.outFile;
+}
+
+CGI&	CGI::operator=(const CGI& rhs)
+{
+	if (this != &rhs)
+	{
+		cgi_ENV = rhs.cgi_ENV;
+		interpreter = rhs.interpreter;
+		extention = rhs.extention;
+		env = rhs.env;
+		header = rhs.header;
+		loop_detected = rhs.loop_detected;
+		time = rhs.time;
+		pid = rhs.pid;
+		outFile = rhs.outFile;
+	}
+	return (*this);
+}
+
+CGI::~CGI()
+{
 }

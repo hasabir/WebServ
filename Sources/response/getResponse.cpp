@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/07 16:49:06 by hasabir           #+#    #+#             */
-/*   Updated: 2023/07/16 15:03:03 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/20 12:11:28 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ int autoindex(struct client& clt, struct webserv &web)
 	struct dirent* en;
 	std::string pattern;
 
+	(void)web;
 	if (!autoindex)
 	{
 		std::cerr << "Failed to create autoindex.html" << std::endl;
@@ -69,10 +70,9 @@ int	get(struct webserv& web, struct client& clt)
 {
 	struct stat pathStat;
 	std::string path;
-	int status;
 	
 	// std::cout << "URI = " << clt.map_request["URI"] << std::endl;
-
+	// std::cout << PURPLE <<"!!!!!!!!!!!!!!! execute cgi = |" << clt.cgi.extention << "|\n" << END;
 	if (stat(clt.map_request["URI"].c_str(), &pathStat))
 	{
 		if (clt.location >= 0
@@ -89,21 +89,19 @@ int	get(struct webserv& web, struct client& clt)
 		if (clt.location >= 0
 			&& !web.config[clt.config].location[clt.location].redirect.empty())
 		{
-			if (clt.response.statusCode)
-				return clt.response.statusCode *= -1;
 			clt.response.body = true;
+			if (clt.response.statusCode)
+				return clt.response.statusCode;
 			return clt.response.statusCode = 302;
 		}
 		if (clt.location >= 0 && !web.config[clt.config].location[clt.location].cgi.empty())
 		{
-			if ((status = cgi(web, clt)))
-		{
-			return 0;
+			if ((cgi(web, clt)))
+			{
+				std::cout << "########## get = |" << clt.cgi.extention << "|\n";
+				return 0;
+			}
 		}
-		std::cout << GREEN << "status = " << status << std::endl;
-			std::cout << RED << "status code = " << clt.response.statusCode << std::endl << END;
-		}
-		
 		return clt.response.statusCode = 200;
 	}
 	if (*clt.map_request["URI"].rbegin() != '/')
@@ -136,11 +134,10 @@ int	get(struct webserv& web, struct client& clt)
 			clt.response.statusCode = 200;
 		return 0;
 	}
-	if (clt.location >= 0)
-	{
-		if (web.config[clt.config].location[clt.location].autoindex.empty() ||
-			web.config[clt.config].location[clt.location].autoindex == "off")
+	if ((clt.location >= 0
+		&& (web.config[clt.config].location[clt.location].autoindex.empty() ||
+			web.config[clt.config].location[clt.location].autoindex == "off"))
+		|| clt.location < 0)
 			return error(clt, 403);
-	}
 	return autoindex(clt, web);
 }

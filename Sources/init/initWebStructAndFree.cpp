@@ -27,9 +27,10 @@ void	getServerConfig(struct webserv& web)
 		serv.serverConfig = web.config[i];
 		web.servers.push_back(serv);
 		int j = 0;
-		while (j < serv.serverConfig.listen.size())
+		while ((unsigned long)j < serv.serverConfig.listen.size())
 		{
 			struct addrinfo	*info;
+			info = NULL;
 			web.servers[i].socket.push_back(info);
 			web.servers[i].socketFd.push_back(-1);
 			j++;
@@ -98,16 +99,16 @@ void	freedWeb(struct webserv& web)
 	int j;
 
 	i = 0;
-	while (i < web.servers.size())
+	while ((unsigned long)i < web.servers.size())
 	{
 		j = 0;
-		while (j < web.servers[i].socketFd.size())
+		while ((unsigned long)j < web.servers[i].socketFd.size())
 		{
 			close(web.servers[i].socketFd[j]);
 			j++;
 		}
 		j = 0;
-		while (j < web.servers[i].socket.size())
+		while ((unsigned long)j < web.servers[i].socket.size())
 		{
 			freeaddrinfo(web.servers[i].socket[j]);
 			j++;

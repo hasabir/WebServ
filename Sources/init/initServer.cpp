@@ -19,7 +19,6 @@ int	initServer(struct webserv& web)
 	int											status;
 	int 										reuse;
 	int											i;
-	int											fd;
 	int											j;
 	int											size;
 	int											len;
@@ -28,7 +27,6 @@ int	initServer(struct webserv& web)
 	status = 0;
 	i = 0;
 	connected_socket = 0;
-	fd = -1;
 	size = web.servers.size(); 
 	while (i < size)
 	{

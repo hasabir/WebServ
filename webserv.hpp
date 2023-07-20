@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 20:01:49 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/07/17 10:44:42 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/20 13:52:00 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,8 @@
 #include <utility>
 #include <sys/wait.h>
 #include <signal.h>
-
+#include <cstdio>
+#include <cstdlib>
 
 # define MAX_CONNECTION 355
 # define HOST "localhost"
@@ -76,6 +77,7 @@ struct body
 	unsigned long	chunks_con_len;
 	unsigned long	content_len;
 	int				content_disposition;
+	int				binary_flag;
 	std::string		boundary;
 };
 
@@ -111,6 +113,8 @@ struct uploadFiles
 	unsigned long 	len;
 	std::string		filename;
 	std::fstream	*file;
+	std::string		just_the_file;
+	std::string		no_name;
 
 
 	uploadFiles();
@@ -122,6 +126,7 @@ struct uploadFiles
 struct Response
 {
 	public:
+		bool				redirection;
 		bool				header;
 		bool				error;
 		bool				cgi;
@@ -139,11 +144,11 @@ struct Response
 		std::vector<char>	responseBody;
 		std::vector<char>	responseData;
 		std::string			uri;
-
-		Response():header(0),cgi(0), nbrFrames(-1),
-		finishReading(0), autoindex(0),generateError(0),
-		body(0), statusCode(0) {};
+		Response():redirection(0), header(0),error(0), cgi(0), finishReading(0),
+        	autoindex(0), generateError(0),
+        	body(0), statusCode(0), nbrFrames(-1){};
 };
+
 
 class CGI
 {
@@ -153,12 +158,16 @@ class CGI
 		std::string 						interpreter;
 		std::vector<std::string> 			env;
 		std::string							 header;
-		bool								loop_detected;
+		int								loop_detected;
 		long								time;
 		pid_t								pid;
 		std::string							outFile;
-		
-	CGI():header(""), loop_detected(false), time(0){};
+
+		CGI();
+		CGI(const CGI& rhs);
+		CGI& operator=(const CGI& rhs);
+		~CGI();
+	//CGI():header(""), loop_detected(false), time(0){};
 };
 struct client
 {
@@ -184,6 +193,7 @@ struct client
 	int									post_flag;
 	std::vector<struct uploadFiles>		upload_files;
 	unsigned long						body_length;
+	std::string							temp_header;
 
 	client();
 	~client();
@@ -422,7 +432,7 @@ int 	cgi(struct webserv &web, struct client &clt);
 int 	isCgiConfigured(struct client &clt, struct webserv &web,  std::string filePath);
 void	fill_CGI_ENV(struct client &clt, struct webserv &web);
 int 	isCgi(struct client& clt, struct webserv &web);
-void	executeCgi(struct client &clt,CGI &cgi, std::string &filePath);
+// void	executeCgi(struct client &clt,CGI &cgi, std::string &filePath);
 // void	generate_CGI_file(class CGI &cgi, std::string file, std::string &filePath);
 void	generate_CGI_file(struct client &clt,std::string &filePath);
 // std::string	parsePHPcgi(std::string fileName, std::string &header);
@@ -439,7 +449,7 @@ int		deleteResponse(struct webserv& web, struct client& clt);
 /************************************************************************************** */
 
 
-int get_time(class CGI& cgi);
+int get_time(struct client &clt);
 template <typename T>
 T min(T a, T b){return (a < b) ? a : b;}
 

@@ -131,7 +131,6 @@ int	isDirectiveWithCloseBrackets(std::string& line)
 {
 	int	i;
 	int	size;
-	int find;
 	int	flag;
 
 	size = line.size();

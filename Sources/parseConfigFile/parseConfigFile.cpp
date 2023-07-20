@@ -68,7 +68,7 @@ void	parseConfigFile(struct webserv& web, int ac, char **av)
 	checkConfigData(web);
 	ports = 0;
 	i = 0;
-	while (i < web.config.size())
+	while ((unsigned long)i < web.config.size())
 	{
 		ports = ports + web.config[i].listen.size();
 		i++;

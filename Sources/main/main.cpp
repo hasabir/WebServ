@@ -15,12 +15,10 @@
 int	main(int ac, char **av)
 {
 	struct	webserv		web;
-	int					index;
 	int					flag;
 
 	web.next_read = 0;
 	web.next_write = 0;
-	index = 0;
 	web.req_nbr = 0;
 	//get data from config file
 	web.status = 0;

@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/07 16:47:18 by hasabir           #+#    #+#             */
-/*   Updated: 2023/07/15 10:34:14 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/20 12:40:20 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,6 @@ int deletefolders(std::string *path)
             old_path += *it + "/" ;// Append the current element to the string
     }
     std::cout << old_path<<std::endl;
-    sleep(1);
     *path = old_path;
     std::cout << "path :"<< *path<<std::endl;
 	return (0);
@@ -103,20 +102,27 @@ int	deleteResponse(struct webserv& web, struct client& clt)
 	std::string path;
 	
 	// std::cout << "URI = " << clt.map_request["URI"] << std::endl;
-
+	std::cout << web.config[clt.config].location[clt.location].cgi.empty()<< "   "<< clt.map_request["URI"].c_str() << " result"<<std::endl;
 	if (stat(clt.map_request["URI"].c_str(), &pathStat) != 0)
 	{
 		return error(clt,404); 
-	} 
-	if (!S_ISDIR(pathStat.st_mode))
+	}
+
+	std::cout << S_ISDIR(pathStat.st_mode) << "   not a directory"<< std::endl;
+	int a = S_ISDIR(pathStat.st_mode);
+	if (a == 0)
 	{
+		std::cout << "Here"<< std::endl;
 		if (clt.location >= 0 && !web.config[clt.config].location[clt.location].cgi.empty())
 		{
-			if (cgi(web, clt) == 200)
-				return 200;
+			if (cgi(web, clt))
+				return 0;
+			if (!clt.response.body)
+				clt.response.statusCode = 200;
 		}
 		else if(web.config[clt.config].location[clt.location].cgi.empty())
 		{
+			std::cout << "I'm here "<<std::endl;
 			if (std::remove(clt.map_request["URI"].c_str()) != 0){
                 std::cerr << "Failed to remove file: " << clt.map_request["URI"].c_str() << std::endl;
 				return 403;

@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/14 13:18:03 by hasabir           #+#    #+#             */
-/*   Updated: 2023/07/10 18:49:53 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/17 12:47:12 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ std::string getContentType(std::string filePath)
 	std::map<std::string, std::string> contentTypes;
 	std::map<std::string, std::string>::iterator iter;
 	std::string type;
-	int index;
+	size_t index;
 	
 	fillMapContentTypes(contentTypes);
 	index = filePath.find_last_of('.');
@@ -38,6 +38,7 @@ std::string decimalToHex(int decimal)
 
 void	initData(struct client &clt, std::string filePath, std::ifstream &file)
 {
+		(void)filePath;
 		file.seekg(0, std::ios::end);
 		clt.response.fileSize = file.tellg();
 		file.seekg(0, std::ios::beg);

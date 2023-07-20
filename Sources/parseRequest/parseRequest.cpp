@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parseRequest.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
+/*   By: hp <hp@student.42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/22 06:56:52 by hasabir           #+#    #+#             */
-/*   Updated: 2023/07/16 17:38:56 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/17 15:22:55 by hp               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,9 @@
 
 int handleRedirection(struct client &clt, struct webserv &web)
 {
-	char nextChar = clt.map_request["URI"]
-					[clt.map_request["URI"].find(web.config[clt.config].location[clt.location].pattern)
-					+ web.config[clt.config].location[clt.location].pattern.size()];
+	// char nextChar = clt.map_request["URI"]
+	// 				[clt.map_request["URI"].find(web.config[clt.config].location[clt.location].pattern)
+	// 				+ web.config[clt.config].location[clt.location].pattern.size()];
 	
 	// if (nextChar != '/' && nextChar != '\0')
 	// 	return error(clt, 404);
@@ -25,7 +25,7 @@ int handleRedirection(struct client &clt, struct webserv &web)
 	clt.map_request["URI"] = web.config[clt.config].location[clt.location].redirect;
 
 	char whitSpace[] = {'\t', ' ', '\v'};
-	int whitSpaceChar;
+	size_t whitSpaceChar;
 	whitSpaceChar = clt.map_request["URI"].find_first_of(whitSpace, 0, sizeof(whitSpace));
 	if (whitSpaceChar != std::string::npos)
 	{
@@ -35,7 +35,7 @@ int handleRedirection(struct client &clt, struct webserv &web)
 		redirect >> statusCode;
 		clt.response.statusCode = stringToInt(statusCode);
 		for (; whitSpaceChar < clt.map_request["URI"].size()
-			&& std::isspace(clt.map_request["URI"][whitSpaceChar]); whitSpaceChar++)
+			&& std::isspace(clt.map_request["URI"][whitSpaceChar]); whitSpaceChar++);
 		clt.map_request["URI"] = clt.map_request["URI"].substr(whitSpaceChar + 1,
 			clt.map_request["URI"].size());
 	}
@@ -77,9 +77,9 @@ int parsLocation(struct client &clt, struct webserv &web)
 int getHostPort(struct client &clt, struct webserv &web)
 {
 	std::vector<std::string>::iterator	port;
-	struct addrinfo *addrinfo;
+	// struct addrinfo *addrinfo;
 
-	int i = 0;
+	size_t i = 0;
 	for (; i < web.config.size(); i++) //! handel host
 	{
 		if (clt.map_request["Host"].substr(0,clt.map_request["Host"].find(":"))

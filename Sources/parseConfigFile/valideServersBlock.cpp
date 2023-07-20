@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   valideServersBlock.cpp                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hp <hp@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 16:30:09 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/06/29 12:50:30 by hp               ###   ########.fr       */
+/*   Updated: 2023/07/20 12:49:43 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ int	valideServerName(std::string line)
 		return (0);
 	return (1);
 }
-
+//! hadi check wach fiha mochkil
 int	isAclosedServer(std::vector<std::string> file, int line_index)
 {
 	int i;
@@ -40,6 +40,7 @@ int	isAclosedServer(std::vector<std::string> file, int line_index)
 
 	i = line_index + 1;
 	open_bracket = 1;
+	size = file.size();
 	while (i < size && open_bracket)
 	{
 		if (isBracket(file[i]) == 1)
@@ -59,7 +60,6 @@ int	isAclosedServer(std::vector<std::string> file, int line_index)
 int	valideServersBlock(std::vector<std::string> file)
 {
 	int i;
-	int j;
 	int	size;
 	int open_brackets;
 

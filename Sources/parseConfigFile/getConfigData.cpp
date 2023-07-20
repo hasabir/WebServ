@@ -43,6 +43,7 @@ int	nbrOfServerBlock(std::vector<std::string> file)
 
 	count = 0;
 	size = file.size();
+	i = 0;
 	while (i < size)
 	{
 		if (isServerBlock(file[i]))
@@ -57,7 +58,6 @@ void	getKeyandValue(std::string& key, std::string& value, std::string line)
 	int			size;
 	int			i;
 	int			j;
-	int			k;
 
 	i = 0;
 	size = line.size();
@@ -84,9 +84,7 @@ void	getMultivalue(std::vector<std::string>& holder, std::string values)
 	int i;
 	int j;
 	int size;
-	int index;
 
-	index = 0;
 	size = values.size();
 	i = 0;
 	while (i < size)

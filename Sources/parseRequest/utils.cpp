@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/01 19:45:42 by hasabir           #+#    #+#             */
-/*   Updated: 2023/07/16 21:11:18 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/17 12:46:19 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,12 +64,11 @@ int search(struct client &clt, struct webserv &web)
 	std::string::iterator		iter;
 	std::vector<int>			vec;
 	std::vector<int>::iterator	vec_iter;
-	int							j;
+	size_t						j(0);
 
-	for (int i = clt.config,j = 0; j < web.config[i].location.size(); j++)
+	for (int i = clt.config; j < web.config[i].location.size(); j++)
 	{
-		int found = clt.map_request["URI"].find(web.config[i].location[j].pattern);
-		if (found != std::string::npos)
+		if (clt.map_request["URI"].find(web.config[i].location[j].pattern) != std::string::npos)
 			vec.push_back(web.config[i].location[j].pattern.size());
 		else
 			vec.push_back(0);

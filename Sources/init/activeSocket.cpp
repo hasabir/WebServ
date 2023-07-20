@@ -23,7 +23,7 @@ void	activeReadSocket(struct webserv& web)
 	while (i < size)
 	{
 		j = 0;
-		while (j < web.servers[i].socketFd.size())
+		while ((unsigned int)j < web.servers[i].socketFd.size())
 		{
 			FD_SET(web.servers[i].socketFd[j], &web.reads);
 			j++;
@@ -43,7 +43,7 @@ void	activeWriteSocket(struct webserv& web)
 	while (i < size)
 	{
 		j = 0;
-		while (j < web.servers[i].socketFd.size())
+		while ((unsigned int)j < web.servers[i].socketFd.size())
 		{
 			FD_SET(web.servers[i].socketFd[j], &web.writes);
 			j++;
@@ -70,7 +70,7 @@ void	activeSocket(struct webserv& web)
 	while (i < size)
 	{
 		j = 0;
-		while (j < web.servers[i].socketFd.size())
+		while ((unsigned int)j < web.servers[i].socketFd.size())
 		{
 			if (web.servers[i].socketFd[j] > maxFd)
 				maxFd = web.servers[i].socketFd[j] ;

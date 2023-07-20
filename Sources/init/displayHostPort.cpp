@@ -18,12 +18,13 @@ void	displayHostPort(struct webserv& web)
 	char			str[32];
 	void			*addr;
 	int				i;
+	size_t			addr_len;
 
 	i = 0;
-	while (i < web.servers.size())
+	while ((unsigned int)i < web.servers.size())
 	{
 		int j = 0;
-		while (j < web.servers[i].socket.size())
+		while ((unsigned int)j < web.servers[i].socket.size())
 		{
 		p = web.servers[i].socket[j];
 		while (p != NULL)
@@ -41,7 +42,8 @@ void	displayHostPort(struct webserv& web)
 		j++;
 		}
 		memset(str, 0, 32);
-		memset(addr, 0, sizeof(addr));
+		addr_len = sizeof(addr);
+		memset(addr, 0, addr_len);
 		i++;
 	}
 }

@@ -227,7 +227,7 @@ void	removeEmptyLineAndComments(std::vector<std::string>& file)
 
 	index = 0;
 	it = file.begin();
-	while (index < file.size())
+	while ((unsigned long)index < file.size())
 	{
 		if (isEmptyLines(file[index]) == 0)
 		{
