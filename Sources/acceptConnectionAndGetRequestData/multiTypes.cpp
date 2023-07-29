@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   multiTypes.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hp <hp@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/30 19:54:34 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/06/29 12:50:30 by hp               ###   ########.fr       */
+/*   Updated: 2023/07/27 18:39:12 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ int		isADerective(std::string buffer, int find, int size)
 
 }
 
-void	getFilename(std::string buffer, int file_index, struct uploadFiles& upload_files, int find, int fd,struct client &clt)
+void	getFilename(std::string buffer, int file_index, struct uploadFiles* upload_files, int find, int fd,struct client &clt)
 {
 	int 			find_filename;
 	int 			i;
@@ -62,9 +62,11 @@ void	getFilename(std::string buffer, int file_index, struct uploadFiles& upload_
 		find_filename = temp.find("filename=");
 		if (find_filename != -1)
 			find_filename = buffer.find("filename=", find);
+		upload_files->no_name = "no";
 	}
 	else if (size)
 		find_filename = buffer.find("filename=", find);
+	upload_files->no_name = "no";
 	if (find != -1 && find_filename != -1)
 	{
 		find_filename += 10;
@@ -84,33 +86,38 @@ void	getFilename(std::string buffer, int file_index, struct uploadFiles& upload_
 		}
 		else
 			temp = "text_" + std::to_string(file_index) + ".txt";
-		upload_files.filename = "./www/uploads/" + temp;
-		upload_files.just_the_file = temp;
-		upload_files.no_name = "no";
+		upload_files->filename = "./www/uploads/" + temp;
+		upload_files->just_the_file = temp;
+		upload_files->no_name = "no";
 	}
 	else if(clt.temp_header[0] != 0) {
 		temp = clt.temp_header;
+		std::cout << temp <<" "<<std::endl;
 		size_t content_di = temp.find("Content-Disposition");
 		(void)content_di;
 		find_filename = temp.find("filename=");
-		find_filename += 10;
+		find_filename += 9;
 		int j = 0;
 		while ((size_t)find_filename + j < temp.size() && temp[find_filename + j] != '\"')
 			j++;
 		temp = temp.substr(find_filename,j);
-		upload_files.filename = "./www/uploads/" + temp;
-		upload_files.just_the_file = temp;
-		upload_files.no_name = "no";
+		std::cout << temp <<" show 2 "<<std::endl;
+		upload_files->filename = "./www/uploads/" + temp;
+		upload_files->just_the_file = temp;
+		upload_files->no_name = "no";
 
 	}
 	else 
 	{
 		std::cout << "Hereeee"<<std::endl;
-		temp = "text_" + std::to_string(file_index) + ".txt";
-		upload_files.filename = "./www/uploads/" + temp;
-		upload_files.just_the_file = temp;
-		upload_files.no_name = "yes";
-
+		std::srand(static_cast<unsigned>(std::time(nullptr)));
+		int a = std::rand();
+		char r[1000000];
+		std::sprintf(r, "%d", a);
+		temp = "text_" + std::string(r) +std::to_string(file_index) + ".txt";
+		upload_files->filename = "./www/uploads/" + temp;
+		upload_files->just_the_file = temp;
+		upload_files->no_name = "yes";
 	}
 }
 
@@ -121,14 +128,12 @@ void	multiTypes(std::string buffer, struct client& clt)
 	int						find;
 	int						size;
 	int						i;
-	int						flag_postman_curl;
 	std::string				hex;
 	std::string				temp;
 	struct  uploadFiles     upload_files;
 	std::string				theEnd;
 
 	theEnd = "\r\n\r\n" + clt.bodys.boundary;
-	flag_postman_curl = 1;
 	size = buffer.size();
 	i = 0;
 	if (clt.bodys.content_length_flag == 1 && clt.bodys.chunks_flag == 0 && clt.bodys.boundary_flag == 0)
@@ -160,13 +165,14 @@ void	multiTypes(std::string buffer, struct client& clt)
 			{
 				clt.temp_header = "";
 			}
-			getFilename(buffer, clt.upload_files.size(), upload_files, -1, clt.fd,clt);
+			getFilename(buffer, clt.upload_files.size(), &upload_files, -1, clt.fd,clt);
 			upload_files.file->open(upload_files.filename.c_str(),std::fstream::app | std::fstream::out);
 			//sleep(2);
 			if (upload_files.file->is_open() == true)
 			{
 				upload_files.file->close();
 				clt.upload_files.push_back(upload_files);
+				clt.upload_files[0].no_name = upload_files.no_name;
 			}
 		}
 		i = clt.upload_files.size();
@@ -184,7 +190,7 @@ void	multiTypes(std::string buffer, struct client& clt)
 			clt.upload_files[i - 1].file->close();
 		}
 	}
-	else if (clt.bodys.boundary_flag == 1 || clt.bodys.chunks_flag == 1)
+	else if (clt.bodys.boundary_flag == 1 /*|| clt.bodys.chunks_flag == 1*/)
 	{
 		int 			flag;
 		std::string		bndry;
@@ -213,12 +219,13 @@ void	multiTypes(std::string buffer, struct client& clt)
 					find = buffer.find("Content-Disposition:");
 					if (find != -1 && isADerective(buffer, find, size) == 1 && clt.bodys.content_disposition == 0)
 					{
-						getFilename(buffer, clt.upload_files.size(), upload_files, find, clt.fd,clt);
+						getFilename(buffer, clt.upload_files.size(), &upload_files, find, clt.fd,clt);
 						upload_files.file->open(upload_files.filename.c_str(), std::fstream::app | std::fstream::out);
 						if (upload_files.file->is_open() == true)
 						{
 							upload_files.file->close();
 							clt.upload_files.push_back(upload_files);
+							clt.upload_files[0].no_name = upload_files.no_name;
 						}
 						find_cr = buffer.find("\r\n\r\n", find);
 						buffer = buffer.substr(find_cr + 4);
@@ -228,12 +235,13 @@ void	multiTypes(std::string buffer, struct client& clt)
 					{
 						if (clt.upload_files.size() == 0)
 						{
-							getFilename(buffer, clt.upload_files.size(), upload_files, find, clt.fd,clt);
+							getFilename(buffer, clt.upload_files.size(), &upload_files, find, clt.fd,clt);
 							upload_files.file->open(upload_files.filename.c_str(), std::fstream::app | std::fstream::out);
 							if (upload_files.file->is_open() == true)
 							{
 								upload_files.file->close();
 								clt.upload_files.push_back(upload_files);
+								clt.upload_files[0].no_name = upload_files.no_name;
 							}
 							clt.bodys.content_disposition = 1;
 						}

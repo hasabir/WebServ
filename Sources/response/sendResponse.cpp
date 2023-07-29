@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/02 16:04:39 by hasabir           #+#    #+#             */
-/*   Updated: 2023/07/20 12:33:03 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/27 19:31:25 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,10 @@ void	readFile(int statusCode, struct client &clt, std::string filePath)
 	(void)statusCode;
 	file.open(filePath.c_str(), std::ios::binary);
 	if (!file.is_open())
-		std::cerr << RED << "ERROR OPEN OUT\n" << END;
+	{
+		error(clt, 500);
+		return;
+	}
 	
 	try {check(clt, file, filePath);}
 	catch (std::exception &e){return ;}
@@ -96,10 +99,15 @@ int sendResponse(struct client &clt, struct webserv &web, int statusCode)
 
 	if (clt.response.error || clt.response.autoindex)
 		fillErrorResponse(clt, web, statusCode);
-	else if (!statusCode || (statusCode >= 300 && !clt.response.body))
+	else if (statusCode == 201 || (statusCode >= 300 && !clt.response.body))
 		fillRedirectResponse(clt, web, statusCode);
 	else
+	{
 		fillResponse(clt, web, statusCode);
+		if (clt.response.error || clt.response.autoindex)
+			fillErrorResponse(clt, web, statusCode);
+		
+	}
 	if (clt.response.finishReading && !clt.response.redirection)
 	{
 		clt.response.position = 0;
@@ -113,20 +121,14 @@ int sendResponse(struct client &clt, struct webserv &web, int statusCode)
 	 	n_byte_read = recv(clt.fd, line, 0, MSG_PEEK);
 		if (n_byte_read < 0)
 		{
-			clt.response.error = true;
+			clt.response.finishReading = true;
 			return 0;
 		}
-			
 		if ((bitSent = send(clt.fd, str.c_str(), str.size(), 0)) <= 0)
-		{
-			std::cerr << "there is an error\n";
-			throw std::runtime_error("Send operation failed");
-		}
+			clt.response.finishReading = 1;
+			// throw std::runtime_error("Send operation failed");
 	}
-	catch(std::exception &e)
-	{
-		std::cerr << e.what() << std::endl;
-	}	
+	catch(std::exception &e){}
 	if (clt.response.header && bitSent > 0)
 		clt.response.position = static_cast<std::streampos>(bitSent + clt.response.position);
 	else

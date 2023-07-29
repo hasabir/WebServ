@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   valides.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hp <hp@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/23 18:39:29 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/06/29 12:50:30 by hp               ###   ########.fr       */
+/*   Updated: 2023/07/20 17:59:52 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,7 @@ int	valideDomainName(std::string line)
 	}
 	if (j >= 2)
 	{
-		std::cout << "Valide servername "<< std::endl;
+		// std::cout << "Valide servername "<< std::endl;
 		return (1);
 	}
 	return (0);
@@ -137,7 +137,7 @@ int	valideFile(std::string line)
 	file.open(name.c_str());
 	if (file.is_open())
 	{
-		std::cout << "File opened\n";
+		// std::cout << "File opened\n";
 		file.close();
 		return (1);
 	}

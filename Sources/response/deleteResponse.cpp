@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/07 16:47:18 by hasabir           #+#    #+#             */
-/*   Updated: 2023/07/20 12:40:20 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/20 18:03:08 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,18 +31,23 @@ int deletefolders(std::string *path)
         if (entry->d_type == DT_DIR) {
             deletefolders((&entryPath));  // Recursive call for subdirectory
         } else {
-            if (std::remove(entryPath.c_str()) != 0) {
-                std::cerr << "Failed to remove file: " << entryPath << std::endl;
+			if (access(entryPath.c_str(), W_OK) == 0) 
+			{
+       			if (std::remove(entryPath.c_str()) != 0){
+                std::cerr << "Failed to remove file: " << entryPath.c_str() << std::endl;
 				return 500;
-            }
+				}
+    		} else {
+       			 return 403;
+    		}
         }
     }
     closedir(dir);
-    // std::cout <<path<<std::endl;
+
     std::string old_path = *path;
     std::vector<std::string> parts;
-    // std::cout << old_path << "   l"<<std::endl;
-    char* token = std::strtok((char *)old_path.c_str(), "/");
+    
+	char* token = std::strtok((char *)old_path.c_str(), "/");
     while (token != NULL) {
         parts.push_back(token);
         token = std::strtok(NULL, "/");
@@ -65,43 +70,12 @@ int deletefolders(std::string *path)
 	return (0);
 }
 
-// int deletefiles(std::string *path)
-// {
-//     DIR* dir = opendir(path->c_str());
-//     if (dir == NULL) {
-//         std::cerr << "Failed to open directory: " << *path << std::endl;
-//         return 403;
-//     }
-
-//     dirent* entry;
-//     while ((entry = readdir(dir)) != NULL) {
-//         if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
-//             continue;  // Skip current and parent directories
-//         }
-
-//         std::string entryPath = *path + "/" + entry->d_name;
-//         std::cout << entryPath <<std::endl;
-//         if (entry->d_type == DT_DIR) {
-//             deletefolders((&entryPath));  // Recursive call for subdirectory
-//         } else {
-// 			if()
-// 			{
-//             	if (std::remove(entryPath.c_str()) != 0) {
-//                 	std::cerr << "Failed to remove file: " << entryPath << std::endl;
-// 					return 500;
-//             	}
-// 			}
-//         }
-//     }
-//     closedir(dir);
-// }
 
 int	deleteResponse(struct webserv& web, struct client& clt)
 {
 	struct stat pathStat;
 	std::string path;
 	
-	// std::cout << "URI = " << clt.map_request["URI"] << std::endl;
 	std::cout << web.config[clt.config].location[clt.location].cgi.empty()<< "   "<< clt.map_request["URI"].c_str() << " result"<<std::endl;
 	if (stat(clt.map_request["URI"].c_str(), &pathStat) != 0)
 	{
@@ -110,63 +84,100 @@ int	deleteResponse(struct webserv& web, struct client& clt)
 
 	std::cout << S_ISDIR(pathStat.st_mode) << "   not a directory"<< std::endl;
 	int a = S_ISDIR(pathStat.st_mode);
+	
 	if (a == 0)
 	{
 		std::cout << "Here"<< std::endl;
-		if (clt.location >= 0 && !web.config[clt.config].location[clt.location].cgi.empty())
-		{
-			if (cgi(web, clt))
-				return 0;
-			if (!clt.response.body)
-				clt.response.statusCode = 200;
-		}
-		else if(web.config[clt.config].location[clt.location].cgi.empty())
+		if(clt.location >= 0)
 		{
 			std::cout << "I'm here "<<std::endl;
-			if (std::remove(clt.map_request["URI"].c_str()) != 0){
+			std::ofstream out2;
+			std::ifstream input2;
+			out2.open("./www/rspnse1.html",std::ios::out);
+			if(!out2.is_open())
+			{
+				std::cerr << "Error: out file\n";
+				return  error(clt, 500);
+			}
+			input2.open(clt.map_request["URI"],std::ios::in);
+			if(!input2.is_open())
+			{
+				std::cerr << "Error: input file\n";
+				return  error(clt, 500);
+			}
+			std::string line2;
+			std::string all2 = "";
+			while(getline(input2,line2))
+			{
+				all2 += line2;
+				all2 += "\n";
+			}
+			out2 << all2;
+			out2.close();
+			input2.close();
+			if (access(clt.map_request["URI"].c_str(), W_OK) == 0) {
+       			if (std::remove(clt.map_request["URI"].c_str()) != 0){
                 std::cerr << "Failed to remove file: " << clt.map_request["URI"].c_str() << std::endl;
-				return 403;
-            }
-			return 204;
-		}
+				return error(clt,403);
+			}
+			} else {
+       			 return error(clt,403);
+    		}
+
+			clt.map_request["URI"] = "./www/rspnse1.html";
+			return clt.response.statusCode = 204;
+        }
 	}
+	
 	if (*clt.map_request["URI"].rbegin() != '/')
 	{
 		return clt.response.statusCode = 409;
 	}
-	if (clt.location >= 0 && !web.config[clt.config].location[clt.location].cgi.empty() && web.config[clt.config].location[clt.location].index.empty())
-	{
-		return clt.response.statusCode = 403;
-	}
-	if (clt.location >= 0 && !web.config[clt.config].location[clt.location].cgi.empty()  && !web.config[clt.config].index.empty())
-	{
-		if (cgi(web, clt) == 200)
-			return 200;
-	}
-	// if (stat(path.c_str(), &pathStat))
-	// 	path = clt.map_request["URI"] + "index.html";
+	// if (clt.location >= 0 && !web.config[clt.config].location[clt.location].cgi.empty() && web.config[clt.config].location[clt.location].index.empty())
+	// {
+	// 	return clt.response.statusCode = 403;
+	// }
+	// if (clt.location >= 0 && !web.config[clt.config].location[clt.location].cgi.empty()  && !web.config[clt.config].index.empty())
+	// {
+	// 	if (cgi(web, clt) == 200)
+	// 		return 200;
+	// }
+	
 	while(clt.map_request["URI"] != web.config[clt.config].location[clt.location].root)
 	{
+		std::ofstream out2;
+		// std::ifstream input2;
+		out2.open("./www/rspnse1.html",std::ios::out);
+		if(!out2.is_open())
+		{
+			std::cerr << "Error: out file\n";
+			return  error(clt, 500);
+		}
+		// input2.open(clt.map_request["URI"],std::ios::in);
+		// if(!input2.is_open())
+		// {
+		// 	std::cerr << "Error: input file\n";
+		// 	return  error(clt, 500);
+		// }
+		// std::string line2;
+		// std::string all2 = "";
+		// while(getline(input2,line2))
+		// {
+		// 	all2 += line2;
+		// 	all2 += "\n";
+		// }
+		out2 << clt.map_request["URI"];
+		out2.close();
+		// input2.close();
 		int a = deletefolders(&clt.map_request["URI"]);
 		if(a != 0)
 			return clt.response.statusCode = a;
 	}
 	if(clt.map_request["URI"] == web.config[clt.config].location[clt.location].root)
+	{
+		clt.map_request["URI"] = "./www/rspnse1.html";
 		return clt.response.statusCode = 204;
-	// if (!stat(path.c_str(), &pathStat))
-	// {
-	// 	clt.map_request["URI"] = path;
-	// 	// if (!clt.response.body)
-	// 		clt.response.statusCode = 200;
-	// 	return 0;
-	// }
-	// if (clt.location >= 0)
-	// {
-	// 	if (web.config[clt.config].location[clt.location].autoindex.empty() ||
-	// 		web.config[clt.config].location[clt.location].autoindex == "off")
-	// 		return error(clt, 403);
-	// }
-	// return autoindex(clt, web);
+	}
 	std::cout << "there is a problem \n";
 	return clt.response.statusCode = 500;
 }

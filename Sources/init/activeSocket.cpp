@@ -12,6 +12,41 @@
 
 #include "../../webserv.hpp"
 
+void	clearFdTmp(struct webserv& web)
+{
+	unsigned long		i;
+	unsigned long		j;
+	unsigned long		size;
+
+	i = 0;
+	size = web.servers.size();
+	while (i < size)
+	{
+		j = 0;
+		while (j < web.servers[i].socketFd.size())
+		{
+			if (FD_ISSET(web.servers[i].socketFd[j] , &web.tmp_read))
+				FD_CLR(web.servers[i].socketFd[j] , &web.tmp_read);	
+			if (FD_ISSET(web.servers[i].socketFd[j] , &web.tmp_write))
+				FD_CLR(web.servers[i].socketFd[j] , &web.tmp_write);	
+			j++;
+		}
+		i++;
+	}
+	i = 0;
+	size = web.clients.size();
+	while (i < size)
+	{
+		if (FD_ISSET(web.clients[i].fd , &web.tmp_read))
+			FD_CLR(web.clients[i].fd , &web.tmp_read);	
+		if (FD_ISSET(web.clients[i].fd , &web.tmp_read))
+			FD_CLR(web.clients[i].fd , &web.tmp_write);	
+		i++;
+	}
+	FD_ZERO(&web.tmp_read);
+	FD_ZERO(&web.tmp_write);
+}
+
 void	activeReadSocket(struct webserv& web)
 {
 	int	i;

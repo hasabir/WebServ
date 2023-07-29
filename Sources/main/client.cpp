@@ -36,6 +36,7 @@ uploadFiles&	uploadFiles::operator=(const uploadFiles& rhs)
 {
 	if (this != &rhs)
 	{
+		delete file;
 		len = rhs.len;
 		filename = rhs.filename;
 		file = new std::fstream();
@@ -159,6 +160,7 @@ client&		client::operator=(const client& rhs)
 		bodys.content_disposition = rhs.bodys.content_disposition;
 		bodys.boundary = rhs.bodys.boundary;
 		headers = rhs.headers;
+		delete file;
 		file = new std::fstream();
 		file_name = rhs.file_name;
 		body_data = rhs.body_data;

@@ -1,0 +1,64 @@
+http://0.0.0.0:8080/file/a.cpp
+		Accept | */*
+		Accept-Encoding | gzip, deflate, br
+		Connection | keep-alive
+		Host | 0.0.0.0:8080
+		Method | POST
+		Postman-Token | 9e2288f8-429e-4aa8-a101-45090f177a55
+		URI | /file/a.cpp
+		User-Agent | PostmanRuntime/7.32.3
+		Version | HTTP/1.1
+body binary
+
+
+If transfer_encoding , calcule body_length and return error if needed
+
+post request when transfer-encoding, the file is empty and return internal server error
+
+------------------------------------------------------------------------
+if more than 6 clients it hangs
+
+leaks
+
+-----------------------
+status code > 599 && < 100 //done
+
+cgi not implemented in config file;// done
+
+cgi the returned status code // done
+
+------------------------------------------------------------------------
+Head request ==> Parse Error: The server returned a malformed response
+Getting a non html file should be downloaded?
+If the same port and the same ip address , does not return error 
+- Check if same port but different address should work or not(it work in our case)
+- check localhost. 
+
+the file uploaded when boundary string is "----------------------------631254724589857935214018
+											Content-Disposition: form-data; name=""; filename="form.py"
+											Content-Type: application/octet-stream
+
+											#!/usr/bin/env python
+
+											html_text = '<!DOCTYPE html>\n<html>\n<head>\n'
+											html_text += '\t<title>'+'test'+'</title>\n'
+											html_text += '</head>\n\n'
+											html_text += '<body>\n'
+
+											html_text += '<h3>Hello world by python cgi</h3>'
+											html_text += '<form action="welcome.py" method="get">'
+											html_text +=   'First Name: <input type="text" name="first_name">  <br />'
+											html_text +=   'Last Name: <input type="text" name="last_name" />'
+											html_text +=   '<input type="submit" value="Submit" />'
+											html_text +=  '</form>\n</body>\n</html>\n'
+
+
+											print(html_text)
+											----------------------------631254724589857935214018--"
+
+
+
+-----------------------------------------------------------------
+
+
+201

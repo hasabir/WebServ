@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/01 19:45:42 by hasabir           #+#    #+#             */
-/*   Updated: 2023/07/17 12:46:19 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/27 13:24:40 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,8 @@ std::string replaceLocation(std::string uri, std::string pattern, std::string ro
 {
 	std::string location(uri);
 	int position = uri.find(pattern);
+	if (root.find_last_of('/') == root.length() - 1 && uri[pattern.length()] == '/')
+		root.erase(root.length() - 1);
 	location.replace(position, pattern.length(), root);
 	return location;
 }
@@ -106,6 +108,9 @@ std::string getStatusMessage(int statusCode)
 	map[301] = "Moved Permanently\r\n";
 	map[200] = "OK\r\n";
 	map[500] = "Internal Server Error\r\n";
+	map[204] = "No Content\r\n";
+	map[201] = "Created\r\n";	
+	map[409] = "Conflict\r\n";
 	map[0] = "OK\r\n";
 	return map[statusCode];
 }
@@ -127,9 +132,10 @@ void fillMapContentTypes(std::map<std::string, std::string> &contentTypes)
 	contentTypes[".gif"] = "image/gif";
 	contentTypes[".mp3"] = "audio/mpeg";
 	contentTypes[".mp4"] = "video/mp4";
-	contentTypes[".hpp"] = "text/x-c++hdr";
-	contentTypes[".cpp"] = "text/x-c++src";
-	contentTypes[".c"] = "text/x-csrc";
+	contentTypes[".hpp"] = "text/plain";
+	contentTypes[".cpp"] = "text/plain";
+	contentTypes[".c"] = "text/plain";
 	contentTypes[".py"] = "text/x-python";
 	contentTypes[".sh"] = "text/plain";
+	contentTypes[".php"] = "text/plain";
 }

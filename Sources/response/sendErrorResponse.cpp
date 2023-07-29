@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   sendErrorResponse.cpp                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hp <hp@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/15 12:01:11 by hasabir           #+#    #+#             */
-/*   Updated: 2023/07/17 15:01:02 by hp               ###   ########.fr       */
+/*   Updated: 2023/07/27 19:58:28 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ std::string	generateErrorFile(struct client &clt, struct webserv &web, int statu
 				<< "</p></center></h1>"
 				<< "</body>\n</html>";
 	clt.map_request["URI"] = filePath;
+	clt.response.remove = true;
 	return filePath;
 }
 
@@ -106,9 +107,12 @@ void readeErrorFile(struct client &clt, int statusCode)
 		std::cerr << "ERROR : FAILED TO OPEN ERROR OR AUTOINDEX FILE \n";
 		return;
 	}
-	responseBody << file.rdbuf();
+	//!
+	responseBody << file.rdbuf();//TODO
 	std::copy( std::istreambuf_iterator<char>(responseBody),
 	std::istreambuf_iterator<char>(), std::back_inserter(clt.response.responseBody));
+	
+	// std::cout << "Oki"<<std::endl;
 	clt.response.error = true;
 }
 
@@ -121,8 +125,9 @@ void	getResponseHeaderError(struct client &clt, int statusCode)
 	response += "Connection: close\r\nServer: webserver-c\r\n ";
 	response += "Content-Type: " + getContentType(clt.response.filePath) + "\r\n";
 	response += "Content-Length:" + intToString(clt.response.responseBody.size()) +"\r\n\r\n";
-		clt.response.responseData.assign(response.begin(), response.begin() + response.size());
-	clt.response.responseData.insert(clt.response.responseData.end(),
+	clt.response.responseData.assign(response.begin(), response.begin() + response.size());
+	if (clt.map_request["Method"] != "HEAD")
+		clt.response.responseData.insert(clt.response.responseData.end(),
 						clt.response.responseBody.begin(), clt.response.responseBody.end());
 }
 

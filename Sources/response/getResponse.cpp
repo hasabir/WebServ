@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/07 16:49:06 by hasabir           #+#    #+#             */
-/*   Updated: 2023/07/20 12:11:28 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/27 17:07:47 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,8 @@
 
 int autoindex(struct client& clt, struct webserv &web)
 {
-	std::ofstream autoindex((clt.map_request["URI"] + "autoindex.html").c_str());
+	std::string file = clt.map_request["URI"] + intToString(clt.fd) + std::string("autoindex.html");
+	std::ofstream autoindex(file.c_str());
 	DIR* directory;
 	struct dirent* en;
 	std::string pattern;
@@ -42,7 +43,7 @@ int autoindex(struct client& clt, struct webserv &web)
 			clt.response.uri += "/";
 		while ((en = readdir(directory)) != NULL)
 		{
-			if (!strcmp(en->d_name, "autoindex.html"))
+			if (!strcmp(en->d_name, file.c_str()))
 				continue;
 			autoindex	<< "<li>" << "<a href=\""
 						<< "http://"
@@ -60,7 +61,8 @@ int autoindex(struct client& clt, struct webserv &web)
 
 	autoindex.close();
 
-	clt.map_request["URI"] +=  "autoindex.html";
+	clt.map_request["URI"] = file;
+	clt.response.remove = true;
 	if (!clt.response.body)
 		clt.response.statusCode = 200;
 	return 0;
@@ -72,7 +74,7 @@ int	get(struct webserv& web, struct client& clt)
 	std::string path;
 	
 	// std::cout << "URI = " << clt.map_request["URI"] << std::endl;
-	// std::cout << PURPLE <<"!!!!!!!!!!!!!!! execute cgi = |" << clt.cgi.extention << "|\n" << END;
+	// std::cout << PURPLE <<"!!!!!!!!!!!!!!! location  = |" << clt.location << "|\n" << END;
 	if (stat(clt.map_request["URI"].c_str(), &pathStat))
 	{
 		if (clt.location >= 0
@@ -90,18 +92,18 @@ int	get(struct webserv& web, struct client& clt)
 			&& !web.config[clt.config].location[clt.location].redirect.empty())
 		{
 			clt.response.body = true;
-			if (clt.response.statusCode)
-				return clt.response.statusCode;
-			return clt.response.statusCode = 302;
+			// if (clt.response.statusCode)
+			// 	return clt.response.statusCode;
+			if (!clt.response.statusCode)
+				clt.response.statusCode = 302;
 		}
 		if (clt.location >= 0 && !web.config[clt.config].location[clt.location].cgi.empty())
 		{
 			if ((cgi(web, clt)))
-			{
-				std::cout << "########## get = |" << clt.cgi.extention << "|\n";
 				return 0;
-			}
 		}
+		if (clt.response.body == true)
+			return clt.response.statusCode;
 		return clt.response.statusCode = 200;
 	}
 	if (*clt.map_request["URI"].rbegin() != '/')
@@ -126,10 +128,7 @@ int	get(struct webserv& web, struct client& clt)
 		// std::cout << GREEN << "\nuri -> = " << path << END << std::endl;//!
 		clt.map_request["URI"] = path;
 		if (cgi(web, clt))
-		{
-			std::cout << RED << "status code = " << clt.response.statusCode << std::endl << END;
 			return 0;
-		}
 		if (!clt.response.body)
 			clt.response.statusCode = 200;
 		return 0;

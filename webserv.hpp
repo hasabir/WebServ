@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 20:01:49 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/07/20 13:52:00 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/27 12:27:29 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,6 +126,7 @@ struct uploadFiles
 struct Response
 {
 	public:
+		bool				remove;
 		bool				redirection;
 		bool				header;
 		bool				error;
@@ -144,7 +145,7 @@ struct Response
 		std::vector<char>	responseBody;
 		std::vector<char>	responseData;
 		std::string			uri;
-		Response():redirection(0), header(0),error(0), cgi(0), finishReading(0),
+		Response():remove(0), redirection(0), header(0),error(0), cgi(0), finishReading(0),
         	autoindex(0), generateError(0),
         	body(0), statusCode(0), nbrFrames(-1){};
 };
@@ -194,6 +195,7 @@ struct client
 	std::vector<struct uploadFiles>		upload_files;
 	unsigned long						body_length;
 	std::string							temp_header;
+	unsigned long						max_body;
 
 	client();
 	~client();
@@ -256,7 +258,7 @@ unsigned long	hexToDec(std::string hex);
 // file name : multiTypes.cpp
 // fun  name :
 void	multiTypes(std::string buffer, struct client& clt);
-void	getFilename(std::string buffer, int file_index, struct uploadFiles& upload_files, int find, int fd);
+void	getFilename(std::string buffer, int file_index, struct uploadFiles *upload_files, int find, int fd);
 int		isADerective(std::string buffer, int find, int size);
 void	getFileSize(struct uploadFiles& file);
 
@@ -372,6 +374,7 @@ void    displayHostPort(struct webserv& web);
 // repo name : init
 // file name : activeSocket.cpp
 // fun  name :
+void	clearFdTmp(struct webserv& web);
 void	activeReadSocket(struct webserv& web);
 void	activeWriteSocket(struct webserv& web);
 void	activeSocket(struct webserv& web);
@@ -436,7 +439,7 @@ int 	isCgi(struct client& clt, struct webserv &web);
 // void	generate_CGI_file(class CGI &cgi, std::string file, std::string &filePath);
 void	generate_CGI_file(struct client &clt,std::string &filePath);
 // std::string	parsePHPcgi(std::string fileName, std::string &header);
-std::string	parsePHPcgi(std::string fileName, std::string &header, std::string suffix);
+std::string	parsePHPcgi(std::string &fileName, std::string &header, std::string suffix);
 
 
 /**************************************************************************************/

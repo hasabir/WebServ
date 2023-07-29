@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   checkConfigdata.cpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hp <hp@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/28 21:03:29 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/07/17 17:01:48 by hp               ###   ########.fr       */
+/*   Updated: 2023/07/20 18:03:05 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,7 @@ int	validHostDirective(std::string& host)
 				return (1);
 		if (dot == 3 && (j == 0 || j > 3 || host[i + j] != 0))
 		{
-			std::cout << "here\n";
+			// std::cout << "here\n";
 			return (1);
 		}
 		nbr = toInt(host.substr(i, j));

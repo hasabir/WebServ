@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parseRequest.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hp <hp@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/22 06:56:52 by hasabir           #+#    #+#             */
-/*   Updated: 2023/07/17 15:22:55 by hp               ###   ########.fr       */
+/*   Updated: 2023/07/27 15:46:25 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,9 +34,11 @@ int handleRedirection(struct client &clt, struct webserv &web)
 		
 		redirect >> statusCode;
 		clt.response.statusCode = stringToInt(statusCode);
+		if (clt.response.statusCode < 100 || clt.response.statusCode > 599)
+			return error(clt, 400);//!The request is malformed
 		for (; whitSpaceChar < clt.map_request["URI"].size()
 			&& std::isspace(clt.map_request["URI"][whitSpaceChar]); whitSpaceChar++);
-		clt.map_request["URI"] = clt.map_request["URI"].substr(whitSpaceChar + 1,
+		clt.map_request["URI"] = clt.map_request["URI"].substr(whitSpaceChar,
 			clt.map_request["URI"].size());
 	}
 	return 0;
@@ -67,10 +69,7 @@ int parsLocation(struct client &clt, struct webserv &web)
 										 web.config[clt.config].location[clt.location].pattern,
 										 web.config[clt.config].root);
 	else
-	{
-		std::cout << "The error is generated here\n";
 		return error(clt, 404);
-	}
 	return 0;
 }
 
@@ -79,11 +78,14 @@ int getHostPort(struct client &clt, struct webserv &web)
 	std::vector<std::string>::iterator	port;
 	// struct addrinfo *addrinfo;
 
+
 	size_t i = 0;
 	for (; i < web.config.size(); i++) //! handel host
 	{
-		if (clt.map_request["Host"].substr(0,clt.map_request["Host"].find(":"))
-			== host(web.config[i].host))
+		if ((clt.map_request["Host"].substr(0,clt.map_request["Host"].find(":"))
+			== web.config[i].host)
+			|| host(clt.map_request["Host"].substr(0,clt.map_request["Host"].find(":")))
+			== web.config[i].host)
 		{
 			port = std::find(web.config[i].listen.begin(), web.config[i].listen.end(),
 				clt.map_request["Host"].substr(clt.map_request["Host"].find(":") + 1));
@@ -103,6 +105,7 @@ int getHostPort(struct client &clt, struct webserv &web)
 int isRequestWellFormed(struct client &clt, struct webserv &web)
 {
 	clt.config = getHostPort(clt, web);
+	// std::cout << "---------------------\n";
 	if ( (clt.map_request["URI"].find_first_not_of(
 		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~:/?#[]@!$&'()*+,;=%")
 		!= std::string::npos)
@@ -113,7 +116,6 @@ int isRequestWellFormed(struct client &clt, struct webserv &web)
 	if (clt.map_request.find("Transfer-Encoding") != clt.map_request.end()
 		&& clt.map_request["Transfer-Encoding"] != "chunked")
 	{
-		std::cout << "returning 501\n";
 		return error(clt, 501);
 	}
 		
@@ -124,7 +126,10 @@ int isRequestWellFormed(struct client &clt, struct webserv &web)
 		&& clt.map_request["Method"] == "POST"
 	&& stringToInt(clt.map_request["Content-Length"])
 		> stringToInt(web.config[clt.config].max_body_size))
+	{
+		// std::cout << "here\n";
 		return error(clt, 413);
+	}
 	return 0;
 }
 
@@ -152,14 +157,11 @@ int parseRequestData(struct client &clt, struct webserv &web)
 
 int parseRequest(struct webserv &web, struct client &clt)
 {
-	// std::cout << "\033[91m--------------------------------------------------------\n";
-	// clt.response_is_ready = true;
 	clt.config = -1;
 	clt.location = -1;
 
 	fillRequestData(clt);
 
 	parseRequestData(clt, web);
-	//!displayServerFile(web.config);
 	return 0;
 }

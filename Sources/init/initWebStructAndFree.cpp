@@ -53,7 +53,6 @@ void	initWebStrcut(struct webserv& web)
 	memset(&web.hints, 0, sizeof(web.hints));
 	web.hints.ai_family = AF_INET;
 	web.hints.ai_socktype = SOCK_STREAM;
-	web.hints.ai_flags = AI_PASSIVE;
 	web.hints.ai_flags = AI_NUMERICHOST;
 	web.hints.ai_protocol = IPPROTO_TCP;
 	i = 0;
@@ -71,12 +70,11 @@ void	initWebStrcut(struct webserv& web)
 		{
 			char *port = const_cast<char*>( web.servers[i].serverConfig.listen[j].c_str());
 			web.status = 0;
-			//web.status = getaddrinfo(HOST, port, &web.hints, &web.servers[i].socket[j]);
 			web.status = getaddrinfo(host, port, &web.hints, &web.servers[i].socket[j]);
+			//printSocketAddress(web.servers[i].socket[j]);
 			if (web.status != 0)
 			{
 				std::cerr << "error : init web struct in port ";
-				std::cout << web.servers[i].serverConfig.listen[j] << std::endl;
 			}
 			else
 			{

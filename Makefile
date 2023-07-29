@@ -1,6 +1,3 @@
-
-
-
 NAME = webserv
 SOURCES = Sources
 

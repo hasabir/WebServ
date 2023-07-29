@@ -3,15 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   getConfigData.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hp <hp@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/19 17:44:50 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/07/10 12:24:31 by hp               ###   ########.fr       */
+/*   Updated: 2023/07/27 12:34:16 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../webserv.hpp"
 char directives[14][21] = {"listen", "host", "servername", "error_page", "client_max_body_size", "location"    , "allow", "root", "autoindex", "index", "upload", "upload_store", "cgi", "redirect"};
+bool parsCgi = false;
+
 
 std::string	getDirectiveKey(std::string line)
 {
@@ -104,6 +106,21 @@ void	getMultivalue(std::vector<std::string>& holder, std::string values)
 	}
 }
 
+void	parseCgi(std::string key, std::string value)
+{
+	if (key == ".py")
+	{
+		if (value != "/usr/bin/python")
+			throw std::runtime_error("Error: Executable python not found");
+	}
+	else if (key == ".php")
+	{
+		if (value != "www/cgi-bin/php/php-cgi")
+			throw std::runtime_error("Error: Executable php not found");
+	}
+	else
+		throw std::runtime_error("Error: Bad CGI extention");
+}
 
 void	getPairValue(std::vector<std::pair<std::string, std::string> >& holder, std::string value)
 {
@@ -127,6 +144,8 @@ void	getPairValue(std::vector<std::pair<std::string, std::string> >& holder, std
 		j++;
 	if (j)
 		pr.second.assign( value.substr(i, j));
+	if (parsCgi)
+		parseCgi(pr.first, pr.second);
 	holder.push_back(pr);
 }
 
@@ -182,7 +201,11 @@ void	fillServerBlock(struct webserv& web, std::vector<std::string> serv)
 				if (key == "root")
 					loc.root.assign(value);
 				if (key == "cgi")
+				{
+					parsCgi = true;
 					getPairValue(loc.cgi, value);
+					parsCgi = false;
+				}
 				if (key == "upload")
 					loc.upload.assign(value);
 				if (key == "upload_store")

@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-
 html_text = '<!DOCTYPE html>\n<html>\n<head>\n'
 html_text += '\t<title>'+'test'+'</title>\n'
 html_text += '</head>\n\n'

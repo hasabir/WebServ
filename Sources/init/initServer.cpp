@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   initServer.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hp <hp@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/16 14:12:36 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/06/29 12:50:30 by hp               ###   ########.fr       */
+/*   Updated: 2023/07/23 19:02:10 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@ int	initServer(struct webserv& web)
 	int											size;
 	int											len;
 	int											connected_socket;
+	int											backlog;
+
 	reuse = 1;//set address to be reuse 
 	status = 0;
 	i = 0;
@@ -44,41 +46,53 @@ int	initServer(struct webserv& web)
 				if (web.servers[i].socketFd[j] > 0)
 				{
 					valide++;
-					//set file descriptor of the socket to non-blocking
-					int flags = fcntl(web.servers[i].socketFd[j], F_GETFL, 0);
-					//printf("stt : %d %d %d\n", flags, O_NONBLOCK, (flags & O_NONBLOCK) == O_NONBLOCK);
-					status = fcntl(web.servers[i].socketFd[j], F_SETFL, flags & O_NONBLOCK);
-					if (status < 0)
+					
+					int on = 1;				
+					reuse = setsockopt(web.servers[i].socketFd[j], SOL_SOCKET, SO_NOSIGPIPE, (char *)&on, sizeof(on));
+					if (reuse < 0)
 						close(web.servers[i].socketFd[j]);
 					else
-					{
-					//	printf("stt : %d %d %d %d\n", valide, status, O_NONBLOCK, (status & O_NONBLOCK) == O_NONBLOCK);
+					{	
 						valide++;
-						//set bind to reuse the some local address even if she is in Time Wait mode
-						status = setsockopt(web.servers[i].socketFd[j], SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(int));
+						//set file descriptor of the socket to non-blocking
+						int flags = fcntl(web.servers[i].socketFd[j], F_GETFL, 0);
+						//printf("stt : %d %d %d\n", flags, O_NONBLOCK, (flags & O_NONBLOCK) == O_NONBLOCK);
+						status = fcntl(web.servers[i].socketFd[j], F_SETFL, flags & O_NONBLOCK);
 						if (status < 0)
 							close(web.servers[i].socketFd[j]);
 						else
 						{
+						//	printf("stt : %d %d %d %d\n", valide, status, O_NONBLOCK, (status & O_NONBLOCK) == O_NONBLOCK);
 							valide++;
-							//Bind socket to localhost address stored in web.server 
-							status = bind(web.servers[i].socketFd[j], ptr->ai_addr, ptr->ai_addrlen);
+							//set bind to reuse the some local address even if she is in Time Wait mode
+							status = setsockopt(web.servers[i].socketFd[j], SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on));
 							if (status < 0)
 								close(web.servers[i].socketFd[j]);
 							else
 							{
 								valide++;
-								//Turn sockets to passive mode (listen to incamming connection) max queue 5
-								status = listen(web.servers[i].socketFd[j], MAX_CONNECTION);
+								//Bind socket to localhost address stored in web.server 
+								status = bind(web.servers[i].socketFd[j], ptr->ai_addr, ptr->ai_addrlen);
 								if (status < 0)
+								{
 									close(web.servers[i].socketFd[j]);
+								}
 								else
+								{
 									valide++;
+									backlog = SOMAXCONN;
+									//Turn sockets to passive mode (listen to incamming connection) max queue 5
+									status = listen(web.servers[i].socketFd[j], backlog);
+									if (status < 0)
+										close(web.servers[i].socketFd[j]);
+									else
+										valide++;
+								}
 							}
 						}
 					}
 				}
-				if (valide == 5)
+				if (valide == 6)
 				{
 					std::cout << "listen to port number ";
 					std::cout << web.servers[i].serverConfig.listen[j] << " is established" << std::endl;
@@ -91,8 +105,10 @@ int	initServer(struct webserv& web)
 					ptr = ptr->ai_next;
 				}
 			}
-			if (valide != 5)
+			if (valide != 6)
+			{
 				web.servers[i].socketFd[j] = -1;
+			}
 			j++;
 		}
 		i++;
