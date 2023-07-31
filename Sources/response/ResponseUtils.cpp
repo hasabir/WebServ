@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/14 13:18:03 by hasabir           #+#    #+#             */
-/*   Updated: 2023/07/27 18:23:14 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/30 13:08:48 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ void	initData(struct client &clt, std::string filePath, std::ifstream &file)
 		file.seekg(0, std::ios::beg);
 		clt.response.len = clt.response.fileSize;
 		clt.response.sizeFrame = 500000;
-		if (clt.response.fileSize < 1024)
+		if (clt.response.fileSize < 1024 && !clt.response.cgi)
 			clt.response.autoindex = 1;
 		if (clt.response.sizeFrame > clt.response.fileSize)
 			clt.response.sizeFrame = clt.response.fileSize;

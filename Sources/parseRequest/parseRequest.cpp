@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/22 06:56:52 by hasabir           #+#    #+#             */
-/*   Updated: 2023/07/27 15:46:25 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/30 10:27:45 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,6 @@
 
 int handleRedirection(struct client &clt, struct webserv &web)
 {
-	// char nextChar = clt.map_request["URI"]
-	// 				[clt.map_request["URI"].find(web.config[clt.config].location[clt.location].pattern)
-	// 				+ web.config[clt.config].location[clt.location].pattern.size()];
-	
-	// if (nextChar != '/' && nextChar != '\0')
-	// 	return error(clt, 404);
-	
 	clt.map_request["URI"].clear();
 	clt.map_request["URI"] = web.config[clt.config].location[clt.location].redirect;
 
@@ -35,7 +28,9 @@ int handleRedirection(struct client &clt, struct webserv &web)
 		redirect >> statusCode;
 		clt.response.statusCode = stringToInt(statusCode);
 		if (clt.response.statusCode < 100 || clt.response.statusCode > 599)
-			return error(clt, 400);//!The request is malformed
+			return error(clt, 400);
+		if (clt.response.statusCode != 301 && clt.response.statusCode != 302)
+			return error(clt, 501);
 		for (; whitSpaceChar < clt.map_request["URI"].size()
 			&& std::isspace(clt.map_request["URI"][whitSpaceChar]); whitSpaceChar++);
 		clt.map_request["URI"] = clt.map_request["URI"].substr(whitSpaceChar,
@@ -61,9 +56,14 @@ int parsLocation(struct client &clt, struct webserv &web)
 			return status;
 	}
 	else if (!web.config[clt.config].location[clt.location].root.empty())
+	{
+		if (web.config[clt.config].location[clt.location].pattern == "/" 
+			&& clt.map_request["URI"] != "/")
+			return error(clt, 404);
 		clt.map_request["URI"] = replaceLocation(clt.map_request["URI"],
-										 web.config[clt.config].location[clt.location].pattern, 
-										 web.config[clt.config].location[clt.location].root);
+										web.config[clt.config].location[clt.location].pattern, 
+										web.config[clt.config].location[clt.location].root);
+	}
 	else if (!web.config[clt.config].root.empty())
 		clt.map_request["URI"] = replaceLocation(clt.map_request["URI"],
 										 web.config[clt.config].location[clt.location].pattern,
@@ -76,16 +76,15 @@ int parsLocation(struct client &clt, struct webserv &web)
 int getHostPort(struct client &clt, struct webserv &web)
 {
 	std::vector<std::string>::iterator	port;
-	// struct addrinfo *addrinfo;
-
-
+	std::string requestedHost;
 	size_t i = 0;
-	for (; i < web.config.size(); i++) //! handel host
+
+	for (; i < web.config.size(); i++)
 	{
-		if ((clt.map_request["Host"].substr(0,clt.map_request["Host"].find(":"))
-			== web.config[i].host)
-			|| host(clt.map_request["Host"].substr(0,clt.map_request["Host"].find(":")))
-			== web.config[i].host)
+		requestedHost = clt.map_request["Host"].substr(0,clt.map_request["Host"].find(":"));
+		if (requestedHost == web.config[i].host || host(requestedHost) == web.config[i].host
+			|| (std::find(web.config[i].server_name.begin(), web.config[i].server_name.end(),
+				requestedHost) != web.config[i].server_name.end()))
 		{
 			port = std::find(web.config[i].listen.begin(), web.config[i].listen.end(),
 				clt.map_request["Host"].substr(clt.map_request["Host"].find(":") + 1));
@@ -105,7 +104,6 @@ int getHostPort(struct client &clt, struct webserv &web)
 int isRequestWellFormed(struct client &clt, struct webserv &web)
 {
 	clt.config = getHostPort(clt, web);
-	// std::cout << "---------------------\n";
 	if ( (clt.map_request["URI"].find_first_not_of(
 		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~:/?#[]@!$&'()*+,;=%")
 		!= std::string::npos)
@@ -126,10 +124,7 @@ int isRequestWellFormed(struct client &clt, struct webserv &web)
 		&& clt.map_request["Method"] == "POST"
 	&& stringToInt(clt.map_request["Content-Length"])
 		> stringToInt(web.config[clt.config].max_body_size))
-	{
-		// std::cout << "here\n";
 		return error(clt, 413);
-	}
 	return 0;
 }
 
@@ -143,9 +138,9 @@ int parseRequestData(struct client &clt, struct webserv &web)
 	if (clt.response.error)
 		return 0;
 
-	std::vector<std::string>::iterator iter;
 	if (clt.config != -1 && clt.location != -1)
 	{
+		std::vector<std::string>::iterator iter;
 		iter = std::find(web.config[clt.config].location[clt.location].allow.begin(),
 		web.config[clt.config].location[clt.location].allow.end(), clt.map_request["Method"]);
 		if (iter == web.config[clt.config].location[clt.location].allow.end())

@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/23 18:39:29 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/07/20 17:59:52 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/29 23:31:40 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,7 +141,7 @@ int	valideFile(std::string line)
 		file.close();
 		return (1);
 	}
-	std::cout << "File not  opened\n";
+	std::cerr << "File not  opened\n";
 	return (0);
 }
 
@@ -173,10 +173,10 @@ int valideUnit(std::string line)
 	nbr = getNbr(line);
 	if ((unit == 'G' || unit == 'K' || unit == 'M') && nbr > 0)
 	{
-		std::cout << "Valide Body size " << std::endl;
+		// std::cout << "Valide Body size " << std::endl;
 		return (1);
 	}
-	std::cout << "unvalide Body size " << std::endl;
+	// std::cout << "unvalide Body size " << std::endl;
 	return 0;
 }
 
@@ -195,7 +195,7 @@ int	valideOnOff(std::string line)
 	{
 		if (line[i + 2] == 0)
 		{
-			std::cout << "Valide on value" << std::endl;
+			// std::cout << "Valide on value" << std::endl;
 			return (1);
 		}
 		i += 2;
@@ -203,7 +203,7 @@ int	valideOnOff(std::string line)
 			i++;
 		if (i == size)
 		{
-			std::cout << "Valide on value" << std::endl;
+			// std::cout << "Valide on value" << std::endl;
 			return (1);
 		}
 		return (0);
@@ -214,7 +214,7 @@ int	valideOnOff(std::string line)
 	{
 		if (line[i + 3] == 0)
 		{
-			std::cout << "Valide off value" << std::endl;
+			// std::cout << "Valide off value" << std::endl;
 			return (1);
 		}
 		i += 3;
@@ -222,12 +222,12 @@ int	valideOnOff(std::string line)
 			i++;
 		if (i == size)
 		{
-			std::cout << "Valide off value" << std::endl;
+			// std::cout << "Valide off value" << std::endl;
 			return (1);
 		}
 		return (0);
 	}	
-	std::cout << "Unvalide on/off value" << std::endl;
+	std::cerr << "Unvalide on/off value" << std::endl;
 	return (0);
 }
 
@@ -255,7 +255,7 @@ int	valideExtension(std::string line)
 			i++;
 	if (i == size)
 	{
-		std::cout << "Valide extension" << std::endl;
+		// std::cout << "Valide extension" << std::endl;
 		return (1);
 	}
 	return (0);
@@ -286,7 +286,7 @@ int	valideScript(std::string line)
 	j = access(name.c_str(), X_OK);
 	if (j == 0)
 	{
-		std::cout << "Valide excutable" << std::endl;
+		// std::cout << "Valide excutable" << std::endl;
 		return (1);
 	}
 	return (0);
@@ -320,7 +320,7 @@ int	validePath(std::string line)
 	{
 		if (S_ISDIR(buffer.st_mode))
 		{
-			std::cout << "Valide directory path" << std::endl;
+			// std::cout << "Valide directory path" << std::endl;
 			return (1);
 		}
 		return (0);

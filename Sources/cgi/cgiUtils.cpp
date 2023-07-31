@@ -44,7 +44,6 @@ void	fill_CGI_ENV(struct client &clt, struct webserv &web)
 	}
 	if (!clt.map_request["Cookie"].empty())
 		clt.cgi.env.push_back("HTTP_COOKIE=" + clt.map_request["Cookie"]);
-	clt.cgi.env.push_back("COUNTER=10");
 }
 
 int isCgiConfigured(struct client &clt, struct webserv &web,  std::string filePath)

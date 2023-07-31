@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/19 17:44:50 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/07/27 12:34:16 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/29 23:21:15 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,6 +170,8 @@ void	fillServerBlock(struct webserv& web, std::vector<std::string> serv)
 		if (key == "listen")
 		{
 			conf.listen.push_back(value);
+			if (value.find_first_not_of("0123456789") != std::string::npos)
+				throw std::runtime_error("Error: ports must be digits");
 		}
 		if (key == "servername")
 		{
@@ -182,6 +184,8 @@ void	fillServerBlock(struct webserv& web, std::vector<std::string> serv)
 		if (key == "client_max_body_size")
 		{
 			conf.max_body_size.assign(value);
+			if (conf.max_body_size.find_first_not_of("0123456789") != std::string::npos)
+				throw std::runtime_error("Error: client max body size must be a digit");
 		}
 		if (key == "root")
 		{
@@ -207,7 +211,11 @@ void	fillServerBlock(struct webserv& web, std::vector<std::string> serv)
 					parsCgi = false;
 				}
 				if (key == "upload")
+				{
 					loc.upload.assign(value);
+					if (!loc.upload.empty() && loc.upload != "on" && loc.upload != "off")
+						throw std::runtime_error("Error: Upload can be either on or off");
+				}
 				if (key == "upload_store")
 					loc.upload_store.assign(value);
 				if (key == "error_page")
@@ -215,9 +223,20 @@ void	fillServerBlock(struct webserv& web, std::vector<std::string> serv)
 				if (key == "index")
 					loc.index.assign(value);
 				if (key == "autoindex")
+				{
 					loc.autoindex.assign(value);
+					if (!loc.autoindex.empty() && loc.autoindex != "on" && loc.autoindex != "off")
+						throw std::runtime_error("Error: autoindex can be either on or off");
+				}
 				if (key == "allow")
+				{
 					getMultivalue(loc.allow, value);
+					for(std::vector<std::string>::iterator iter = loc.allow.begin();iter != loc.allow.end();iter++)
+					{
+						if (*iter != "GET" && *iter != "POST" && *iter != "DELETE")
+							throw std::runtime_error("Error: Method not supported");
+					}
+				}
 				if (key == "redirect")
 					loc.redirect.assign(value);
 				i++;

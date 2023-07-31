@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/15 11:40:12 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/07/27 18:01:19 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/30 12:54:28 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,33 +110,17 @@ void	receiveRequest(struct webserv& web, struct client& clt, int clt_i, int& fla
 			if (FD_ISSET(web.clients[clt_i].fd , &web.reads)){
 				FD_CLR(web.clients[clt_i].fd , &web.reads);
 				if (!FD_ISSET(web.clients[clt_i].fd , &web.writes))
-				{
-					// std::cout << "Is not set " << std::endl;
 					FD_SET(web.clients[clt_i].fd, &web.writes);
-				}
 			}
-			// FD_CLR(web.clients[clt_i].fd , &web.reads);
-			// int n_byte_readed = 0;
-			// char line[2];
-			// n_byte_readed = recv(web.clients[clt_i].fd, line, 0, MSG_PEEK);
-			// if (n_byte_readed < 0)
-			// {
-			// 	closeConnection(web, clt_i);
-			// 	flag_fail = 0;
-			// 	return ;
-			// }
 			web.clients[clt_i].request_is_ready = true;
-			// sendResponse(web.clients[clt_i], web, web.clients[clt_i].response.statusCode);
-			// closeConnection(web, clt_i);
 			flag_fail = 0;
 			return ;
 		}
 	}
 	/*****************************************************************/
 
-	web.clients[clt_i].response.error = false;
-	if (clt.post_flag == 1)
-		splitBody(buff, clt);
+	if (!web.clients[clt_i].map_request.empty() && web.clients[clt_i].map_request["Method"] == "POST")
+		splitBody(buff, clt,n_byte_readed);
 	else
 	{
 		i = buff.find("\r\n\r\n");
@@ -148,7 +132,9 @@ void	receiveRequest(struct webserv& web, struct client& clt, int clt_i, int& fla
 		}
 
 	}
-	if (endOfTheRequest(buff, clt.bodys) == 0)
+	if (endOfTheRequest(buff, clt.bodys) == 0 
+		|| (!web.clients[clt_i].map_request.empty()
+		&& !web.clients[clt_i].map_request["Referer"].empty()))
 	{
 		clt.request_is_ready = true;
 		if (clt.post_flag)

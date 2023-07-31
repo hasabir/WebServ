@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/15 12:01:11 by hasabir           #+#    #+#             */
-/*   Updated: 2023/07/27 19:58:28 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/29 23:29:24 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 std::string	generateErrorFile(struct client &clt, struct webserv &web, int statusCode)
 {
 	(void)web;
-	// std::cout << RED << "generating error file path\n" << END;
 	std::string filePath("www/error/generated_"
 					+ intToString(statusCode) + ".html");
 	std::ofstream  errorFile(filePath.c_str());
@@ -35,7 +34,7 @@ std::string	generateErrorFile(struct client &clt, struct webserv &web, int statu
 				<< ".larger-text {\n"
 				<< "font-size: 60px;\n"
 				<< "text-align: center;\n}\n"
-				
+	
 				<< "body {\n"
 				<< "background-color: #080707;\n"
 				<< "font-family: Courier New, monospace;\n}\n"
@@ -65,14 +64,11 @@ std::string getFilePath(struct client& clt, struct webserv &web, int statusCode)
 	struct stat pathStat;
 	int status;
 
-	// std::cout << "location = " << clt.location << std::endl;
-	// displayServerFile(web.config);
 	if (clt.location >= 0 )
 	{
 		for (iter = web.config[clt.config].location[clt.location].error_page.begin();
 		iter != web.config[clt.config].location[clt.location].error_page.end()
 		&& iter->first != intToString(statusCode); iter++);
-			// std::cout << "statius code = " << iter->first << std::endl;
 		if (iter != web.config[clt.config].location[clt.location].error_page.end())
 			filePath = iter->second;
 	}
@@ -82,10 +78,8 @@ std::string getFilePath(struct client& clt, struct webserv &web, int statusCode)
 		for (iter = web.config[clt.config].error_page.begin();
 			iter != web.config[clt.config].error_page.end()
 			&& iter->first != intToString(statusCode); iter++);
-			// std::cout << "error = " << iter->first << " | path = " << iter->second << std::endl;;
 		if (iter != web.config[clt.config].error_page.end())
 			filePath = iter->second;
-		// std::cout << "file path = " << filePath << std::endl;
 	}
 	if (iter == web.config[clt.config].error_page.end()
 		|| (iter != web.config[clt.config].error_page.end()
@@ -107,22 +101,32 @@ void readeErrorFile(struct client &clt, int statusCode)
 		std::cerr << "ERROR : FAILED TO OPEN ERROR OR AUTOINDEX FILE \n";
 		return;
 	}
-	//!
-	responseBody << file.rdbuf();//TODO
+	responseBody << file.rdbuf();
 	std::copy( std::istreambuf_iterator<char>(responseBody),
-	std::istreambuf_iterator<char>(), std::back_inserter(clt.response.responseBody));
-	
-	// std::cout << "Oki"<<std::endl;
+		std::istreambuf_iterator<char>(), std::back_inserter(clt.response.responseBody));
 	clt.response.error = true;
 }
 
 
-void	getResponseHeaderError(struct client &clt, int statusCode)
+void	getResponseHeaderError(struct webserv& web, struct client &clt, int statusCode)
 {
 	std::string response;
 
 	response = "HTTP/1.1 " + intToString(statusCode) + " " + getStatusMessage(statusCode);
-	response += "Connection: close\r\nServer: webserver-c\r\n ";
+	response += "Connection: close\r\nServer: webserver-c\r\n";
+	if (statusCode == 405 && clt.location >= 0)
+	{
+		response += "Allow: ";
+		for(std::vector<std::string>::iterator iter = web.config[clt.config].location[clt.location].allow.begin();
+			iter != web.config[clt.config].location[clt.location].allow.end();iter++)
+		{
+			if (iter != web.config[clt.config].location[clt.location].allow.begin())
+				response += std::string(", ") + *iter;
+			else
+				response += *iter;
+		}
+		response += "\r\n";
+	}
 	response += "Content-Type: " + getContentType(clt.response.filePath) + "\r\n";
 	response += "Content-Length:" + intToString(clt.response.responseBody.size()) +"\r\n\r\n";
 	clt.response.responseData.assign(response.begin(), response.begin() + response.size());
@@ -138,5 +142,5 @@ void	fillErrorResponse(struct client &clt, struct webserv &web, int statusCode)
 	else
 		clt.response.filePath = getFilePath(clt, web, statusCode);
 	readeErrorFile(clt, statusCode);
-	getResponseHeaderError(clt, statusCode);
+	getResponseHeaderError(web, clt, statusCode);
 }

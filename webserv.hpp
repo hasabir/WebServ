@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 20:01:49 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/07/27 12:27:29 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/29 19:07:42 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,20 +65,24 @@
 
 struct body
 {
-	int				get_body_type;
-	int				rd_bytes;
-	int				chunks_flag;
-	int				boundary_flag;
-	int				content_length_flag;
-	int				cr_nl_flag;
-	int				n_chunks;
-	int				cr_index;
-	unsigned long	chunks_len;
-	unsigned long	chunks_con_len;
-	unsigned long	content_len;
-	int				content_disposition;
-	int				binary_flag;
-	std::string		boundary;
+    int                left_bytes;
+    bool            plan_hex;
+    int                get_body_type;
+    int                rd_bytes;
+    int                chunks_flag;
+    int                boundary_flag;
+    int                content_length_flag;
+    int                cr_nl_flag;
+    int                n_chunks;
+    int                cr_index;
+    unsigned long    chunks_len;
+    unsigned long    chunks_con_len;
+    unsigned long    content_len;
+    int                content_disposition;
+    int                binary_flag;
+    std::string        boundary;
+    std::string        tmp_buff;
+    int index;
 };
 
 
@@ -126,6 +130,7 @@ struct uploadFiles
 struct Response
 {
 	public:
+		bool				is_redirect;
 		bool				remove;
 		bool				redirection;
 		bool				header;
@@ -196,6 +201,7 @@ struct client
 	unsigned long						body_length;
 	std::string							temp_header;
 	unsigned long						max_body;
+	long long							position;
 
 	client();
 	~client();
@@ -257,16 +263,18 @@ unsigned long	hexToDec(std::string hex);
 // repo name : acceptConnectionAndGetRequestData
 // file name : multiTypes.cpp
 // fun  name :
-void	multiTypes(std::string buffer, struct client& clt);
+void	multiTypes(std::string buffer,std::string &buffer2, struct client& clt,int n_byte_readed);
 void	getFilename(std::string buffer, int file_index, struct uploadFiles *upload_files, int find, int fd);
 int		isADerective(std::string buffer, int find, int size);
 void	getFileSize(struct uploadFiles& file);
+
+
 
 // repo name : acceptConnectionAndGetRequestData
 // file name : splitBody.cpp
 // fun  name :
 void	addHeaders(std::string buffer, struct client& clt, int pos);
-void	splitBody(std::string buffer, struct client& clt);
+void	splitBody(std::string buffer, struct client& clt, int n_byte_readed);
 
 // repo name : acceptConnectionAndGetRequestData
 // file name : getFilesLength.cpp

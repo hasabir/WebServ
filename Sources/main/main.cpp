@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 19:47:52 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/07/27 13:18:17 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/30 11:05:11 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ int	main(int ac, char **av)
 		return (1);
 	}
 	//Display IP and PORT
-	displayHostPort(web);
+	// displayHostPort(web);
 	//Launch servers
 	flag = initServer(web);
 	if (flag)

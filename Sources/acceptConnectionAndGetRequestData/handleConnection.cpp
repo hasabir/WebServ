@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/16 14:04:07 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/07/27 19:38:52 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/30 11:27:34 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,27 +16,12 @@ void	closeConnection(struct webserv& web, int client_i)
 {
 	std::vector<client>::iterator it;
 
-	// std::cout << RED << "\nConnection Closed " << web.clients[client_i].fd << END << std::endl;
 	it = web.clients.begin();
 	FD_CLR(web.clients[client_i].fd , &web.reads);
 	FD_CLR(web.clients[client_i].fd , &web.writes);
 	close(web.clients[client_i].fd);
-	
-	//
-	// if (!web.clients[client_i].map_request.empty())
-	// 	std::remove(web.clients[client_i].file_name.c_str());
-	
-	// if (web.clients[client_i].response.autoindex
-	// 	|| web.clients[client_i].response.generateError
-	// 	|| web.clients[client_i].response.cgi)
-	// {
-		if (web.clients[client_i].response.remove)
-			std::remove(web.clients[client_i].map_request["URI"].c_str());
-		// std::cerr << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n";
-	// }
-	// if (web.clients[client_i].map_request["Method"] == "POST"
-	// 	&& web.clients[client_i].response.cgi)
-	// 	std::remove(web.clients[client_i].upload_files[0].filename.c_str());
+	if (web.clients[client_i].response.remove)
+		std::remove(web.clients[client_i].map_request["URI"].c_str());
 	while ((unsigned int)client_i < web.clients.size()
 		&& (*it).fd != web.clients[client_i].fd && it != web.clients.end())
 		it++;
@@ -111,10 +96,7 @@ void	handleConnection(struct webserv& web)
 		{
 			
 			flag_fail = 1;
-			// try{
-				receiveRequest(web, web.clients[i], i, flag_fail);
-			// }
-			// catch(std::exception &e){error(web.clients[i], 500);}
+			receiveRequest(web, web.clients[i], i, flag_fail);
 			if (flag_fail && web.clients[i].request_is_ready == true && !web.clients[i].response.error)
 			{
 				FD_CLR(web.clients[i].fd , &web.reads);
@@ -134,9 +116,7 @@ void	handleConnection(struct webserv& web)
 	{
 		if (FD_ISSET(web.clients[i].fd, &web.tmp_write) )
 		{
-			//TODO rm req files
-			// std::cout << GREEN << "#############\n" << END;
-			if (web.clients[i].request_is_ready == true)// * && web.clients[i].response_is_ready == true *//*)
+			if (web.clients[i].request_is_ready == true)
 			{
 				if (!web.clients[i].map_request.empty())
 					std::remove(web.clients[i].file_name.c_str());

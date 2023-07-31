@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/16 14:02:55 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/07/20 12:46:50 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/29 19:12:52 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,6 +181,7 @@ void	getBodyType(std::string buffer, struct body& bodys)
 		while (i + j < size && (buffer[i + j] >= '0' && buffer[i + j] <= '9'))
 			j++;
 		bodys.content_len = toInt(buffer.substr(i, j));
+		// std::cout<< bodys.content_len<<std::endl;
 		if (bodys.content_len > 0)
 		{
 			bodys.content_length_flag = 1;

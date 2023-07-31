@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/16 14:12:36 by tel-bouh          #+#    #+#             */
-/*   Updated: 2023/07/23 19:02:10 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/30 11:29:17 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,8 +56,9 @@ int	initServer(struct webserv& web)
 						valide++;
 						//set file descriptor of the socket to non-blocking
 						int flags = fcntl(web.servers[i].socketFd[j], F_GETFL, 0);
+						flags |= O_NONBLOCK;//!
 						//printf("stt : %d %d %d\n", flags, O_NONBLOCK, (flags & O_NONBLOCK) == O_NONBLOCK);
-						status = fcntl(web.servers[i].socketFd[j], F_SETFL, flags & O_NONBLOCK);
+						status = fcntl(web.servers[i].socketFd[j], F_SETFL, flags);
 						if (status < 0)
 							close(web.servers[i].socketFd[j]);
 						else
@@ -94,8 +95,8 @@ int	initServer(struct webserv& web)
 				}
 				if (valide == 6)
 				{
-					std::cout << "listen to port number ";
-					std::cout << web.servers[i].serverConfig.listen[j] << " is established" << std::endl;
+					// std::cout << "listen to port number ";
+					// std::cout << web.servers[i].serverConfig.listen[j] << " is established" << std::endl;
 					connected_socket++;
 					while (ptr)
 						ptr = ptr->ai_next;

@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/16 11:30:12 by hasabir           #+#    #+#             */
-/*   Updated: 2023/07/27 19:32:36 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/30 13:25:55 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ void	fillRedirectResponse(struct client &clt, struct webserv &web, int statusCod
 	std::string	response;
 
 	(void)web;
+	std::cout << "location = " << clt.map_request["URI"] << std::endl;
 	clt.response.redirection = true;
 	clt.response.finishReading = true;
 	response = "HTTP/1.1 " + intToString(statusCode) + " " + getStatusMessage(statusCode);

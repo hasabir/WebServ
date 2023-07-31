@@ -6,7 +6,7 @@
 /*   By: hasabir <hasabir@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/19 16:05:26 by hasabir           #+#    #+#             */
-/*   Updated: 2023/07/27 13:09:05 by hasabir          ###   ########.fr       */
+/*   Updated: 2023/07/30 13:15:06 by hasabir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,9 @@ void	generate_CGI_file(struct client &clt,std::string &filePath)
 	else if (clt.cgi.extention == ".py" && clt.cgi.loop_detected)
 	{
 		kill(clt.cgi.pid, SIGKILL);
+		std::cout << filePath<< std::endl;
+		// if (std::remove(filePath.c_str())< 0)
+				// throw std::runtime_error("Error: remove");
 		error(clt, 508);
 		return ;
 	}
@@ -101,7 +104,7 @@ int cgi(struct webserv &web, struct client &clt)
 		return 0;
 	}
 	try {
-			executeCgi(clt, clt.map_request["URI"], web);
+		executeCgi(clt, clt.map_request["URI"], web);
 	}
 	catch (std::exception &e)
 	{
