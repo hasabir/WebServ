@@ -1,9 +1,9 @@
 # webServ
 
 This is a custom HTTP server implementation that adheres to a specific set of requirements and features. The server is designed to be efficient, non-blocking, and capable of serving static websites, handling various HTTP methods, and processing CGI scripts. The server uses a configuration file to define its behavior and settings.
+---
 
 ## Features
----
 - Supports HTTP 1.1 protocol.
 - Non-blocking.
 - Provides default error pages .
@@ -14,10 +14,9 @@ This is a custom HTTP server implementation that adheres to a specific set of re
 - Supports 301 and 302 redirections, -directory listing, default file for 	directories, and CGI execution (python and php-CGI).
 - Enables file uploads and allows configuring the upload destination.
 - Support cookies and session management.
-
-## Installation
 ---
 
+## Installation
 1. Clone the repository:
 
 ```bash
@@ -28,17 +27,16 @@ cd WebServ
 
 ```go
 make
-```
-## Usage
 ---
+## Usage
 - Run the server:
 
 ```bash
 ./webserv
 ```
 
-## Configuration File
 ---
+## Configuration File
 
 The configuration file config.conf is used to customize the server's behavior. Below are the available options:
 
@@ -88,4 +86,19 @@ Start the server:
 	Access the server from your web browser, or use tools like curl or to test various routes and features.
 
 Ensure that all the required features, such as static file serving, route handling, and CGI execution, work as expected.
+
+#### Programing Languages:
+<p align="left">
+	
+<a href="https://en.cppreference.com/w/" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/isocpp/logos/master/cpp_logo.png" width="36" height="36" alt="Cpp" /></a>
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg" alt="python" width="40" height="40"/>
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/html5/html5-original.svg" alt="HTML" width="40" height="40"/>
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/css3/css3-original.svg" alt="CSS" width="40" height="40"/>
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/php/php-original.svg" alt="PHP" width="40" height="40"/>
+</p>
+
+
+
+
+
 
