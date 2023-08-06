@@ -27,7 +27,7 @@ cd WebServ
 
 ```go
 make
----
+```
 ## Usage
 - Run the server:
 
